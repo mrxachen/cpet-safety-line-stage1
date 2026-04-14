@@ -1,0 +1,42 @@
+# =============================================================================
+# Home Proxy Map v0 — Preliminary mapping of CPET anchors to home-measurable proxies
+# Status: HYPOTHESIS — to be validated in Stage II/III
+# =============================================================================
+version: "0.1"
+status: hypothesis
+
+proxies:
+  six_minute_walk_distance:
+    maps_to_anchor: R1_vo2peak_pct_pred
+    measurement: "6MWT distance (meters)"
+    equipment: "Flat corridor ≥30m, pulse oximeter"
+    feasibility: high
+    evidence_level: moderate  # validated correlation with VO2peak
+
+  heart_rate_at_talk_test:
+    maps_to_anchor: T1_hr_at_vt1
+    measurement: "HR when patient can no longer speak full sentences"
+    equipment: "Chest strap or wrist HR monitor"
+    feasibility: medium
+    evidence_level: low  # limited validation in elderly
+
+  resting_hrv_rmssd:
+    maps_to_anchor: R2_o2_pulse_peak
+    measurement: "HRV RMSSD from 5-min resting recording"
+    equipment: "Polar H10 or Apple Watch Series 8+"
+    feasibility: medium
+    evidence_level: low  # correlation with stroke volume is indirect
+
+  spo2_at_fixed_hr:
+    maps_to_anchor: I1_eih_status
+    measurement: "SpO2 during exercise at 60-70% HR_peak target"
+    equipment: "Fingertip pulse oximeter (medical grade)"
+    feasibility: high
+    evidence_level: moderate
+
+  rpe_at_target_hr:
+    maps_to_anchor: T2_hr_at_rcp
+    measurement: "Borg RPE scale at target HR zone"
+    equipment: "Borg scale card"
+    feasibility: high
+    evidence_level: moderate

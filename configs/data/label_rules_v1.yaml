@@ -1,0 +1,85 @@
+# =============================================================================
+# Label Rules v1 — P0 / P1 Label Generation Rules
+# Applied by label_engine.py
+# =============================================================================
+version: "1.0"
+
+# --------------- P0: Safety Event Proxy Label ---------------
+# Binary outcome: "adverse event during or after supervised exercise"
+# Since historical records lack prospective outcomes, we use proxy indicators
+p0:
+  description: "Adverse safety event proxy (binary)"
+  positive_if_any:
+    # Hard stop criteria encountered during CPET
+    - field: arrhythmia_flag
+      value: true
+    - field: test_terminated_early
+      value: true
+      # Only count as event if terminated for cardiac reason
+      additional_condition:
+        field: termination_reason
+        contains_any: ["心律失常", "ST", "血压", "胸痛", "arrhythmia", "ST depression", "BP", "chest pain"]
+    - field: eih_status
+      value: true
+    # Functional criteria
+    - field: vo2_peak_pct_pred
+      less_than: 50
+      label: "severely_reduced_capacity"
+    # Hemodynamic instability
+    - field: bp_peak_sys
+      greater_than: 220
+    - field: st_depression_mm
+      greater_than_eq: 1.0
+
+  # Leakage guard: exclude features that directly encode the label
+  leakage_guard:
+    exclude_from_features:
+      - arrhythmia_flag
+      - test_terminated_early
+      - termination_reason
+      - st_depression_mm
+      - bp_peak_sys  # borderline — see leakage_guard.py notes
+
+# --------------- P1: Safety Zone Classification ---------------
+# 3-class ordinal: green (safe) / yellow (caution) / red (high risk)
+p1:
+  description: "Exercise safety zone (3-class ordinal)"
+  zone_rules:
+    green:
+      label: 0
+      description: "Functionally preserved, no significant abnormalities"
+      criteria:
+        vo2_peak_pct_pred: {gte: 70}
+        ve_vco2_slope: {lte: 30}
+        eih_status: false
+        rer_peak: {gte: 1.05}  # adequate effort confirmed
+
+    yellow:
+      label: 1
+      description: "Mildly-moderately reduced; exercise with monitoring"
+      criteria:
+        vo2_peak_pct_pred: {gte: 50, lt: 70}
+        # OR
+        ve_vco2_slope: {gt: 30, lte: 36}
+        # OR
+        nyha_class: {in: [2]}
+
+    red:
+      label: 2
+      description: "Severely reduced or unstable; exercise requires supervision"
+      criteria:
+        vo2_peak_pct_pred: {lt: 50}
+        # OR
+        ve_vco2_slope: {gt: 36}
+        # OR
+        eih_status: true
+        # OR
+        nyha_class: {in: [3, 4]}
+
+  # Conflict resolution when multiple zones qualify
+  conflict_resolution: take_worst  # take_worst | manual_review
+
+  # Minimum effort threshold for P1 validity
+  effort_required:
+    rer_min: 1.00
+    action_if_below: exclude  # exclude | downgrade_to_yellow

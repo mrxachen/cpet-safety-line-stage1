@@ -1,0 +1,13 @@
+# Ordinal Zone Model — shared config for ordinal P1 experiments
+ordinal_encoding:
+  green: 0
+  yellow: 1
+  red: 2
+
+metrics:
+  primary: f1_macro
+  secondary: [accuracy, kappa, auc_ovr]
+
+thresholds:
+  default_predict_proba_red: 0.40   # flag as red if P(red) >= this
+  default_predict_proba_green: 0.60 # flag as green if P(green) >= this

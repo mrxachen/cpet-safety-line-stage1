@@ -1,0 +1,106 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.backends.legacy:build"
+
+[project]
+name = "cpet-stage1"
+version = "0.1.0"
+description = "CPET-based exercise safety-line prediction for older adults with cardiovascular disease (Stage I)"
+readme = "README.md"
+license = {text = "Apache-2.0"}
+requires-python = ">=3.11"
+authors = [
+    {name = "mrxachen", email = "mrxachen@example.com"},
+]
+keywords = ["CPET", "cardiology", "exercise", "safety", "machine-learning"]
+classifiers = [
+    "Development Status :: 2 - Pre-Alpha",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: Apache Software License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Medical Science Apps.",
+]
+
+dependencies = [
+    # Data handling
+    "pandas>=2.1",
+    "numpy>=1.26",
+    "pyarrow>=14.0",
+    "openpyxl>=3.1",
+    # Statistics
+    "scipy>=1.11",
+    "statsmodels>=0.14",
+    # ML
+    "scikit-learn>=1.4",
+    "xgboost>=2.0",
+    "lightgbm>=4.2",
+    "catboost>=1.2",
+    "shap>=0.44",
+    # Visualization
+    "matplotlib>=3.8",
+    "seaborn>=0.13",
+    # Config & CLI
+    "pydantic>=2.5",
+    "pyyaml>=6.0",
+    "python-dotenv>=1.0",
+    "typer>=0.9",
+    "rich>=13.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4",
+    "pytest-cov>=4.1",
+    "ruff>=0.3",
+    "pre-commit>=3.5",
+    "ipykernel>=6.27",
+    "notebook>=7.0",
+]
+docs = [
+    "mkdocs>=1.5",
+    "mkdocs-material>=9.4",
+]
+
+[project.scripts]
+cpet-stage1 = "cpet_stage1.cli:app"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-dir]
+"" = "src"
+
+# --------------- Ruff ---------------
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B", "C4", "RET", "SIM"]
+ignore = ["E501"]  # line length handled by formatter
+
+[tool.ruff.lint.isort]
+known-first-party = ["cpet_stage1"]
+
+# --------------- Pytest ---------------
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-v --tb=short"
+filterwarnings = [
+    "ignore::DeprecationWarning",
+]
+
+# --------------- Coverage ---------------
+[tool.coverage.run]
+source = ["src/cpet_stage1"]
+omit = ["*/tests/*", "*/__pycache__/*"]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "if TYPE_CHECKING:",
+    "raise NotImplementedError",
+]

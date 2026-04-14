@@ -1,0 +1,21 @@
+# =============================================================================
+# Base configuration — shared across all pipeline stages
+# =============================================================================
+
+project:
+  name: cpet-safety-line-stage1
+  stage: 1
+  version: "0.1.0"
+
+reproducibility:
+  random_seed: 42
+
+logging:
+  level: INFO
+  format: "%(asctime)s | %(levelname)s | %(name)s | %(message)s"
+
+# Override with paths.yaml or DATA_DIR env variable
+paths:
+  data_dir: ${DATA_DIR:./data}
+  output_dir: ${OUTPUT_DIR:./outputs}
+  reports_dir: ${REPORTS_DIR:./reports}

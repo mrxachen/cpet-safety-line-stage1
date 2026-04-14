@@ -1,0 +1,24 @@
+# =============================================================================
+# Contract Rules v1 — ID and session contract validation rules
+# =============================================================================
+version: "1.0"
+
+subject_id:
+  format: "S{YYYY}{NNNN}"  # e.g., S20230001
+  unique: true
+  immutable: true
+
+session_id:
+  format: "{subject_id}_{YYYYMMDD}"
+  unique: true
+
+allowed_stages: [1, 2, 3, 4]
+
+cross_stage_linking:
+  stage1_to_stage2:
+    required_anchor_fields:
+      - vt1_hr
+      - rcp_hr
+      - vo2_peak_pct_pred
+      - eih_status
+    export_format: parquet

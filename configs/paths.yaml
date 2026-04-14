@@ -1,0 +1,31 @@
+# =============================================================================
+# Path configuration — override DATA_DIR etc. here for local development
+# Values can also be set via environment variables (take precedence)
+# =============================================================================
+
+paths:
+  # Root for all data layers
+  data_dir: ${DATA_DIR:./data}
+
+  # Sub-layers (relative to data_dir by default)
+  raw_dir: ${DATA_DIR:./data}/raw
+  staging_dir: ${DATA_DIR:./data}/staging
+  curated_dir: ${DATA_DIR:./data}/curated
+  features_dir: ${DATA_DIR:./data}/features
+  labels_dir: ${DATA_DIR:./data}/labels
+  anchors_dir: ${DATA_DIR:./data}/anchors
+  contracts_dir: ${DATA_DIR:./data}/contracts
+  manifests_dir: ./data/manifests
+  demo_dir: ./data/demo
+
+  # Outputs
+  output_dir: ${OUTPUT_DIR:./outputs}
+  bridge_prep_dir: ${OUTPUT_DIR:./outputs}/bridge_prep
+
+  # Reports
+  reports_dir: ${REPORTS_DIR:./reports}
+  reports_release_dir: ${REPORTS_DIR:./reports}/release
+  reports_tmp_dir: ${REPORTS_DIR:./reports}/tmp
+
+  # Configs
+  configs_dir: ./configs

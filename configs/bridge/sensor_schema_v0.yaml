@@ -1,0 +1,27 @@
+# =============================================================================
+# Sensor Schema v0 — Interface schema for home/wearable sensor data
+# Used in Stage III/IV; defined here for planning purposes
+# =============================================================================
+version: "0.1"
+status: draft
+
+sensors:
+  wrist_hr_monitor:
+    fields: [timestamp, hr_bpm, confidence]
+    sample_rate_hz: 1
+    required_accuracy: "±5 bpm vs chest strap"
+
+  pulse_oximeter:
+    fields: [timestamp, spo2_pct, pi_pct]
+    sample_rate_hz: 1
+    required_accuracy: "±2% SpO2"
+
+  chest_strap_ecg:
+    fields: [timestamp, rr_interval_ms, hr_bpm]
+    sample_rate_hz: 1
+    optional_fields: [single_lead_ecg_mv]
+
+  accelerometer:
+    fields: [timestamp, ax, ay, az, steps]
+    sample_rate_hz: 50
+    unit: g

@@ -1,0 +1,22 @@
+# =============================================================================
+# Split Rules v1 — Train/Validation/Test Split Strategy
+# =============================================================================
+version: "1.0"
+
+strategy: stratified_kfold
+
+# --------------- Primary Split ---------------
+holdout:
+  test_fraction: 0.20
+  stratify_by: [p1_zone, sex]  # stratify on label + sex
+  random_seed: 42
+
+# --------------- Cross-Validation ---------------
+cv:
+  n_folds: 5
+  stratify_by: [p1_zone]
+  random_seed: 42
+
+# --------------- Group Constraints ---------------
+# Subjects with multiple sessions must stay in the same fold
+group_by: subject_id  # prevents data leakage across sessions

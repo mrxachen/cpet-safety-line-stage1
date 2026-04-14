@@ -1,0 +1,101 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+.Python
+pip-wheel-metadata/
+*.whl
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# Environment variables (sensitive config)
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Patient data — NEVER commit real data
+data/raw/
+data/staging/
+data/curated/
+data/features/
+data/labels/
+data/anchors/
+data/contracts/
+# Allow demo synthetic data
+!data/demo/
+!data/demo/**
+
+# Data file extensions (extra safety net)
+*.xlsx
+*.xls
+*.parquet
+*.feather
+*.arrow
+*.h5
+*.hdf5
+# Allow specific demo CSV
+!data/demo/*.csv
+
+# Manifests with potentially sensitive paths
+data/manifests/*.csv
+data/manifests/*.json
+!data/manifests/snapshot_notes.md
+
+# Outputs (generated, not source)
+outputs/
+!outputs/.gitkeep
+
+# Reports (keep release snapshots)
+reports/tmp/
+!reports/release/
+!reports/release/.gitkeep
+
+# Model artifacts
+*.pkl
+*.joblib
+*.pt
+*.pth
+*.onnx
+mlruns/
+mlflow.db
+
+# Coverage & testing
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Distribution / packaging
+*.tar.gz
+*.zip
+site/
+docs/_build/
+
+# Logs
+*.log
+logs/

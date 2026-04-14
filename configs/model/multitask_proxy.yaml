@@ -1,0 +1,13 @@
+# Multi-task Proxy Model — joint P0+P1 prediction
+# Status: exploratory (Stage I extension)
+model_type: multitask_gradient_boosting
+tasks:
+  - name: p0_event
+    type: binary
+    weight: 0.4
+  - name: p1_zone_ordinal
+    type: ordinal
+    weight: 0.6
+
+shared_layers: true
+status: experimental

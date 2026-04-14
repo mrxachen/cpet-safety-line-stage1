@@ -1,0 +1,71 @@
+# =============================================================================
+# QC Rules v1 — Data Quality Control Rules
+# Applied during qc stage to flag/reject records
+# =============================================================================
+version: "1.0"
+
+# --------------- Completeness ---------------
+completeness:
+  required_fields:
+    - subject_id
+    - age
+    - sex
+    - vo2_peak
+    - hr_peak
+    - rer_peak
+  warn_missing_threshold: 0.10   # warn if >10% missing for a field
+  reject_missing_threshold: 0.50 # reject record if >50% key fields missing
+
+# --------------- Range Checks ---------------
+# Records failing hard limits are flagged for manual review
+range_checks:
+  age: {min: 40, max: 100}
+  bmi: {min: 15, max: 50}
+  vo2_peak: {min: 3, max: 60}
+  vo2_peak_pct_pred: {min: 10, max: 160}
+  hr_peak: {min: 50, max: 220}
+  rer_peak: {min: 0.7, max: 1.6}
+  ve_vco2_slope: {min: 15, max: 70}
+  lvef_pct: {min: 10, max: 80}
+  eih_nadir_spo2: {min: 60, max: 100}
+  vt1_pct_vo2peak: {min: 30, max: 90}
+  rcp_pct_vo2peak: {min: 50, max: 100}
+
+# --------------- Logical Consistency ---------------
+logic_checks:
+  # VT1 must be less than peak values
+  vt1_lt_peak:
+    condition: "vt1_vo2 < vo2_peak"
+    action: warn
+  rcp_lt_peak:
+    condition: "rcp_vo2 <= vo2_peak"
+    action: warn
+  vt1_lt_rcp:
+    condition: "vt1_vo2 < rcp_vo2"
+    action: warn
+  # RER ≥ 1.05 suggests maximal effort
+  effort_check:
+    condition: "rer_peak >= 1.05"
+    action: flag_adequate_effort
+    flag_field: effort_adequate
+
+# --------------- Effort Adequacy ---------------
+effort:
+  min_rer_for_adequate: 1.05
+  fallback_hr_pct_pred: 0.85  # HR_peak ≥ 85% predicted if RER unavailable
+
+# --------------- Duplicate Detection ---------------
+duplicates:
+  key_fields: [subject_id, test_date]
+  action: keep_latest  # keep_latest | keep_first | flag_all
+
+# --------------- Outlier Detection ---------------
+outliers:
+  method: iqr
+  iqr_multiplier: 3.0
+  fields_to_check:
+    - vo2_peak
+    - ve_vco2_slope
+    - o2_pulse_peak
+    - vt1_pct_vo2peak
+  action: flag  # flag | winsorize | remove

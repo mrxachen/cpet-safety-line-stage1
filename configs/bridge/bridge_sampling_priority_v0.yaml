@@ -1,0 +1,30 @@
+# =============================================================================
+# Bridge Sampling Priority v0 — Stage II recruitment priority guidance
+# =============================================================================
+version: "0.1"
+status: draft
+
+priority_tiers:
+  tier_1_critical:
+    description: "Must-have for bridge validation"
+    n_target: 60
+    criteria:
+      - htn_history: true
+      - age_range: [65, 80]
+      - nyha_class: {in: [2, 3]}
+      - complete_cpet_within_12mo: true
+
+  tier_2_important:
+    description: "Important for subgroup analysis"
+    n_target: 40
+    criteria:
+      - cad_history: true
+      - age_range: [60, 75]
+
+  tier_3_supplementary:
+    description: "Healthy reference comparison"
+    n_target: 20
+    criteria:
+      - htn_history: false
+      - cad_history: false
+      - age_range: [60, 75]

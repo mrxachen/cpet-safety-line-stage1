@@ -1,0 +1,18 @@
+# P1 — CatBoost (handles categorical features natively)
+model_type: catboost
+task: multiclass
+num_class: 3
+target: p1_zone_ordinal
+
+hyperparameters:
+  iterations: [300, 500]
+  depth: [4, 6]
+  learning_rate: [0.03, 0.1]
+  l2_leaf_reg: [1, 3]
+  auto_class_weights: Balanced
+
+cv:
+  n_folds: 5
+  scoring: f1_macro
+  search_method: random
+  n_iter: 30

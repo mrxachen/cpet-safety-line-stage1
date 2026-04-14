@@ -1,0 +1,17 @@
+# P0 — LASSO Logistic Regression (baseline interpretable model)
+model_type: lasso_logistic
+task: binary_classification
+target: p0_event
+
+hyperparameters:
+  C: [0.001, 0.01, 0.1, 1.0, 10.0]  # 1/lambda grid for CV
+  max_iter: 1000
+  solver: saga
+
+cv:
+  n_folds: 5
+  scoring: roc_auc
+  refit: true
+
+calibration:
+  method: isotonic  # isotonic | sigmoid

@@ -1,0 +1,129 @@
+# =============================================================================
+# Anchor Rules v1 — Three-Axis Anchor Variable Definitions
+# R (Reserve) / T (Threshold) / I (Instability)
+# These are the "bridge" variables that link Stage I CPET findings
+# to Stage II/III home-measurable proxies
+# =============================================================================
+version: "1.0"
+
+description: >
+  Anchor variables represent the mechanistic core of the exercise safety-line.
+  Each anchor is measurable in the clinical lab (Stage I) and has a proposed
+  home proxy in Stage II. The three axes (R/T/I) map to:
+    R = How much functional reserve does this patient have?
+    T = What is their safe exercise threshold?
+    I = How unstable/reactive is their cardiovascular response?
+
+# --------------- Axis R: Functional Reserve ---------------
+axis_R:
+  name: "Functional Reserve"
+  description: "Capacity relative to predicted or reference population"
+  variables:
+    R1_vo2peak_pct_pred:
+      canonical_field: vo2_peak_pct_pred
+      description: "VO2peak as % predicted (Wasserman equations, age/sex adjusted)"
+      unit: "%"
+      clinical_meaning: "Primary index of cardiovascular fitness reserve"
+      home_proxy_hypothesis: "6MWT distance / predicted 6MWT distance"
+      priority: critical
+
+    R2_o2_pulse_peak:
+      canonical_field: o2_pulse_peak
+      description: "Peak O2 pulse (VO2/HR) — stroke volume surrogate"
+      unit: mL/beat
+      clinical_meaning: "Reflects cardiac stroke volume augmentation capacity"
+      home_proxy_hypothesis: "Resting HRV RMSSD (wearable)"
+      priority: high
+
+    R3_vt1_pct_vo2peak:
+      canonical_field: vt1_pct_vo2peak
+      description: "AT (VT1) as % of VO2peak"
+      unit: "%"
+      clinical_meaning: "Aerobic efficiency; higher = more aerobic capacity"
+      home_proxy_hypothesis: "Talk test threshold HR (structured home protocol)"
+      priority: high
+
+# --------------- Axis T: Exercise Threshold ---------------
+axis_T:
+  name: "Exercise Threshold"
+  description: "Heart rate and work rate at key metabolic thresholds"
+  variables:
+    T1_hr_at_vt1:
+      canonical_field: vt1_hr
+      description: "Heart rate at VT1 (anaerobic threshold)"
+      unit: bpm
+      clinical_meaning: "Safe upper HR boundary for low-intensity home exercise"
+      home_proxy_hypothesis: "Target HR zone band (±5 bpm) for home training"
+      priority: critical
+
+    T2_hr_at_rcp:
+      canonical_field: rcp_hr
+      description: "Heart rate at RCP (VT2 / respiratory compensation point)"
+      unit: bpm
+      clinical_meaning: "Upper limit for moderate-intensity exercise"
+      home_proxy_hypothesis: "Perceived exertion RPE 14-15 corresponds to this HR"
+      priority: high
+
+    T3_load_at_vt1:
+      canonical_field: vt1_load_w
+      description: "Work rate (W) at VT1"
+      unit: W
+      clinical_meaning: "Absolute exercise prescription reference"
+      home_proxy_hypothesis: "Cycling cadence or step frequency proxy (Stage III)"
+      priority: medium
+
+    T4_ve_vco2_slope:
+      canonical_field: ve_vco2_slope
+      description: "VE/VCO2 slope — ventilatory efficiency"
+      range: [15, 60]
+      clinical_meaning: "Prognostic marker; >36 indicates poor prognosis in HF"
+      home_proxy_hypothesis: "Breathing frequency at fixed moderate exercise"
+      priority: high
+
+# --------------- Axis I: Instability Indicators ---------------
+axis_I:
+  name: "Cardiovascular Instability"
+  description: "Markers of pathological hemodynamic or autonomic response"
+  variables:
+    I1_eih_status:
+      canonical_field: eih_status
+      description: "Exercise-induced hypoxemia flag"
+      dtype: bool
+      clinical_meaning: "If true, home exercise requires SpO2 monitoring"
+      home_proxy_hypothesis: "Fingertip pulse oximeter (Stage III bridge)"
+      priority: critical
+
+    I2_eih_nadir_spo2:
+      canonical_field: eih_nadir_spo2
+      description: "Nadir SpO2 during CPET"
+      unit: "%"
+      clinical_meaning: "Severity of EIH; <88% = significant"
+      home_proxy_hypothesis: "SpO2 at target exercise HR (wearable)"
+      priority: high
+
+    I3_bp_response_abnormal:
+      canonical_field: bp_response_abnormal
+      description: "Abnormal BP response during exercise"
+      dtype: bool
+      clinical_meaning: "Exaggerated response predicts increased cardiovascular risk"
+      home_proxy_hypothesis: "Wrist BP at peak home exercise"
+      priority: medium
+
+    I4_arrhythmia_flag:
+      canonical_field: arrhythmia_flag
+      description: "Significant arrhythmia during CPET"
+      dtype: bool
+      clinical_meaning: "Requires Holter or telemetry during home exercise"
+      home_proxy_hypothesis: "Single-lead ECG band (Stage III/IV)"
+      priority: high
+
+# --------------- Composite Safety Score ---------------
+composite:
+  name: "Composite Exercise Safety Index (CESI)"
+  description: "Weighted composite of R/T/I axes for overall risk stratification"
+  weighting: TBD_after_p1_model  # will be derived from P1 model coefficients
+  output_range: [0, 100]
+  interpretation:
+    0-33: "Low risk — green zone"
+    34-66: "Moderate risk — yellow zone"
+    67-100: "High risk — red zone"

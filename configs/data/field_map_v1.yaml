@@ -1,0 +1,113 @@
+# =============================================================================
+# Field Mapping v1 — Chinese column names → English canonical names
+# Source: CPET Excel files in Dataset/
+# Update this file after reviewing the actual Excel column headers
+# =============================================================================
+version: "1.0"
+
+# Format:
+#   canonical_name: "原始中文列名"
+# Or for multiple aliases:
+#   canonical_name:
+#     aliases: ["中文名1", "英文缩写", "备用名"]
+
+# --------------- Identity ---------------
+subject_id:
+  aliases: ["编号", "患者编号", "ID", "受试者编号"]
+test_date:
+  aliases: ["检测日期", "测试日期", "检查日期"]
+
+# --------------- Demographics ---------------
+age:
+  aliases: ["年龄", "Age", "年龄(岁)"]
+sex:
+  aliases: ["性别", "Sex", "Gender"]
+  value_map:
+    男: M
+    女: F
+    male: M
+    female: F
+    "1": M
+    "2": F
+height_cm:
+  aliases: ["身高", "身高(cm)", "Height"]
+weight_kg:
+  aliases: ["体重", "体重(kg)", "Weight"]
+bmi:
+  aliases: ["BMI", "体重指数", "体质指数"]
+
+# --------------- Clinical ---------------
+htn_history:
+  aliases: ["高血压", "高血压史", "HTN", "高血压病史"]
+cad_history:
+  aliases: ["冠心病", "冠心病史", "CAD", "冠状动脉疾病"]
+hf_history:
+  aliases: ["心衰", "心力衰竭", "HF", "心功能不全"]
+lvef_pct:
+  aliases: ["LVEF", "左室射血分数", "EF(%)", "射血分数"]
+nyha_class:
+  aliases: ["NYHA", "NYHA分级", "心功能分级"]
+bp_rest_sys:
+  aliases: ["静息收缩压", "安静收缩压", "SBP(mmHg)", "静息SBP"]
+bp_rest_dia:
+  aliases: ["静息舒张压", "安静舒张压", "DBP(mmHg)", "静息DBP"]
+
+# --------------- CPET Resting ---------------
+hr_rest:
+  aliases: ["静息心率", "安静心率", "Rest HR", "HR_rest"]
+
+# --------------- CPET Peak ---------------
+vo2_peak:
+  aliases: ["峰值摄氧量", "VO2peak", "VO2 Peak", "峰值VO2(ml/kg/min)", "峰值VO2"]
+vo2_peak_pct_pred:
+  aliases: ["VO2peak%pred", "峰值VO2占预计值%", "VO2max预计值%"]
+hr_peak:
+  aliases: ["峰值心率", "Peak HR", "HR_peak", "最大心率"]
+hr_peak_pct_pred:
+  aliases: ["峰值心率%pred", "峰值心率占预计值"]
+load_peak_w:
+  aliases: ["峰值功率", "峰值负荷", "Peak Load(W)", "最大功率(W)"]
+rer_peak:
+  aliases: ["峰值RER", "RER", "呼吸交换率", "Peak RER"]
+o2_pulse_peak:
+  aliases: ["氧脉搏", "O2 Pulse", "O2Pulse", "氧脉搏(ml/beat)"]
+ve_vco2_slope:
+  aliases: ["VE/VCO2斜率", "VE/VCO2 slope", "通气效率斜率"]
+bp_peak_sys:
+  aliases: ["峰值收缩压", "运动峰值SBP", "Peak SBP"]
+bp_peak_dia:
+  aliases: ["峰值舒张压", "运动峰值DBP", "Peak DBP"]
+
+# --------------- CPET Threshold ---------------
+vt1_vo2:
+  aliases: ["AT摄氧量", "VT1 VO2", "无氧阈VO2", "AT VO2(ml/kg/min)"]
+vt1_hr:
+  aliases: ["AT心率", "VT1 HR", "无氧阈心率"]
+vt1_load_w:
+  aliases: ["AT功率", "VT1功率", "无氧阈功率(W)"]
+vt1_pct_vo2peak:
+  aliases: ["AT占峰值%", "VT1/VO2peak%", "AT%VO2peak"]
+rcp_vo2:
+  aliases: ["RCP摄氧量", "VT2 VO2", "呼吸代偿点VO2"]
+rcp_hr:
+  aliases: ["RCP心率", "VT2心率", "呼吸代偿点心率"]
+rcp_load_w:
+  aliases: ["RCP功率", "VT2功率"]
+rcp_pct_vo2peak:
+  aliases: ["RCP占峰值%", "VT2/VO2peak%"]
+
+# --------------- Safety Flags ---------------
+eih_status:
+  aliases: ["运动低氧", "EIH", "低氧血症", "SpO2下降"]
+eih_nadir_spo2:
+  aliases: ["最低SpO2", "SpO2最低值", "Nadir SpO2(%)"]
+bp_response_abnormal:
+  aliases: ["血压反应异常", "BP反应", "高血压反应"]
+st_depression_mm:
+  aliases: ["ST压低", "ST段压低(mm)", "ST Depression"]
+arrhythmia_flag:
+  aliases: ["心律失常", "运动心律失常", "Arrhythmia"]
+test_terminated_early:
+  aliases: ["提前终止", "试验终止", "Early Stop"]
+termination_reason:
+  aliases: ["终止原因", "停止原因", "Termination Reason"]

@@ -1,0 +1,20 @@
+# =============================================================================
+# Reference Rules v1 — Reference subset selection for anchor calibration
+# Used to select a representative "healthy older adult" reference subset
+# for normalizing anchor variables in Stage II bridge
+# =============================================================================
+version: "1.0"
+
+reference_subset:
+  description: "Relatively healthy older adult subset for anchor baseline"
+  inclusion_criteria:
+    htn_history: false   # no hypertension
+    cad_history: false
+    hf_history: false
+    vo2_peak_pct_pred: {gte: 70}
+    ve_vco2_slope: {lte: 30}
+    rer_peak: {gte: 1.05}
+    eih_status: false
+    nyha_class: {in: [1, 2]}
+  age_range: [60, 80]
+  min_sample_size: 50  # warn if below

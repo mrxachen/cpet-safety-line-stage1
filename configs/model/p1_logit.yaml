@@ -1,0 +1,13 @@
+# P1 — Ordinal Logistic Regression (baseline interpretable model)
+model_type: ordinal_logistic
+task: ordinal_classification
+target: p1_zone_ordinal
+
+hyperparameters:
+  method: logit  # logit | probit | cloglog
+  regularization: L2
+  C: [0.01, 0.1, 1.0, 10.0]
+
+cv:
+  n_folds: 5
+  scoring: f1_macro
