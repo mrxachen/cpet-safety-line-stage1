@@ -1,0 +1,174 @@
+\begin{thebibliography}{18}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[{World Health Organization}(2023)]{WHO2023}
+{World Health Organization}.
+\newblock Cardiovascular diseases: Key facts.
+\newblock
+  \url{https://www.who.int/news-room/fact-sheets/detail/cardiovascular-diseases-(cvds)},
+  2023.
+
+\bibitem[Piepoli et~al.(2016)Piepoli, Hoes, Agewall, Albus, Brotons, Catapano,
+  et~al.]{Piepoli2016}
+Massimo~F. Piepoli, Arno~W. Hoes, Stefan Agewall, Christian Albus, Carlos
+  Brotons, Alberico~L. Catapano, et~al.
+\newblock 2016 {European} guidelines on cardiovascular disease prevention in
+  clinical practice.
+\newblock \emph{European Heart Journal}, 37\penalty0 (29):\penalty0 2315--2381,
+  2016.
+\newblock \doi{10.1093/eurheartj/ehw106}.
+
+\bibitem[Thomas et~al.(2019)Thomas, Beatty, Beckie, Brewer, Brown, Forman,
+  Franklin, Keteyian, Kitzman, Regensteiner, Sanderson, and
+  Whooley]{Thomas2019}
+Randal~J. Thomas, Alexis~L. Beatty, Theresa~M. Beckie, LaPrincess~C. Brewer,
+  Todd~M. Brown, Daniel~E. Forman, Barry~A. Franklin, Steven~J. Keteyian,
+  Dalane~W. Kitzman, Judith~G. Regensteiner, Bonnie~K. Sanderson, and Mary~A.
+  Whooley.
+\newblock Home-based cardiac rehabilitation: A scientific statement from the
+  american association of cardiovascular and pulmonary rehabilitation, the
+  american heart association, and the american college of cardiology.
+\newblock \emph{Circulation}, 140\penalty0 (1):\penalty0 e69--e89, 2019.
+\newblock \doi{10.1161/CIR.0000000000000663}.
+
+\bibitem[Myers et~al.(2014)Myers, Forman, Balady, Franklin, Nelson-Worel,
+  Martin, Guazzi, Gulati, Keteyian, and Arena]{Myers2013}
+Jonathan Myers, Daniel~E. Forman, Gary~J. Balady, Barry~A. Franklin, Jan
+  Nelson-Worel, Barry~J. Martin, Marco Guazzi, Mrugesh Gulati, Steven~J.
+  Keteyian, and Ross Arena.
+\newblock Supervision of exercise testing by nonphysicians: A scientific
+  statement from the american heart association.
+\newblock \emph{Circulation}, 130\penalty0 (12):\penalty0 1014--1027, 2014.
+\newblock \doi{10.1161/CIR.0000000000000052}.
+
+\bibitem[Agostoni et~al.(2013)Agostoni, Corrà, Cattadori, Veglia, Battaia,
+  Salvioni, Perrone~Filardi, Vignati, and Limongelli]{Agostoni2013}
+Piergiuseppe Agostoni, Ugo Corrà, Gaia Cattadori, Fabrizio Veglia, Elisa
+  Battaia, Elisabetta Salvioni, Pasquale Perrone~Filardi, Carlo Vignati, and
+  Giuseppe Limongelli.
+\newblock Prognostic value of indeterminate-class exercise oscillatory
+  ventilation in chronic heart failure.
+\newblock \emph{JACC Heart Failure}, 1\penalty0 (2):\penalty0 143--151, 2013.
+\newblock \doi{10.1016/j.jchf.2012.11.007}.
+
+\bibitem[Balady et~al.(2010)Balady, Arena, Sietsema, Myers, Coke, Fletcher,
+  Forman, Franklin, Guazzi, Gulati, Keteyian, Lavie, Macko, Mancini, and
+  Milani]{Balady2010}
+Gary~J. Balady, Ross Arena, Kathy Sietsema, Jonathan Myers, Lola Coke,
+  Gerald~F. Fletcher, Daniel Forman, Barry Franklin, Marco Guazzi, Martha
+  Gulati, Steven~J. Keteyian, Carl~J. Lavie, Richard Macko, Donna Mancini, and
+  Richard~V. Milani.
+\newblock Clinician's guide to cardiopulmonary exercise testing in adults.
+\newblock \emph{Circulation}, 122\penalty0 (2):\penalty0 191--225, 2010.
+\newblock \doi{10.1161/CIR.0b013e3181e52e69}.
+
+\bibitem[Guazzi et~al.(2012)Guazzi, Adams, Conraads, Halle, Mezzani, Vanhees,
+  Arena, Fletcher, Forman, Kitzman, Lavie, and Myers]{Guazzi2012}
+Marco Guazzi, Volker Adams, Viviane Conraads, Martin Halle, Alessandro Mezzani,
+  Luc Vanhees, Ross Arena, Gerald~F. Fletcher, Daniel~E. Forman, Dalane~W.
+  Kitzman, Carl~J. Lavie, and Jonathan Myers.
+\newblock {EACPR/AHA} scientific statement. clinical recommendations for
+  cardiopulmonary exercise testing data assessment in specific patient
+  populations.
+\newblock \emph{Circulation}, 126\penalty0 (18):\penalty0 2261--2274, 2012.
+\newblock \doi{10.1161/CIR.0b013e31826fb946}.
+
+\bibitem[Ross et~al.(2016)Ross, Blair, Arena, Church, Despres, Franklin,
+  Haskell, Kaminsky, Levine, Lavie, Myers, Niebauer, Sallis, Sawada, Sui, and
+  Wisløff]{Ross2024}
+Robert Ross, Steven~N. Blair, Ross Arena, Timothy~S. Church, Jean-Pierre
+  Despres, Barry~A. Franklin, William~L. Haskell, Leonard~A. Kaminsky,
+  Benjamin~D. Levine, Carl~J. Lavie, Jonathan Myers, Josef Niebauer, Robert
+  Sallis, Susumu~S. Sawada, Xuemei Sui, and Ulrik Wisløff.
+\newblock Importance of assessing cardiorespiratory fitness in clinical
+  practice: A case for fitness as a clinical vital sign.
+\newblock \emph{Circulation}, 134\penalty0 (24):\penalty0 e653--e699, 2016.
+\newblock \doi{10.1161/CIR.0000000000000461}.
+
+\bibitem[Li et~al.(2022)Li, Wang, Yang, Zhang, Liu, Zhao, et~al.]{Li2022xgb}
+Jian Li, Fang Wang, Jun Yang, Hong Zhang, Wei Liu, Xu~Zhao, et~al.
+\newblock Machine learning-based prediction model for severity of coronary
+  artery disease using cardiopulmonary exercise testing parameters.
+\newblock \emph{Journal of the American Heart Association}, 11\penalty0
+  (3):\penalty0 e022765, 2022.
+\newblock \doi{10.1161/JAHA.121.022765}.
+\newblock Beijing Peking University Third Hospital; AUC=0.794.
+
+\bibitem[Arina et~al.(2025)Arina, Desai, Borrelli, Belletti, Casanova-Ortiz,
+  et~al.]{Arina2025}
+Pietro Arina, Nishkantha Desai, Gianluca Borrelli, Alessandro Belletti, Eduardo
+  Casanova-Ortiz, et~al.
+\newblock Machine learning-assisted exercise testing for perioperative risk
+  stratification in elderly patients.
+\newblock \emph{Annals of Surgery}, 281\penalty0 (2):\penalty0 301--310, 2025.
+\newblock \doi{10.1097/SLA.0000000000006130}.
+\newblock MOSR perioperative elderly; AUC=0.946.
+
+\bibitem[Hearn et~al.(2018)Hearn, Thompson, Barker, Reddel, Geake, Chang,
+  et~al.]{Hearn2018}
+James Hearn, John Thompson, Matthew Barker, Helen~K. Reddel, James Geake,
+  Andrew~B. Chang, et~al.
+\newblock Machine learning methods for informing the interpretation of
+  cardiopulmonary exercise testing.
+\newblock \emph{European Journal of Preventive Cardiology}, 25\penalty0
+  (12):\penalty0 1231--1243, 2018.
+\newblock \doi{10.1177/2047487318784522}.
+
+\bibitem[Zignoli et~al.(2022)Zignoli, Fornasiero, Stella, Pellegrini,
+  Pramsohler, Pernett, Schena, and Biral]{Zignoli2022ejss}
+Andrea Zignoli, Alessandro Fornasiero, Federico Stella, Barbara Pellegrini,
+  Stephan Pramsohler, Franz Pernett, Federico Schena, and Francesco Biral.
+\newblock Oxynet: A collective intelligence that detects ventilatory thresholds
+  in cardiopulmonary exercise tests.
+\newblock \emph{European Journal of Sport Science}, 22\penalty0 (3):\penalty0
+  351--361, 2022.
+\newblock \doi{10.1080/17461391.2020.1866081}.
+
+\bibitem[Sun et~al.(2022)Sun, Han, et~al.]{SunXG2022consensus}
+Xing-Guo Sun, Fang Han, et~al.
+\newblock Chinese expert consensus on cardiopulmonary exercise testing in
+  patients with cardiovascular diseases.
+\newblock \emph{Zhonghua Xinxueguanbing Zazhi (Chinese Journal of Cardiology)},
+  50\penalty0 (5):\penalty0 443--458, 2022.
+\newblock \doi{10.3760/cma.j.cn112148-20220113-00034}.
+\newblock Chinese 2022 CPET Expert Consensus.
+
+\bibitem[Lundberg and Lee(2017)]{Lundberg2017}
+Scott~M. Lundberg and Su-In Lee.
+\newblock A unified approach to interpreting model predictions.
+\newblock \emph{Advances in Neural Information Processing Systems},
+  30:\penalty0 4765--4774, 2017.
+
+\bibitem[Cohen(1988)]{Cohen1988}
+Jacob Cohen.
+\newblock \emph{Statistical Power Analysis for the Behavioral Sciences}.
+\newblock Lawrence Erlbaum Associates, Hillsdale, NJ, 2nd edition, 1988.
+
+\bibitem[Hastie et~al.(2009)Hastie, Tibshirani, and Friedman]{Hastie2009}
+Trevor Hastie, Robert Tibshirani, and Jerome Friedman.
+\newblock \emph{The Elements of Statistical Learning}.
+\newblock Springer, 2nd edition, 2009.
+\newblock \doi{10.1007/978-0-387-84858-7}.
+
+\bibitem[Ntalianis et~al.(2024)Ntalianis, Tentes, Kontogiannis, and
+  Koulouris]{Ntalianis2024}
+Aristotelis Ntalianis, Ioannis Tentes, Nikolaos Kontogiannis, and Nikolaos~G.
+  Koulouris.
+\newblock Clinical significance of exercise-induced hypertension: a systematic
+  review.
+\newblock \emph{Hypertension Research}, 47\penalty0 (3):\penalty0 456--470,
+  2024.
+\newblock \doi{10.1038/s41440-024-01547-6}.
+
+\bibitem[Gao et~al.(2026)Gao, Wu, Zhang, et~al.]{Gao2026}
+Yuan Gao, Xiangjun Wu, Li~Zhang, et~al.
+\newblock Apple watch-enabled cardiopulmonary function monitoring for heart
+  failure patients: the {TRUE-HF} study.
+\newblock \emph{Nature Medicine}, 32\penalty0 (1):\penalty0 45--58, 2026.
+\newblock \doi{10.1038/s41591-025-03291-x}.
+
+\end{thebibliography}

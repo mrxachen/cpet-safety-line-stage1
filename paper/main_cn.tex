@@ -1,0 +1,750 @@
+% ============================================================
+% main_cn.tex — 论文中文版
+% 标题：老年高血压人群心肺运动试验安全分区特征研究
+%       ——基于 HTN×EIH 2×2 设计的表型分析与机器学习分层模型（N=3,206）
+%
+% 文档类：ctexart；编译链：xelatex + bibtex
+% 参考文献：GB/T 7714-2015（gbt7714 本地安装）
+%
+% 编译方法：
+%   xelatex main_cn.tex
+%   bibtex main_cn
+%   xelatex main_cn.tex
+%   xelatex main_cn.tex
+%
+% 注意：gbt7714 包需要本地安装。若系统未安装，请从 CTAN 下载：
+%   curl -sL "https://mirrors.ctan.org/biblio/bibtex/contrib/gbt7714.zip" \
+%        -o /tmp/gbt7714.zip
+%   cd /tmp && unzip gbt7714.zip -d gbt7714_extracted
+%   cd /tmp/gbt7714_extracted/gbt7714 && latex gbt7714.ins
+%   cp *.sty *.bst /path/to/paper/
+% ============================================================
+
+\documentclass[12pt, a4paper]{ctexart}
+
+% ------ 基础包 ------
+\usepackage{geometry}
+\geometry{left=2.5cm, right=2.5cm, top=3cm, bottom=3cm}
+\usepackage{setspace}
+\onehalfspacing
+
+% ------ 参考文献（GB/T 7714-2015）------
+\usepackage[super,square,sort&compress]{natbib}
+% 尝试 gbt7714；若未安装则注释掉以下两行改用标准样式
+\usepackage{gbt7714}
+\bibliographystyle{gbt7714-numerical}
+
+% ------ 图表 ------
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{makecell}
+\usepackage{multirow}
+\usepackage{caption}
+\captionsetup{font=small, labelfont=bf}
+
+% ------ 数学 ------
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+% ------ 颜色与链接 ------
+\usepackage[dvipsnames]{xcolor}
+\usepackage[colorlinks=true, linkcolor=blue, citecolor=blue, urlcolor=blue]{hyperref}
+
+% ------ 其他 ------
+\usepackage{enumitem}
+\usepackage{subcaption}
+\usepackage{float}
+
+% ------ 元数据 ------
+\title{\textbf{老年高血压人群心肺运动试验安全分区特征研究}\\
+\large——基于 HTN$\times$EIH 2$\times$2 设计的表型分析与机器学习分层模型（N=3,206）}
+
+\author{作者姓名$^{1}$\\
+\small$^{1}$单位名称}
+
+\date{2026年4月}
+
+% ============================================================
+\begin{document}
+\maketitle
+
+% ------ 摘要 ------
+\begin{abstract}
+\noindent\textbf{背景与目的：}
+心肺运动试验（CPET）是评估心血管患者运动安全性的金标准，但面向老年高血压人群的
+安全区分层体系尚不完善。本研究旨在：（1）刻画老年高血压合并/不合并运动性低氧血症（EIH）
+患者的 CPET 表型特征；（2）构建基于 CPET 汇总数据的运动安全区（绿/黄/红）预测模型；
+（3）评估 summary-level CPET 数据的机器学习预测上限。
+
+\noindent\textbf{方法：}
+回顾性单中心研究（N=3,206），采用 HTN 既往史$\times$EIH 反应 2$\times$2 设计，
+构建四组队列：对照组（CTRL, n=1,858）、既往HTN无EIH组（HTN-NoEIH, n=738）、
+既往HTN合并EIH组（HTN-EIH, n=277）、仅EIH组（EIH-Only, n=333）。
+质量控制管线包含五层检查及数据泄漏防护（Leakage Guard）。
+安全区分层采用双时间轴设计：P0（运动前预测的运动事件风险，二分类）和 P1（运动后安全区分层，三分类有序）。
+统计分析：Kruskal-Wallis + Dunn's post-hoc、II型 HTN$\times$EIH 双因素 ANOVA（偏$\eta^2$）、
+参考方程（OLS，n$\approx$968）。
+机器学习：P0（LASSO + XGBoost），P1（有序Logistic + LightGBM + CatBoost）+ SHAP。
+
+\noindent\textbf{结果：}
+HTN 既往史是 VO$_2$peak 下降的主效应因子（$F$=290.6, $p$<0.001，偏$\eta^2$=0.084，中等效应），
+EIH 反应主要体现为峰值血压大幅升高（$F$=1803.1, $p$<0.001，偏$\eta^2$=0.371，大效应）；
+VO$_2$peak 的 HTN$\times$EIH 交互效应不显著（$F$=0.02, $p$=0.894）。
+HTN 组 VO$_2$peak 中位数（19.2--20.1 mL/kg/min）显著低于非HTN组（23.2--23.5 mL/kg/min）。
+安全区分布：绿区40.2\%，黄区34.3\%，红区24.9\%；HTN-EIH 组红区占比99.3\%，CTRL 组仅6.3\%。
+P0 模型：XGBoost AUC=0.583；
+P1 最优模型：CatBoost F1$_\text{macro}$=0.499，$\kappa$=0.302，
+均反映 summary-level 数据的预测天花板。
+SHAP 分析显示 VO$_2$peak 和峰值心率为最重要特征。
+
+\noindent\textbf{结论：}
+HTN$\times$EIH 2$\times$2 队列设计有效刻画了老年高血压患者的心肺储备分层特征。
+两个因子通过独立主效应（而非协同交互效应）分别影响心肺储备不同维度。
+summary-level CPET 数据接近预测上限（P0 AUC$\approx$0.58，P1 F1$\approx$0.50），
+提示后续研究需引入逐呼吸原始数据。
+Leakage Guard 方法学框架为此类回顾性研究提供了可复现的泄漏防护范式。
+
+\noindent\textbf{关键词：}心肺运动试验；运动安全；高血压；运动性低氧血症；机器学习；安全区
+\end{abstract}
+
+\tableofcontents
+\newpage
+
+% ============================================================
+\section{引言}
+% ============================================================
+
+全球老龄化背景下，心血管疾病（CVD）已成为老年人致残致死的首要原因\cite{WHO2023}。
+运动康复被证实可显著改善 CVD 患者的心肺功能和预后\cite{Piepoli2016,Thomas2019}，
+但运动诱发的不良事件风险——尤其是运动性低氧血症（Exercise-Induced Hypoxemia，EIH）
+和高血压应激反应——严重制约了运动处方的精准推广\cite{Myers2013,Agostoni2013}。
+
+心肺运动试验（Cardiopulmonary Exercise Testing，CPET）提供了全面的心肺功能评估，
+是制订运动安全处方的金标准\cite{Balady2010,Guazzi2012}。
+然而，面向老年高血压患者的 CPET 安全区分层体系尚未形成共识：
+（1）既往 HTN 与 EIH 的交互效应尚未在大样本中系统量化；
+（2）基于 summary-level CPET 数据的机器学习模型性能上限不清；
+（3）数据泄漏问题在回顾性 CPET 建模研究中普遍存在但鲜有明确讨论\cite{Ross2024}。
+
+机器学习在 CPET 建模领域已有若干探索：
+Li 等\cite{Li2022xgb}基于冠心病患者 CPET 数据构建 XGBoost 预测模型（AUC=0.794），
+Arina 等\cite{Arina2025}在围术期老年患者中达到 AUC=0.946，
+但两者均包含大量临床检验特征（药物、LVEF 等），
+代表了特征丰富场景下的性能上限\cite{Hearn2018,Zignoli2022ejss}。
+
+中国 CPET 专家共识\cite{SunXG2022consensus}推荐了标准化 CPET 方案，
+但针对老年高血压患者的安全区量化框架仍缺乏大样本数据支撑。
+本研究旨在：
+（1）基于 HTN$\times$EIH 2$\times$2 设计，刻画老年高血压患者 CPET 表型特征；
+（2）构建分时间轴双模型安全区预测框架（P0 运动前 + P1 运动后）；
+（3）通过 Leakage Guard 方法学保障，量化 summary-level 数据的预测上限。
+
+% ============================================================
+\section{方法}
+% ============================================================
+
+\subsection{研究人群与设计}
+
+本研究为单中心回顾性队列研究，纳入2015年至2023年间完成CPET检查的老年患者（$\geq60$岁），
+共3,232例，经数据质量控制后纳入分析3,206例（排除26例，0.8\%）。
+研究设计采用 HTN 既往史（有/无）$\times$ EIH 反应（有/无）的 2$\times$2 分层结构
+（表~\ref{tab:cohort_design}）。
+
+\begin{table}[H]
+\centering
+\caption{HTN$\times$EIH 2$\times$2 队列设计}
+\label{tab:cohort_design}
+\begin{tabular}{lccc}
+\toprule
+队列 & 代码 & N（QC后）& 说明 \\
+\midrule
+对照/非HTN & CTRL & 1,858 & 无既往HTN史，无EIH \\
+既往HTN，无EIH & HTN-NoEIH & 738 & 有HTN史，运动试验中无EIH \\
+既往HTN，合并EIH & HTN-EIH & 277 & 有HTN史，运动试验中有EIH \\
+仅EIH & EIH-Only & 333 & 无HTN史，运动试验中有EIH \\
+\midrule
+合计 & & 3,206 & （原始3,232） \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+本研究经伦理委员会批准（批准号：待填写），采用回顾性设计，豁免知情同意。
+数据已进行脱敏处理，不含任何可识别个人信息。
+
+\subsection{CPET 测试方案与变量定义}
+
+CPET采用递增负荷踏车或平板方案，标准气体代谢分析系统。
+主要测量指标：峰值摄氧量（VO$_2$peak，mL/kg/min）、峰值心率（HR$_\text{peak}$，bpm）、
+氧脉搏（O$_2$脉搏，mL/beat）、通气阈VO$_2$（VT1-VO$_2$）、VE/VCO$_2$ slope、
+心率恢复（HRR，1分钟）、氧摄取效率斜率（OUES）、峰值METs。
+
+\textbf{EIH定义}：运动中SpO$_2$较静息下降$\geq4\%$或绝对值$<90\%$，
+本研究中由 group\_code 字段标识（含"EHT"的组别）。
+
+\subsection{质量控制管线}
+
+质量控制管线包含五层检查：
+（1）数值范围合规检查（生理合理范围，含clip修正35个离群值）；
+（2）跨字段逻辑一致性检查；
+（3）缺失率阈值检查（$>30\%$字段标记，药物类字段全缺失）；
+（4）协议一致性检查（踏车/平板标准化）；
+（5）EHT\_ONLY 组专项诊断（峰值收缩压缺失139条）。
+
+\textbf{Leakage Guard}：
+由于 eih\_status 直接参与 P1 区间定义（P1 Red 条件之一），
+同时 ve\_vco2\_slope 和 vo2\_peak\_pct\_pred 也参与 P1 标签构建，
+本研究设立显式 Leakage Guard 机制，
+在特征工程阶段强制排除上述字段。
+此机制确保模型性能评估的真实性：泄漏版本 F1=0.84 vs 清洁版本 F1=0.47，
+差值约0.37 F1点\cite{Ross2024,Lundberg2017}。
+
+\subsection{安全区定义}
+
+采用双时间轴设计：
+
+\textbf{P0（运动前预测的运动事件风险，binary）}：
+P0 标签由运动中/后测量变量定义，P0 模型的任务是仅使用运动前可获得的基线信息
+（年龄、性别、BMI、病史等），预测运动后是否将出现以下不良事件之一。
+满足以下任一条件为 P0 阳性：
+（1）eih\_status = True（运动中SpO$_2$下降$\geq4\%$或$<90\%$）；
+（2）VO$_2$peak $<50\%$预测值（运动后）；
+（3）峰值SBP $>220$ mmHg（运动中）。
+本研究为回顾性设计，P0 为前瞻性预测任务：特征时间点（运动前）与标签时间点（运动中/后）严格分离。
+
+\textbf{P1（运动后安全区分层，三分类有序）}：
+P1 定义基于三个运动结果变量，采用 take-worst 策略（多条件冲突时取最差区间）：
+\begin{itemize}
+    \item \textbf{绿区（低风险）}：eih\_status = False，
+          且 VO$_2$peak $\geq70\%$预测值，且 VE/VCO$_2$ slope $\leq30$
+    \item \textbf{黄区（中风险）}：eih\_status = False，
+          且 VO$_2$peak 50--70\% 或 VE/VCO$_2$ slope 30--36（不满足绿区/红区条件）
+    \item \textbf{红区（高风险）}：eih\_status = True（独立充分条件），
+          或 VO$_2$peak $<50\%$预测值，或 VE/VCO$_2$ slope $>36$
+\end{itemize}
+
+\begin{quote}
+\textbf{注（标签构成公理）}：EIH 阳性（eih\_status = True）是红区的独立充分条件，
+即 EIH+ 患者的 P1 区间由定义预先确定为红区，与 VO$_2$peak 和 VE/VCO$_2$ 值无关。
+这一设计反映了临床实践中 EIH 本身即为高风险标志的共识\cite{SunXG2022consensus}。
+因此，EIH+ 队列（HTN-EIH 和 EIH-Only）的高红区占比（分别为99.3\%和97.3\%）
+是标签定义的公理性结果，而非模型预测发现。
+leakage guard 将 eih\_status 强制排除出 P1 特征集，
+确保模型无法直接利用这一公理性约束，模型预测适用于非 EIH 子集。
+\end{quote}
+
+\subsection{统计分析}
+
+基线特征采用 Kruskal-Wallis 检验（连续变量，Shapiro-Wilk正态检验决定格式）和
+$\chi^2$ 检验（分类变量），Dunn's post-hoc 两两比较（Bonferroni 校正，$\alpha=0.0083$）。
+
+HTN$\times$EIH 交互效应采用 II 型 ANOVA（statsmodels，偏$\eta^2 = SS_\text{eff}/(SS_\text{eff}+SS_\text{res})$）。
+鉴于样本量 N=3,206，微小效应（$\eta^2<0.01$）也可达统计显著。
+本文以偏$\eta^2$效应量作为主要解读依据（Cohen, 1988），$p$值仅用于辅助判断。
+效应量等级：negligible（$\eta^2<0.01$）、small（0.01--0.06）、medium（0.06--0.14）、large（$\geq0.14$）；
+表中以上标标注（$^n/^s/^m/^L$）。
+
+参考正常方程由 reference-normal 子集构建，纳入年龄、性别及交互项（$age \times sex$）
+作为预测变量，输出VO$_2$peak\%pred 和 z-score。
+
+\subsection{机器学习模型}
+
+\textbf{P0模型}：LASSO logistic回归（基线，L1正则化）和XGBoost（主模型）。
+五折交叉验证 + 等渗校准（isotonic calibration）。
+评价指标：AUC-ROC、AUPRC、Brier score。
+
+\textbf{P1模型}：有序Logistic（基线）、LightGBM（主模型）、CatBoost（对照）。
+三分类有序输出（green=0/yellow=1/red=2），类别平衡采用 class\_weight=balanced。
+评价指标：F1$_\text{macro}$、Cohen's $\kappa$、各类别精确率/召回率。
+
+\textbf{代价敏感敏感性分析}：对 LightGBM 设置 Red 类权重$\times$4，
+量化安全优先导向下 F1 与 Red 召回率的权衡\cite{Hastie2009}.
+
+特征解释采用SHAP（SHapley Additive exPlanations）\cite{Lundberg2017}全局特征重要性。
+
+% ============================================================
+\section{结果}
+% ============================================================
+
+\subsection{研究人群基线特征}
+
+如表~\ref{tab:table1}所示，四组队列年龄中位数均为 67 岁，差异不显著（$p$=0.375）。
+HTN 组（HTN-NoEIH 和 HTN-EIH）体重显著高于非HTN组（$p$<0.001），
+与高血压代谢综合征背景一致。
+HTN-NoEIH 组 VO$_2$peak 中位数最低（19.2 mL/kg/min），
+EIH-Only 组最高（23.5 mL/kg/min）；HTN-EIH 组峰值收缩压最高（214 mmHg）。
+两两比较（Dunn's post-hoc）显示10/11个关键变量存在显著组间差异。
+
+\begin{table}[H]
+\centering
+\small
+\caption{四组队列基线特征（Table 1）}
+\label{tab:table1}
+\begin{tabular}{lcccccc}
+\toprule
+变量 & CTRL & HTN-NoEIH & HTN-EIH & EIH-Only & $P$值$^a$ \\
+ & (n=1,858) & (n=738) & (n=277) & (n=333) & \\
+\midrule
+\multicolumn{6}{l}{\textit{连续变量（中位数[Q1,Q3]）}} \\
+年龄（岁）& 67 [63,72] & 67 [63,71] & 67 [63,71] & 67 [64,71] & 0.375 \\
+VO$_2$peak（mL/kg/min）& 23.2 [19.5,28.3] & 19.2 [16.2,23.0] & 20.1 [16.8,23.4] & 23.5 [19.3,28.9] & <0.001 \\
+VO$_2$peak\%pred（\%）& 77.0 [66,88] & 72.0 [62,86] & 80.0 [67,91] & 79.0 [68.5,92] & <0.001 \\
+峰值心率（bpm）& 154 [140,167] & 134 [119,148] & 145 [129,158] & 158 [145,170] & <0.001 \\
+峰值收缩压（mmHg）& 161 [144,178] & 171 [155,184] & 214 [204,226] & 212 [200,223] & <0.001 \\
+VE/VCO$_2$ slope & 26.7 [24.2,29.4] & 27.8 [25.3,30.8] & 27.6 [24.8,30.0] & 27.4 [24.4,30.0] & <0.001 \\
+O$_2$脉搏峰值（mL/beat）& 10.0 [8.0,13.0] & 10.0 [8.2,13.0] & 10.0 [8.0,13.0] & 11.0 [8.0,14.0] & 0.036 \\
+\midrule
+\multicolumn{6}{l}{\textit{分类变量（n，\%）}} \\
+女性 & 926 (49.8\%) & 312 (42.3\%) & 135 (48.9\%) & 147 (44.1\%) & 0.004 \\
+高血压病史 & 0 (0\%) & 738 (100\%) & 277 (100\%) & 0 (0\%) & <0.001 \\
+运动性高血压（EIH）& 0 (0\%) & 0 (0\%) & 277 (100\%) & 333 (100\%) & <0.001 \\
+糖尿病 & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & — \\
+\bottomrule
+\end{tabular}
+\\[1ex]
+\footnotesize $^a$ Kruskal-Wallis（连续变量）或 $\chi^2$（分类变量）；$^b$ Dunn's post-hoc (Bonferroni校正)。\\
+糖尿病等合并症字段在当前数据集中全部为0（数据局限性）。
+\end{table}
+
+\subsection{HTN$\times$EIH 交互效应分析}
+
+II 型双因素 ANOVA 结果见表~\ref{tab:anova}。
+
+\begin{table}[H]
+\centering
+\small
+\caption{HTN$\times$EIH 双因素方差分析（Table 2）}
+\label{tab:anova}
+\begin{tabular}{lcccccccc}
+\toprule
+\multirow{2}{*}{结局变量} & \multicolumn{3}{c}{HTN主效应} & \multicolumn{3}{c}{EIH主效应} & \multicolumn{2}{c}{交互效应（A$\times$B）} \\
+\cmidrule(lr){2-4}\cmidrule(lr){5-7}\cmidrule(lr){8-9}
+ & $F$ & $p$ & $\eta^2$ & $F$ & $p$ & $\eta^2$ & $F$ ($p$) & $\eta^2$ \\
+\midrule
+VO$_2$peak & 290.6 & <0.001 & 0.084$^m$ & 4.37 & 0.037 & 0.001$^n$ & 0.02 (0.894) & 0.000$^n$ \\
+VO$_2$peak\%pred & 22.3 & <0.001 & 0.007$^n$ & 25.9 & <0.001 & 0.008$^n$ & 5.03 (0.025) & 0.002$^n$ \\
+峰值心率 & 487.6 & <0.001 & 0.133$^m$ & 42.4 & <0.001 & 0.013$^s$ & 12.87 (<0.001) & 0.004$^n$ \\
+峰值收缩压 & 65.6 & <0.001 & 0.021$^s$ & 1803.1 & <0.001 & 0.371$^L$ & 5.20 (0.023) & 0.002$^n$ \\
+VE/VCO$_2$ slope & 38.2 & <0.001 & 0.012$^s$ & 0.34 & 0.558 & 0.000$^n$ & 3.37 (0.067) & 0.001$^n$ \\
+O$_2$脉搏峰值 & 2.91 & 0.088 & 0.001$^n$ & 9.67 & 0.002 & 0.003$^n$ & 5.84 (0.016) & 0.002$^n$ \\
+\bottomrule
+\end{tabular}
+\\[1ex]
+\footnotesize 效应量：$^n$ negligible (<0.01)，$^s$ small (0.01--0.06)，$^m$ medium (0.06--0.14)，$^L$ large (>0.14)（Cohen 1988）。\\
+HTN = 高血压既往史；EIH = 运动性低氧血症。
+\end{table}
+
+主要发现（图~\ref{fig:interaction}）：
+\begin{itemize}
+    \item \textbf{HTN 既往史}是 VO$_2$peak 下降的主效应因子（$\eta^2$=0.084，中等效应），
+          同时显著降低峰值心率（$\eta^2$=0.133，中等效应）。
+    \item \textbf{EIH 反应}主要表现为峰值收缩压大幅升高（均值214.85 vs 160.76 mmHg，
+          $\eta^2$=0.371，大效应），而对 VO$_2$peak 的独立影响较小（$\eta^2$=0.001）。
+    \item \textbf{交互效应}：VO$_2$peak 的 HTN$\times$EIH 交互效应不显著（$F$=0.02, $p$=0.894，$\eta^2$=0.000，negligible）；
+          VO$_2$peak\%pred（$\eta^2$=0.002）、峰值心率（$\eta^2$=0.004）和峰值收缩压（$\eta^2$=0.002）
+          的交互效应在大样本下达到统计显著（$p$<0.05），但效应量均可忽略（$\eta^2<0.01$），
+          不具有实质性临床意义。上述结果提示两因子主要通过独立主效应分别作用于心肺功能不同维度，
+          而非存在超加性协同交互效应。
+\end{itemize}
+
+\subsection{参考方程}
+
+以 reference-normal 子集（n$\approx$968，男479，女489）构建五项参考正常方程（表~\ref{tab:refequations}）。
+
+\begin{table}[H]
+\centering
+\small
+\caption{参考正常方程汇总（Table 3）}
+\label{tab:refequations}
+\begin{tabular}{lccl}
+\toprule
+变量 & N（参考子集）& $R^2$ & 公式（$\hat{y}$） \\
+\midrule
+VO$_2$peak（mL/kg/min）& 968 & 0.298 & $29.376 - 0.092 \times \text{age} + (-4.064 + 0.183\times\text{age})\times\mathbf{1}_M$ \\
+VO$_2$peak\%pred（\%）& 969 & 0.013 & $116.908 - 0.447\times\text{age} + \ldots$（年龄性别解释力低）\\
+峰值心率（bpm）& 966 & 0.082 & $134.477 + 0.257\times\text{age} + \ldots$ \\
+VE/VCO$_2$ slope & 969 & 0.040 & $30.525 - 0.067\times\text{age} + \ldots$ \\
+O$_2$脉搏峰值（mL/beat）& 968 & 0.489 & $11.372 - 0.032\times\text{age} + \ldots$ \\
+\bottomrule
+\end{tabular}
+\\[1ex]
+\footnotesize 所有方程均含年龄$\times$性别交互项；$\mathbf{1}_M$ 为男性指示变量。
+VO$_2$peak $R^2$=0.298 提示老年人群个体异质性较大（残差SD=6.3 mL/kg/min）；
+O$_2$脉搏 $R^2$=0.489 反映心功能储备与体型的强相关性。
+\end{table}
+
+\subsection{安全区分布}
+
+全样本安全区分布（图~\ref{fig:zone_dist}）：绿区 1,289 例（40.2\%）、黄区 1,099 例（34.3\%）、
+红区 797 例（24.9\%）。按 2$\times$2 队列分布如下：
+\begin{itemize}
+    \item \textbf{HTN-EIH}（n=277）：红区 275 例（\textbf{99.3\%}），绿/黄均为0
+    \item \textbf{EIH-Only}（n=333）：红区 324 例（\textbf{97.3\%}），绿/黄均为0
+    \item \textbf{HTN-NoEIH}（n=738）：绿 299（40.5\%），黄 353（47.8\%），红 81（11.0\%）
+    \item \textbf{CTRL}（n=1,858）：绿 990（53.3\%），黄 746（40.2\%），红 117（\textbf{6.3\%}）
+\end{itemize}
+
+P0 触发因子分析（727例阳性，占22.7\%）：
+EIH 触发 610 例（19.0\%）、VO$_2$peak$<$50\%pred 触发 133 例（4.1\%）、
+峰值SBP$>$220 mmHg 触发 146 例（4.6\%）（各触发因子可叠加）。
+
+\noindent\textbf{注（EIH-Red 公理性约束）}：
+HTN-EIH 组 99.3\% Red、EIH-Only 组 97.3\% Red，
+此分布由 P1 标签定义公理性决定（eih\_status = True 是 Red 的独立充分条件），
+并非模型预测结果（见 2.4 节）。
+模型的预测任务仅对非 EIH 子集有意义，EIH+ 组的区域由标签构成规则预先确定。
+少数 EIH+ 样本未落入 Red（HTN-EIH 中 0 例、EIH-Only 中 9 例）
+是由于这些样本 eih\_status 字段为 NaN（缺失），NaN 不触发 EIH-Red 条件。
+
+\subsection{P0 预测模型}
+
+P0 模型评估结果见表~\ref{tab:p0models}。
+
+\begin{table}[H]
+\centering
+\small
+\caption{P0 运动前先验风险模型对比（Table 4）}
+\label{tab:p0models}
+\begin{tabular}{llccccc}
+\toprule
+模型 & 变体 & AUC-ROC & AUPRC & Brier Score & CV-AUC（mean$\pm$SD）\\
+\midrule
+LASSO & 含BP & 0.582 & 0.284 & 0.174 & 0.622$\pm$0.030 \\
+LASSO & 无BP & 0.582 & 0.284 & 0.174 & 0.622$\pm$0.030 \\
+XGBoost & 含BP & 0.583 & 0.287 & 0.180 & 0.623$\pm$0.028 \\
+\textbf{XGBoost} & \textbf{无BP} & \textbf{0.583} & \textbf{0.287} & \textbf{0.180} & \textbf{0.623$\pm$0.028} \\
+\bottomrule
+\end{tabular}
+\\[1ex]
+\footnotesize LeakageGuard 验证通过。静息BP字段在当前数据集中全部缺失，
+含BP/无BP变体结果相同。P0 AUC$\approx$0.58 主要受限于药物信息全缺（30列全为0）
+及静息血液动力学指标（BP/HR/LVEF）缺失。
+\end{table}
+
+P0 ROC 曲线见图~\ref{fig:p0_roc}。
+SHAP 分析（图~\ref{fig:shap_p0}）显示年龄和 HTN 既往史为最重要预测因子。
+
+\subsection{P1 分类模型}
+
+P1 模型评估结果见表~\ref{tab:p1models}。
+
+\begin{table}[H]
+\centering
+\small
+\caption{P1 运动后安全区分层模型对比——v2 扩展特征版（Table 5）}
+\label{tab:p1models}
+\begin{tabular}{llccccc}
+\toprule
+模型 & 样本 & F1$_\text{macro}$ & $\kappa$ & Accuracy & CV-F1（mean$\pm$SD）\\
+\midrule
+有序Logistic & 全样本 & 0.386 & 0.225 & 0.504 & 0.393$\pm$0.013 \\
+LightGBM & 全样本 & 0.465 & 0.258 & 0.499 & 0.460$\pm$0.007 \\
+\textbf{CatBoost} & \textbf{全样本} & \textbf{0.499} & \textbf{0.302} & \textbf{0.528} & \textbf{0.447$\pm$0.015} \\
+\bottomrule
+\end{tabular}
+\\[1ex]
+\footnotesize 踏车协议子集与全样本结果完全一致（exercise\_protocol字段缺失）。
+\end{table}
+
+混淆矩阵（图~\ref{fig:p1_cm}，CatBoost 最优模型）显示：
+绿区召回率67.1\%（173/258），黄区召回率51.8\%（114/220），
+红区召回率30.8\%（49/159），反映高风险患者特征的高度异质性。
+
+SHAP 分析（图~\ref{fig:shap_p1}）显示 VO$_2$peak 和峰值心率为最重要分类特征。
+
+\textbf{代价敏感敏感性分析}（表~\ref{tab:cost_sensitive}）：
+\begin{table}[H]
+\centering
+\small
+\caption{P1 代价敏感模型 vs 标准模型（Table 6）}
+\label{tab:cost_sensitive}
+\begin{tabular}{lccccc}
+\toprule
+模型 & F1$_\text{macro}$ & $\kappa$ & 绿区召回率 & 黄区召回率 & 红区召回率 \\
+\midrule
+LightGBM（标准） & 0.465 & 0.258 & — & — & 23.9\% (38/159) \\
+\textbf{LightGBM（CS，Red$\times$4）} & \textbf{0.392} & \textbf{0.128} & — & — & \textbf{53.5\% (85/159)} \\
+CatBoost（标准） & 0.499 & 0.302 & 67.1\% & 51.8\% & 30.8\% \\
+CatBoost（CS） & 0.187 & 0.023 & — & — & 96.2\%（退化）\\
+\bottomrule
+\end{tabular}
+\\[1ex]
+\footnotesize CS = cost-sensitive（代价敏感训练），Red$\times$4 表示红区类权重4倍。\\
+LightGBM CS版牺牲 F1（-0.07）换取 Red 召回率提升（+29.6\%），
+CatBoost CS版退化为几乎全预测红区。
+\end{table}
+
+\subsection{P1 代理泄漏消融实验}
+
+为量化 \texttt{vo2\_peak}（绝对值）通过 \texttt{vo2\_peak\_pct\_pred}
+对 P1 预测性能的代理泄漏贡献，本研究设计了三变体消融实验（表~\ref{tab:ablation}）。
+
+\begin{table}[H]
+\centering
+\small
+\caption{P1 代理泄漏消融实验（Table 8）}
+\label{tab:ablation}
+\begin{tabular}{llccccc}
+\toprule
+变体 & 特征集 & F1$_\text{macro}$ & $\kappa$ & Green召回 & Yellow召回 & Red召回 \\
+\midrule
+Full & 全部 P1 特征（含 vo2\_peak）& 0.458 & 0.237 & 0.630 & 0.481 & 0.268 \\
+No-VO2 & 排除 vo2\_peak & 0.455 & 0.243 & 0.627 & 0.481 & 0.261 \\
+VO2-only & 仅 vo2\_peak + age + sex & 0.441 & 0.200 & 0.612 & 0.476 & 0.242 \\
+\bottomrule
+\end{tabular}
+\\[1ex]
+\footnotesize
+Full vs No-VO2: $\Delta$F1=+0.003（可忽略）；VO2-only（代理泄漏上界）F1=0.441。\\
+分类器：LightGBM（class\_weight=balanced）；固定 80/20 分割。
+\end{table}
+
+Full 与 No-VO2 变体 F1 差异为 0.003，远低于方法学显著性阈值，
+表明 \texttt{vo2\_peak} 绝对值在当前数据集中对 P1 区间边界的代理能力有限。
+这一发现的主要原因是参考方程 $R^2$=0.298（age/sex 对预测峰值VO$_2$解释力低），
+导致 \texttt{vo2\_peak} → \texttt{vo2\_peak\_pct\_pred} 的重建精度不足。
+代理泄漏上界（VO2-only，F1=0.441）亦低于 Full 变体（F1=0.458），
+确认当前 F1≈0.50 的预测上限来自特征集固有局限而非泄漏驱动。
+
+\subsection{EIH 独立预测因子分析}
+
+EIH 多因素 Logistic 回归（表~\ref{tab:eih_logistic}）显示：
+HTN 既往史（aOR=1.441，$p$<0.001）、BMI（aOR=1.585，$p$<0.001）
+和女性（aOR=0.862，$p$=0.005）是 EIH 的独立预测因子；
+多因素调整后 VO$_2$peak 与 EIH 呈正相关（aOR=1.230，$p$<0.001），
+可能反映 EIH 患者运动强度更高的选择偏差。
+
+\begin{table}[H]
+\centering
+\small
+\caption{EIH 独立预测因子 Logistic 回归（Table 7）}
+\label{tab:eih_logistic}
+\begin{tabular}{lccccc}
+\toprule
+\multirow{2}{*}{变量} & \multicolumn{2}{c}{单变量分析} & \multicolumn{2}{c}{多因素分析} \\
+\cmidrule(lr){2-3}\cmidrule(lr){4-5}
+ & OR（95\% CI）& $p$ & aOR（95\% CI）& $p$ \\
+\midrule
+年龄 & 0.942 (0.865--1.028) & 0.185 & 0.975 (0.896--1.062) & 0.590 \\
+女性 & 1.003 (0.916--1.091) & 0.949 & 0.862 (0.766--0.953) & 0.005 \\
+VO$_2$peak & 0.979 (0.880--1.064) & 0.658 & 1.230 (1.109--1.346) & <0.001 \\
+HTN 既往史 & 1.410 (1.306--1.532) & <0.001 & 1.441 (1.315--1.606) & <0.001 \\
+BMI & 1.603 (1.399--1.828) & <0.001 & 1.585 (1.366--1.843) & <0.001 \\
+HTN 病程（年）& 1.132 (1.049--1.236) & 0.003 & 0.930 (0.832--1.012) & 0.154 \\
+\bottomrule
+\end{tabular}
+\\[1ex]
+\footnotesize 样本量 N=3,206，EIH 阳性率=19.0\%（610/3206）；多因素模型收敛。
+\end{table}
+
+% ============================================================
+\section{讨论}
+% ============================================================
+
+\subsection{主要发现}
+
+本研究在单中心3,206例老年高血压患者队列中，系统量化了 HTN$\times$EIH
+双因素对 CPET 安全区分布的影响。主要发现如下：
+
+\textbf{（一）HTN 与 EIH 通过独立主效应影响不同心肺维度。}
+HTN 既往史对运动耐量（VO$_2$peak，$\eta^2$=0.084，中等效应）和心率响应
+（HR$_\text{peak}$，$\eta^2$=0.133，中等效应）有显著影响，
+而 EIH 反应主要体现为峰值收缩压大幅升高（$\eta^2$=0.371，大效应）。
+VO$_2$peak 的交互效应不显著（$F$=0.02, $p$=0.894，$\eta^2$=0.000）；
+即便在大样本下达到统计显著的交互效应（如 VO$_2$peak\%pred，$p$=0.025），
+其效应量也可忽略（$\eta^2$=0.002），不具实质临床意义。
+两种机制分别作用于心肺功能的不同轴向，而非存在超加性协同效应。
+这一发现校正了既往文献中对 HTN-EIH 协同损害的直觉认知\cite{Ntalianis2024}。
+
+\textbf{（二）summary-level 数据预测天花板。}
+P0 AUC$\approx$0.58、P1 F1$\approx$0.50 反映该数据层次的预测上限，
+主要制约因素包括：
+（a）药物信息全部缺失（30个药物字段全为0，$\beta$受体阻滞剂是影响CPET解读的关键因素）；
+（b）静息BP/HR/LVEF 缺失；
+（c）EIH-Red 结构性约束（EIH$+$患者在 P1 标签定义中均为红区，
+    但 eih\_status 被 Leakage Guard 强制排除，造成特征-标签信息缺口）。
+
+\textbf{（三）Leakage Guard 方法学贡献。}
+显式泄漏防护机制量化了数据泄漏效应约 0.37 F1 点（泄漏版 F1=0.84 vs 清洁版 F1=0.47），
+为同类回顾性 CPET 研究提供了方法学基准。
+本研究将 Leakage Guard 作为正式方法学而非工程补丁，在特征工程阶段完全隔离了
+参与标签定义的字段，确保模型性能评估的可信度\cite{Ross2024}。
+
+\subsection{与文献比较}
+
+与 Li 等\cite{Li2022xgb}（冠心病患者，XGBoost AUC=0.794）相比，
+本研究 P0 AUC 较低（0.583），差异主要源于特征集的系统性差异：
+Li 等研究包含心肌酶、超声心动图参数和药物数据，
+而本研究 summary-level 数据仅含 CPET 峰值指标。
+类似地，Arina 等\cite{Arina2025}在围术期老年患者中 AUC=0.946，
+但其特征集包含完整术前评估（LVEF、BNP、肌酐等），场景不具可比性。
+上述对比印证了"summary-level CPET 数据预测上限"的论断。
+
+Hearn 等\cite{Hearn2018}和 Zignoli 等\cite{Zignoli2022ejss}的研究表明，
+深度学习应用于逐呼吸原始 CPET 数据可显著提升预测精度，
+支持本研究阶段 II 引入逐呼吸波形的规划。
+
+与中国 CPET 专家共识\cite{SunXG2022consensus}相比，
+本研究的安全区定义与共识推荐的 VO$_2$peak$\%$pred 分层阈值高度吻合，
+但共识中未明确 EIH 对安全区定义的影响，
+本研究提供了 EIH-Red 公理的大样本数据支撑（HTN-EIH 红区99.3\%，EIH-Only 红区97.3\%）。
+
+\subsection{方法学贡献}
+
+\textbf{双时间轴设计（P0/P1）}是本研究的核心方法学创新。
+将运动前预测（P0，仅用运动前变量预测运动中/后不良事件）与运动后分层（P1，基于完整CPET结果）完全解耦，
+并在代码层通过 Leakage Guard 机制硬性隔离，
+为不同决策场景（运动前筛查 vs 测试后分层）提供分离的风险评估工具。
+
+\textbf{参考方程 VO$_2$peak $R^2$=0.298}提示老年人群内在异质性大
+（残差SD=6.3 mL/kg/min），\%pred 标准化虽有助于跨性别比较，
+但在高龄亚组（$\geq$75岁）的适用性需要进一步评估。
+
+\subsection{临床效用与模型定位}
+
+\textbf{P0 临床效用评估}（表~\ref{tab:clinical_utility_p0}）显示：
+2变量基线模型（HTN既往史+BMI）AUC=0.611，而 XGBoost 所有特征模型 AUC=0.577（$\Delta$AUC=$-$0.034），
+表明在当前特征集受限条件下，复杂ML模型相对简单临床规则不具增量优势。
+这一结果支持将本研究定位为「方法学框架验证」而非「预测工具推广」。
+尽管如此，P0 模型在高敏感度决策阈值（0.141）下 NPV=0.853，
+提示当模型预测「低风险」时，真正低风险的概率达85.3\%，
+具有一定的运动前\textbf{排除}价值（NPV 主导的 rule-out 应用）。
+简化决策曲线分析（DCA）显示模型在 10\%--20\% 决策阈值范围内净获益优于「全部治疗」策略。
+
+\begin{table}[H]
+\centering
+\small
+\caption{P0 临床效用关键指标（Table 9，最优决策阈值 0.141）}
+\label{tab:clinical_utility_p0}
+\begin{tabular}{lcccc}
+\toprule
+指标 & 2变量基线 AUC & XGBoost AUC & NPV & NNS \\
+\midrule
+值 & 0.611 & 0.577 & 0.853 & 3.8 \\
+\bottomrule
+\end{tabular}
+\\[1ex]
+\footnotesize NPV=阴性预测值；NNS=每发现1例真阳性需筛查人数。
+\end{table}
+
+\textbf{P1 临床效用评估}：
+Red 区域 NPV=0.781（当模型预测「非红区」时，真正非红区概率 78.1\%），
+Red→Green 危险漏判率 29.4\%（153例真红区中45例被预测为绿区）。
+值得注意的是，简单硬编码规则（VO$_2$peak$<$20.1 mL/kg/min）的 Red 召回率（48.4\%）
+高于 LightGBM 模型（26.8\%），提示在 Red 区高召回率场景下，
+简单阈值规则可能比复杂模型更具实用价值——这与 summary-level 数据预测上限的结论高度一致。
+
+基于以上分析，本研究模型的临床价值体现在三个层面：
+（1）方法学框架验证：HTN$\times$EIH 2$\times$2 设计 + Leakage Guard 提供可复现分析范式；
+（2）特征重要性发现：SHAP 揭示 VO$_2$peak 和峰值心率的预测贡献，为阶段 II 特征选择提供实证依据；
+（3）基线 Benchmark：P0 AUC=0.583、P1 F1=0.499 作为 summary-level 数据基准，
+供阶段 II/III 引入逐呼吸数据后量化性能提升。
+当前性能水平\textbf{不建议}用于临床直接决策。
+
+\subsection{局限性}
+
+（1）单中心回顾性设计，存在选择偏差，缺乏独立外部验证队列；
+（2）药物信息全部缺失，$\beta$受体阻滞剂等对心率响应有显著影响；
+（3）EIH 定义基于 group\_code 字段推导（非实时 SpO$_2$ 连续监测），
+    存在分类误差；
+（4）仅使用 summary-level CPET 汇总数据，不含逐呼吸波形，
+    制约了VT/RCP精确检测；
+（5）EIH+ 组100\% Red 为标签定义的结构性公理，非模型发现，
+    亚组分析中 EIH+ 性能不反映真实预测能力；
+（6）参考方程 VO$_2$peak $R^2$=0.298，提示老年人群个体差异大，
+    \%pred 分层阈值可能需要针对具体人群校准。
+
+\subsection{未来方向}
+
+阶段 II 研究将引入逐呼吸气体交换和12导联 ECG 波形数据，
+预期突破 summary-level 预测上限\cite{Hearn2018,Zignoli2022ejss}。
+阶段 III 将探索家庭可穿戴设备对 CPET 锚点的代理能力（Apple Watch 等）\cite{Gao2026}，
+构建居家运动安全走廊（$C_\text{home}$）。
+未来研究还需前瞻性多中心验证，纳入完整药物信息和静息血流动力学参数。
+
+% ============================================================
+\section{结论}
+% ============================================================
+
+本研究建立了首个基于 HTN$\times$EIH 2$\times$2 设计的老年高血压患者
+CPET 运动安全区分层框架（N=3,206）。
+主要结论：
+（1）HTN 与 EIH 通过独立主效应影响心肺功能不同维度——HTN 主要降低有氧储备，
+    EIH 主要放大血压应激反应，两者交互效应对 VO$_2$peak 不显著；
+（2）summary-level CPET 数据接近预测上限（P0 AUC=0.583，P1 F1=0.499），
+    明确指向阶段 II 逐呼吸数据的必要性；
+（3）Leakage Guard 方法学框架量化了数据泄漏效应（约0.37 F1点），
+    为此类回顾性研究提供了可复现的方法学保障。
+本框架为后续逐呼吸建模和居家安全走廊研究奠定了实验室锚点基础。
+
+% ============================================================
+% 参考文献
+% ============================================================
+\bibliography{references}
+
+% ============================================================
+% 图说明
+% ============================================================
+\clearpage
+\section*{图说明}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.85\textwidth]{figures/interaction_plots.png}
+\caption{HTN$\times$EIH 双因素交互效应图（VO$_2$peak 分组均值）。
+CTRL vs HTN 组差异显著（$\eta^2$=0.084，中等效应），
+EIH$+$/EIH$-$ 组在相同 HTN 状态下 VO$_2$peak 相近，交互效应不显著（$p$=0.894）。}
+\label{fig:interaction}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.85\textwidth]{figures/zone_distribution_stacked.png}
+\caption{安全区分布（绿/黄/红）按 HTN$\times$EIH 2$\times$2 队列堆叠柱状图。
+EIH$+$组（HTN-EIH 和 EIH-Only）几乎全部为红区（99.3\%/97.3\%），
+反映 EIH-Red 标签定义公理。}
+\label{fig:zone_dist}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.7\textwidth]{figures/p0_roc.png}
+\caption{P0 XGBoost 模型 ROC 曲线（无BP变体，AUC=0.583）。
+曲线接近对角线反映 summary-level 数据的预测限制。}
+\label{fig:p0_roc}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.7\textwidth]{figures/shap_p0.png}
+\caption{P0 XGBoost 模型 SHAP 全局特征重要性（无BP变体）。
+年龄和 HTN 既往史为最重要预测因子。}
+\label{fig:shap_p0}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.65\textwidth]{figures/p1_cm_catboost.png}
+\caption{P1 CatBoost 最优模型混淆矩阵（F1$_\text{macro}$=0.499，$\kappa$=0.302）。
+Red 召回率30.8\%（49/159）；Green 召回率67.1\%（173/258）。}
+\label{fig:p1_cm}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.85\textwidth]{figures/shap_p1.png}
+\caption{P1 LightGBM 模型 SHAP 全局特征重要性（全样本变体）。
+VO$_2$peak 和峰值心率为最重要分类特征。}
+\label{fig:shap_p1}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.7\textwidth]{figures/eih_forest.png}
+\caption{EIH 独立预测因子森林图（多因素 Logistic 回归）。
+HTN 既往史（aOR=1.44）和 BMI（aOR=1.59）为最强独立预测因子。}
+\label{fig:eih_forest}
+\end{figure}
+
+\end{document}
