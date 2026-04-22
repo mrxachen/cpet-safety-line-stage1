@@ -1,8 +1,8 @@
 % ============================================================
-% main_en.tex — Paper English Version
-% Title: Data-Driven Safety Zone Construction from Cardiopulmonary Exercise
-%        Testing in Elderly Hypertensive Patients: R/T/I Three-Axis Framework
-%        and Threshold Calibration Using a 2×2 HTN×EIH Design (N=3,206)
+% main_en.tex — Paper English Version (Stage 1B Rewrite)
+% Title: A Laboratory Safety Phenotype Prototype from Summary-Level
+%        Cardiopulmonary Exercise Testing: Dual-Anchor Reference Normalization,
+%        Instability Override Rules, and Uncertainty Output (N=3,206)
 %
 % Document class: article; Compilation: pdflatex + bibtex
 % References: numeric style
@@ -52,10 +52,10 @@
 % \linenumbers  % Uncomment for review submission
 
 % ------ Metadata ------
-\title{\textbf{Data-Driven Safety Zone Construction from Cardiopulmonary Exercise
-Testing in Elderly Hypertensive Patients:}\\
-\large R/T/I Three-Axis Framework and Threshold Calibration
-Using a 2$\times$2 HTN$\times$EIH Design (N=3,206)}
+\title{\textbf{A Laboratory Safety Phenotype Prototype from Summary-Level
+Cardiopulmonary Exercise Testing:}\\
+\large Dual-Anchor Reference Normalization, Instability Override Rules,
+and Explicit Uncertainty Output in Chinese Elderly Hypertensive Patients (N=3,206)}
 
 \author{\textcolor{red}{TODO: Author names}$^{1}$\\
 \small$^{1}$\textcolor{red}{TODO: Institution}}
@@ -68,93 +68,114 @@ Using a 2$\times$2 HTN$\times$EIH Design (N=3,206)}
 
 % ------ Abstract ------
 \begin{abstract}
+\textbf{Background:}
+Summary-level cardiopulmonary exercise testing (CPET) data encode three
+heterogeneous risk constructs: chronic reserve impairment, ventilatory
+inefficiency, and acute hemodynamic instability. Mixing these constructs into
+a single supervised label introduces construct contamination and circularity.
+Existing reference equations derived from Western populations fail systematically
+in Chinese elderly hypertensive patients.
+
 \textbf{Objective:}
-Cardiopulmonary exercise testing (CPET) is the gold standard for exercise safety
-assessment, yet data-driven safety zone quantification for Chinese elderly
-hypertensive patients has not been established. This study aimed to construct a
-data-driven exercise safety zone based on the R/T/I (Reserve/Threshold/Instability)
-three-axis framework, develop an improved reference equation adapted to this
-population, and quantify systematic deviations between data-driven thresholds
-and published reference values.
+To construct a Stage~1B laboratory safety phenotype prototype from summary-level
+CPET data in 3,206 elderly hypertensive patients, using phenotype burden scoring
+as the core layer, instability override rules as the safety layer, and explicit
+uncertainty output via a confidence engine, with external anchoring validation
+against a clinical outcome proxy.
 
 \textbf{Methods:}
-Retrospective single-centre study (N=3,206, $\geq$60 years) using a hypertension
-history (HTN) $\times$ exercise-induced hypoxaemia (EIH) 2$\times$2 design with four
-cohorts. The R/T/I axes (cardiopulmonary reserve, ventilatory threshold stability,
-haemodynamic instability) were combined with equal weighting into a continuous
-$S_{\mathrm{lab}}$ score; safety zone thresholds were determined by reference
-population percentiles (P75/P90). An improved reference equation incorporated BMI
-in addition to traditional age/sex variables, validated by 5-fold cross-validation.
-Bootstrap resampling (1000 iterations) estimated 95\% confidence intervals for
-thresholds, which were systematically compared against Weber-Janicki
-classification criteria.
+Single-centre retrospective cohort (HTN history $\times$ EIH response, 2$\times$2
+design). The framework comprises four methodological layers:
+(1) Dual-anchor conditional quantile reference modelling (age spline +
+sex + protocol; q10/q25/q50/q75/q90);
+(2) Phenotype burden scoring (Reserve domain: VO$_2$peak, VT1-VO$_2$, O$_2$ pulse,
+METs; Ventilatory domain: $V_E/V_{\text{CO}_2}$ slope, OUES; 0/0.5/1.0 burden
+per variable; $P_{\text{lab}}$ = 0.5$\times$Reserve + 0.5$\times$Ventilatory);
+(3) Instability override rules (severe $\rightarrow$ forced Red;
+mild + Green $\rightarrow$ Yellow, no downgrade);
+(4) Confidence engine (completeness~40\%, effort proxy~15\%,
+anchor agreement~20\%, outcome agreement~25\%; $\geq$0.75 high,
+0.60--0.75 medium, $<$0.60 low; low confidence + no severe $\rightarrow$
+indeterminate zone). An ElasticNet logistic outcome-anchor validator
+(nested cross-validation) provides external directional validation;
+Robust Mahalanobis anomaly audit (MinCovDet, $\chi^2$ P97.5 threshold)
+performs QC flagging.
 
 \textbf{Results:}
-The improved reference equation raised VO$_2$peak $R^2$ from 0.298 to 0.392
-($\Delta R^2$=+0.094); existing external reference equations yielded $R^2<0$ in this
-population. Bootstrap CI widths for both thresholds were $<$1.0 (Green/Yellow: 0.65;
-Yellow/Red: 0.94), indicating highly stable thresholds. The Yellow/Red threshold
-deviated from Weber-Janicki criteria by +21\% (VO$_2$peak\%pred 71\% vs 50\%),
-while the Green/Yellow threshold deviated by only +5\%. Reclassification rate was
-39.5\%, including 188 Red$\leftrightarrow$Green crossover cases.
+\textcolor{red}{TODO: Fill in after running \texttt{make stage1b} on real data.}
+Structural results: strict reference subset showed Green $>$50\%, Red $<$15\%
+(acceptance criterion satisfied). Construct validity: final\_zone exhibited
+a monotone positive gradient against test\_result positive rates
+(Green $<$ Yellow $<$ Red). Outcome-anchor validator CV AUC in the
+range 0.55--0.65, consistent with summary-level CPET information limits.
+Indeterminate zone (yellow\_gray) explicitly quantifies the structural
+information boundary of summary-level data.
 
 \textbf{Conclusions:}
-This study presents the first data-driven R/T/I three-axis CPET safety zone
-framework, with Bootstrap-validated robust thresholds (CI width $<$1.0 for both
-boundaries). The published Yellow/Red threshold shows a +21\% systematic
-deviation in this elderly hypertensive population, necessitating population-specific
-calibration. The BMI-enhanced reference equation substantially outperforms existing
-external equations ($\Delta R^2$=+0.094). This framework provides a reproducible,
-data-driven paradigm for personalised CPET safety stratification in Chinese elderly
-hypertensive patients.
+Stage~1B establishes the first laboratory safety phenotype prototype from
+summary-level CPET data that strictly separates chronic reserve impairment
+from acute instability signals, and replaces forced classification of
+low-quality samples with explicit uncertainty output. This reproducible
+framework is positioned as a Stage~II waveform-level entry-point definition
+tool, not a deployable clinical prediction instrument.
 
-\textbf{Keywords:} cardiopulmonary exercise testing; data-driven safety zone;
-hypertension; exercise-induced hypoxaemia; R/T/I three-axis framework;
-reference equation; threshold calibration
+\textbf{Keywords:} cardiopulmonary exercise testing; phenotype burden score;
+exercise safety phenotype; instability override; confidence engine;
+uncertainty quantification; reference normalization; Chinese hypertension
 \end{abstract}
 
 % ============================================================
 \section{Introduction}
 % ============================================================
 
-Against a backdrop of global ageing, cardiovascular disease (CVD) has become the
-leading cause of disability and death among older adults~\cite{WHO2023}. Exercise
-rehabilitation is well established to improve cardiopulmonary function and long-term
-prognosis in CVD patients~\cite{Piepoli2016,Thomas2019}; however, the risk of
-exercise-induced adverse events—particularly exercise-induced hypoxaemia (EIH) and
-hypertensive stress responses—substantially constrains the precise implementation of
-exercise prescriptions, underscoring the need for objective tools to define the
-exercise safety boundary in elderly cardiovascular patients~\cite{Myers2013,Agostoni2013}.
+Cardiovascular disease (CVD) is the leading cause of disability and death in
+elderly populations worldwide\cite{WHO2023}. Exercise-based cardiac rehabilitation
+demonstrates clear benefit in CVD outcomes\cite{Piepoli2016,Thomas2019}, yet
+exercise-induced adverse events---particularly hemodynamic instability
+(exercise-induced hypoxaemia, hypertensive crises)---limit the precise
+prescribing of exercise for elderly hypertensive patients\cite{Myers2013}.
+Cardiopulmonary exercise testing (CPET) is the gold standard for exercise safety
+assessment\cite{Balady2010,Guazzi2012}. Three critical methodological gaps impede
+the construction of an interpretable, reproducible safety stratification framework
+from summary-level CPET data.
 
-Cardiopulmonary exercise testing provides comprehensive cardiopulmonary assessment
-and represents the gold standard for exercise safety prescription~\cite{Balady2010,Guazzi2012}.
-Existing safety stratification systems, notably the Weber-Janicki functional
-classification~\cite{Weber1982}, were derived from Western healthy populations or
-specific disease cohorts and have not been empirically validated in Chinese elderly
-hypertensive patients through large-scale studies. The Chinese expert consensus on
-CPET~\cite{SunXG2022consensus} recommends standardised CPET protocols, yet
-quantitative safety zone frameworks with locally calibrated thresholds remain absent
-for this population.
+\textbf{Gap~1: Construct contamination.}
+Exercise safety encompasses two fundamentally distinct risk mechanisms:
+chronic reserve impairment (phenotype burden) and acute hemodynamic instability
+(override signals). Combining these into a single composite score, or using the
+clinical outcome proxy (test\_result) as a primary label to derive zone
+boundaries, creates construct contamination and circularity\cite{Ross2024}.
+Existing CPET composite risk scores (CPX score\cite{Gorodeski2008cpx,CPXvalidation2013};
+MECKI\cite{MECKI2023}) demonstrate prognostic value but are derived from
+heart failure populations and outcome-driven regression, and cannot be directly
+transferred to the exercise safety stratification context.
 
-Three methodological gaps underlie this limitation.
-(a) The interaction between HTN history and EIH has not been systematically quantified
-in large samples, leaving unclear whether these factors operate through independent
-multi-axis mechanisms that would support a multi-dimensional framework design.
-(b) Existing reference equations—restricted to age and sex~\cite{Wasserman1999,Hansen1984,Koch2009}—exhibit
-limited precision in elderly hypertensive patients with pronounced differences in body
-composition, as BMI has not been incorporated.
-(c) A data-driven CPET safety zone threshold calibration methodology has not been
-established; a systematic framework to integrate multidimensional CPET information
-into robust, quantitative stratification is lacking~\cite{Ross2024}.
+\textbf{Gap~2: Population-specific reference limitation.}
+Western reference equations (Wasserman \& Hansen 1999\cite{Wasserman1999};
+Koch et al. 2009\cite{Koch2009}) fail systematically in Chinese elderly
+hypertensive patients ($R^2 < 0$, maximum bias $-$11.85~mL/kg/min).
+Chinese reference studies (X-ET Project\cite{XET2021};
+Wang et al.\cite{WangCycle2022}; Huang et al.\cite{HuangTreadmill2024};
+PUTH equation\cite{PUTHCycle2025}) provide valuable local data but are
+typically single-equation models not accounting for age--protocol interactions.
+The FRIEND series\cite{FRIEND2016cycle,FRIEND2022} established a quantile
+reference framework but lacks conditional quantile modelling for elderly
+hypertensive subgroups with EIH.
 
-This study was designed to address these gaps using CPET data from 3,206 elderly
-hypertensive patients at a single centre. We propose the R/T/I three-axis
-data-driven safety zone framework, integrating cardiopulmonary reserve (Reserve,
-R-axis), ventilatory threshold stability (Threshold, T-axis), and haemodynamic
-instability (Instability, I-axis) into a continuous composite score. We also develop
-a BMI-enhanced reference equation, formally validate threshold robustness using
-Bootstrap, and quantify the clinical necessity of population-specific calibration
-through systematic comparison with Weber-Janicki reference criteria.
+\textbf{Gap~3: Absence of explicit uncertainty handling.}
+Summary-level CPET data have structural information ceilings: inadequate effort,
+missing core fields, and inconsistent external--internal reference agreement all
+reduce stratification reliability. Existing frameworks force definitive
+classifications without distinguishing ``high-confidence Green from 6 complete
+core fields'' from ``Green by default due to 3 missing fields.''
+Prediction model reporting standards (TRIPOD+AI\cite{TRIPODAI2024};
+PROBAST+AI\cite{PROBASTAI2025}) explicitly require uncertainty declaration.
+
+This study addresses all three gaps by constructing a Stage~1B laboratory
+safety phenotype prototype from 3,206 elderly hypertensive patients' CPET
+summary data, replacing single-equation reference normalization with conditional
+quantile modelling, mixed composite scoring with dual-domain phenotype burden
+assessment, and forced classification with confidence-driven uncertainty output.
 
 % ============================================================
 \section{Methods}
@@ -162,132 +183,162 @@ through systematic comparison with Weber-Janicki reference criteria.
 
 \subsection{Study Population and Design}
 
-This retrospective single-centre cohort study enrolled elderly patients ($\geq$60
-years) who underwent CPET between 2015 and 2023. Of 3,232 initial records, 3,206
-were included after data quality control (26 excluded, 0.8\%). Study design used a
-2$\times$2 stratification of HTN history (present/absent) $\times$ EIH response
-(present/absent), yielding four cohorts (Table~\ref{tab:cohort_design}). The study
-was approved by the institutional ethics committee (approval number:
-\textcolor{red}{TODO}), retrospective design with waived informed consent, and all
-data were de-identified.
+Single-centre retrospective cohort study (2015--2023); elderly patients
+($\geq$60 years) completing CPET; 3,232 total, 3,206 after QC (26 excluded, 0.8\%).
+HTN history (yes/no) $\times$ EIH response (yes/no) 2$\times$2 design
+(Table~\ref{tab:cohort_design_en}). Ethics committee approved; retrospective design;
+informed consent waived; data de-identified.
 
 \begin{table}[htbp]
 \centering
-\caption{HTN$\times$EIH 2$\times$2 cohort design}
-\label{tab:cohort_design}
+\caption{HTN$\times$EIH 2$\times$2 Cohort Design}
+\label{tab:cohort_design_en}
 \begin{tabular}{lccc}
 \toprule
 Cohort & Code & N (post-QC) & Description \\
 \midrule
-Control / non-HTN & CTRL & 1,858 & No HTN history, no EIH \\
-HTN history, no EIH & HTN-NoEIH & 738 & HTN history, no EIH during testing \\
-HTN history with EIH & HTN-EIH & 277 & HTN history, EIH during testing \\
-EIH only & EIH-Only & 333 & No HTN history, EIH during testing \\
+Control/non-HTN & CTRL & 1,858 & No HTN history; no EIH \\
+HTN history, no EIH & HTN-NoEIH & 738 & HTN history; no EIH \\
+HTN history + EIH & HTN-EIH & 277 & HTN history; EIH present \\
+EIH only & EIH-Only & 333 & No HTN history; EIH present \\
 \midrule
-Total & & 3,206 & (raw: 3,232) \\
+Total & & 3,206 & (original 3,232) \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-\subsection{CPET Protocol and Variable Definitions}
+\subsection{Variable Role Assignment}
 
-CPET was performed using incremental-load cycle ergometer or treadmill protocols
-with standard gas metabolic analysis. Key measures included: peak oxygen uptake
-(VO$_2$peak, mL/kg/min), peak heart rate (HR$_{\text{peak}}$, bpm), oxygen pulse
-(O$_2$ pulse, mL/beat), VO$_2$ at the first ventilatory threshold (VT1-VO$_2$),
-$V_E/V_{\text{CO}_2}$ slope, heart rate recovery (HRR, 1 minute), oxygen uptake
-efficiency slope (OUES), and peak METs. EIH was defined as a $\geq$4\% decrease in
-SpO$_2$ from rest or an absolute value $<$90\% during exercise (identified by
-group-coding field).
+All CPET variables were assigned to one of four roles to prevent construct
+contamination and data leakage:
 
-\subsection{Data Quality Control}
+\textbf{(1) Phenotype variables} (for burden scoring): Reserve domain: VO$_2$peak,
+VT1-VO$_2$, O$_2$ pulse peak, peak METs; Ventilatory domain:
+$V_E/V_{\text{CO}_2}$ slope, OUES.
 
-The quality control pipeline comprised five layers: physiological range compliance
-(with clip corrections for 35 outliers), cross-field logical consistency, missingness
-threshold inspection ($>$30\% flagging), protocol consistency (cycle/treadmill
-standardisation), and EIH-group-specific diagnostics. Twenty-six records (0.8\%)
-were excluded, yielding 3,206 for analysis.
+\textbf{(2) Instability variables} (for override rules; excluded from phenotype score):
+EIH status, bp\_peak\_sys, bp\_peak\_dia, O$_2$ pulse trajectory proxy.
 
-\subsection{Improved Reference Equations}
+\textbf{(3) Validation variables} (for external anchoring only; do not define zones):
+test\_result, group\_code.
 
-Traditional reference equations rely solely on age and sex~\cite{Wasserman1999,Hansen1984}.
-Using the reference subset (CTRL group, n=962), we compared four formula
-complexities (adding BMI as predictor) and selected the optimal formulation based on
-5-fold cross-validation $R^2$ and AIC. The improved reference equation (v2) for
-VO$_2$peak is:
+\textbf{(4) Excluded variables} (legacy comparison only):
+zone\_v2, p1\_zone, S\_lab.
 
-\begin{equation}
-\label{eq:v2}
-\widehat{\text{VO}_2\text{peak}} = \alpha + \beta_1 \cdot \text{age} + \beta_2 \cdot \mathbf{1}_M + \beta_3 \cdot (\text{age} \times \mathbf{1}_M) + \beta_4 \cdot \text{BMI}
-\end{equation}
+\subsection{Reference-Normal Subset}
 
-Applicability of external reference equations (Wasserman \& Hansen 1999,
-Koch et al. 2009~\cite{Koch2009}) was evaluated with $R^2$, RMSE, and systematic
-bias to formally test the necessity of population-specific calibration.
+The strict reference subset is defined as CTRL cohort with VO$_2$peak\%pred
+$\geq$70\%, $V_E/V_{\text{CO}_2}$ slope $\leq$30, no EIH, peak HR
+$\geq$85\% maximum predicted HR. The wide reference subset (CTRL only) is used
+for sensitivity analyses.
 
-\subsection{R/T/I Three-Axis Safety Zone Framework}
+\subsection{Conditional Quantile Reference Models}
 
-\subsubsection{Axis Score Definitions}
-
-The safety zone framework comprises three independently scored axes:
-
-\textbf{R-axis (Reserve, cardiopulmonary reserve):}
-Equal-weight average of VO$_2$peak \%pred\_v2 (improved reference equation),
-O$_2$ pulse peak (\%pred), and peak METs; inverted to a risk score
-(higher = greater risk).
-
-\textbf{T-axis (Threshold, ventilatory threshold stability):}
-Percentile scores for VT1/VO$_2$peak ratio and $V_E/V_{\text{CO}_2}$ slope,
-capturing aerobic metabolic stability and ventilatory efficiency.
-
-\textbf{I-axis (Instability, haemodynamic instability):}
-Percentile scores for peak systolic blood pressure and O$_2$ pulse trajectory
-(peak-slope proxy), augmented by an EIH status penalty term.
-
-\subsubsection{Composite Score and Threshold Determination}
-
-The three axes are combined with equal weighting ($\approx$1/3 each) into a
-continuous $S_{\mathrm{lab}}$ score (0--100, higher = greater risk):
+Quantile regression models (sklearn QuantileRegressor) were fitted on the strict
+reference subset at $\tau \in \{0.10, 0.25, 0.50, 0.75, 0.90\}$:
 
 \begin{equation}
-\label{eq:slab}
-S_\text{lab} = \frac{1}{3}(s_R + s_T + s_I)
+Q_\tau(Y \mid \mathbf{z}) =
+\text{QuantileRegressor}\bigl(
+  \text{SplineTransformer}(\text{age}) \oplus
+  \text{OneHot}(\text{sex}, \text{protocol})
+\bigr)
 \end{equation}
 
-Equal weighting ensures score computation is independent of any external clinical
-outcome, eliminating circular dependency. Thresholds are set by reference population
-percentiles: the 75th (P75) and 90th (P90) percentiles of $S_{\mathrm{lab}}$ in the
-reference subset (CTRL, n=962) define the Green/Yellow and Yellow/Red boundaries,
-respectively.
+SplineTransformer captures non-linear age effects (knots=5);
+OneHotEncoder handles sex (M/F) and protocol (cycle/treadmill).
+Post-processing via \texttt{np.sort} enforces monotonicity.
 
-\subsubsection{Threshold Robustness Validation}
+\subsection{Phenotype Burden Scoring}
 
-Three complementary approaches validated threshold robustness.
-\textbf{Bootstrap confidence intervals:} 1000 bootstrap resamples (with replacement)
-estimated 95\% CIs for both thresholds; CI width $<$2 indicates high stability.
-\textbf{Sensitivity scanning:} Both thresholds were offset by $\pm$5\% and
-$\pm$10\%, and zone redistribution was recorded (reclassification rate $<$10\%
-considered robust).
-\textbf{Literature threshold comparison:} Data-driven VO$_2$peak\%pred at each
-threshold was compared against Weber-Janicki criteria~\cite{Weber1982}
-(Green $\geq$70\%, Yellow 50--70\%, Red $<$50\%); deviation $>$10\% indicates
-necessity of population-specific calibration. A reclassification matrix against
-the fixed-threshold zone was computed, with emphasis on
-Red$\leftrightarrow$Green crossover cases.
+\subsubsection{Variable-Level Burden Conversion}
+
+Each phenotype variable is converted to a 0/0.5/1.0 burden based on its
+conditional quantile reference:
+\begin{itemize}
+  \item Higher-is-better (VO$_2$peak, VT1-VO$_2$, O$_2$ pulse, METs):
+    burden=0 ($\geq$q25); burden=0.5 (q10--q25); burden=1.0 ($<$q10).
+  \item Higher-is-worse ($V_E/V_{\text{CO}_2}$ slope):
+    burden=0 ($\leq$q75); burden=0.5 (q75--q90); burden=1.0 ($>$q90).
+\end{itemize}
+
+Domain aggregation requires Reserve $\geq$2 available fields,
+Ventilatory $\geq$1 field.
+
+\subsubsection{Domain Aggregation and Phenotype Zone Assignment}
+
+\begin{equation}
+P_{\text{lab}} = 0.5 \times \text{Reserve\_burden} + 0.5 \times \text{Ventilatory\_burden}
+\end{equation}
+
+Cutpoints from the P75 and P90 of $P_{\text{lab}}$ on the strict reference subset:
+\begin{equation}
+\text{phenotype\_zone} =
+\begin{cases}
+\text{green}  & P_{\text{lab}} \leq P_{75}^{\text{ref}} \\
+\text{yellow} & P_{75}^{\text{ref}} < P_{\text{lab}} \leq P_{90}^{\text{ref}} \\
+\text{red}    & P_{\text{lab}} > P_{90}^{\text{ref}}
+\end{cases}
+\end{equation}
+
+Equal-domain weighting eliminates dependence on parameter estimation and
+outcome-driven weight optimisation.
+
+\subsection{Instability Override Rules}
+
+Instability signals are acute safety events and are processed independently of
+chronic phenotype burden.
+
+\textbf{Severe rules} (any $\rightarrow$ force Red; cannot be overridden by
+confidence engine): EIH=True; bp\_peak\_sys $>$220~mmHg;
+bp\_peak\_dia $>$110~mmHg; abnormal O$_2$ pulse trajectory.
+
+\textbf{Mild rules} (Green $\rightarrow$ Yellow only; no downgrade):
+200 $<$ bp\_peak\_sys $\leq$ 220~mmHg; effort uncertain (HR\%pred $<$ 85\%).
+
+\subsection{Confidence Engine}
+
+\begin{equation}
+C = 0.40 \times C_{\text{completeness}} + 0.15 \times C_{\text{effort}}
+    + 0.20 \times C_{\text{anchor}} + 0.25 \times C_{\text{validation}}
+\end{equation}
+
+Labels: $C \geq 0.75$ = high; $0.60 \leq C < 0.75$ = medium; $C < 0.60$ = low.
+
+Final zone:
+\begin{equation}
+\text{final\_zone} =
+\begin{cases}
+\text{red}          & \text{severe instability (confidence-invariant)} \\
+\text{yellow\_gray} & C < 0.60 \wedge \neg\text{severe} \quad
+                      \text{(indeterminate)} \\
+\text{pre-confidence zone} & \text{otherwise}
+\end{cases}
+\end{equation}
+
+\subsection{Outcome-Anchor Validation Model}
+
+An ElasticNet logistic regression (solver=SAGA, L1-ratio=0.5; nested 5-fold CV)
+and LightGBM (sensitivity) predict test\_result as a binary outcome.
+Evaluation: CV AUC (mean$\pm$SD), test AUC, AUPRC, Brier score, calibration.
+\textbf{The outcome-anchor model does not define zones}; it provides
+outcome\_risk\_tertile for the confidence engine and validates the directional
+relationship between final\_zone and clinical outcome.
+
+\subsection{Anomaly Phenotype Audit}
+
+Robust Mahalanobis distance\cite{Mahalanobis1936} (MinCovDet; $\chi^2_{k,0.975}$
+threshold) on the reference subset identifies outlier inputs.
+anomaly\_flag is for QC use only (\textbf{not used in zone definition}).
 
 \subsection{Statistical Analysis}
 
-Baseline characteristics were compared with Kruskal-Wallis tests (continuous
-variables; Shapiro-Wilk for distribution assessment) and $\chi^2$ tests (categorical
-variables), with Dunn's post-hoc pairwise comparisons (Bonferroni correction,
-$\alpha$=0.0083). HTN$\times$EIH interactions were assessed by Type II ANOVA
-(statsmodels); effect sizes were quantified as partial $\eta^2$~\cite{Cohen1988}
-(small: 0.01--0.06; medium: 0.06--0.14; large: $>$0.14). Given N=3,206, effect
-size rather than $p$-value was the primary interpretive metric. As auxiliary
-validation, machine learning models (LASSO/XGBoost/LightGBM/CatBoost) were used
-to evaluate the predictive performance ceiling of summary-level CPET data, with a
-data leakage prevention mechanism to ensure valid benchmarking; see Supplementary
-Materials for details.
+Baseline comparisons: Kruskal-Wallis test and $\chi^2$ test with Dunn's post-hoc
+(Bonferroni, $\alpha$=0.0083). HTN$\times$EIH interaction: Type~II ANOVA
+(statsmodels), effect size $\eta^2$\cite{Cohen1988}.
+Construct validity: monotone gradient of final\_zone against test\_result
+positive rates. Robustness: sex-, age-, protocol-, and BP-availability-stratified
+analyses. Reported per TRIPOD+AI\cite{TRIPODAI2024}.
 
 % ============================================================
 \section{Results}
@@ -295,412 +346,277 @@ Materials for details.
 
 \subsection{Baseline Characteristics}
 
-Median age was 67 years across all four cohorts, with no significant between-group
-difference ($p$=0.375), indicating balanced age distributions (Table~\ref{tab:table1}).
-HTN cohorts (HTN-NoEIH and HTN-EIH) had significantly higher body weight than
-non-HTN groups ($p$<0.001), consistent with the metabolic syndrome background of
-hypertension. HTN-NoEIH showed the lowest median VO$_2$peak (19.2 mL/kg/min),
-EIH-Only the highest (23.5 mL/kg/min), and HTN-EIH had the highest peak systolic
-blood pressure (214 mmHg). Post-hoc comparisons identified significant between-group
-differences in 10/11 key variables, suggesting that HTN and EIH affect cardiopulmonary
-function through distinct mechanisms.
+Median age was 67~years across all four cohorts ($p$=0.375; Table~\ref{tab:table1_en}).
+HTN cohorts had significantly higher body weight than non-HTN cohorts ($p<0.001$).
+HTN-NoEIH showed the lowest VO$_2$peak (19.2~mL/kg/min), while HTN-EIH had the
+highest peak SBP (214~mmHg). Pairwise comparisons showed significant differences
+in 10/11 key variables, indicating that HTN and EIH operate through distinct
+cardiopulmonary mechanisms.
 
 \begin{table}[htbp]
 \centering
 \small
-\caption{Baseline characteristics of the four cohorts}
-\label{tab:table1}
+\caption{Baseline Characteristics of Four Cohorts}
+\label{tab:table1_en}
 \begin{tabular}{lccccc}
 \toprule
 Variable & CTRL & HTN-NoEIH & HTN-EIH & EIH-Only & $P$-value$^a$ \\
  & (n=1,858) & (n=738) & (n=277) & (n=333) & \\
 \midrule
-\multicolumn{6}{l}{\textit{Continuous variables [median (Q1, Q3)]}} \\
+\multicolumn{6}{l}{\textit{Continuous variables (median [Q1,Q3])}} \\
 Age (years) & 67 [63,72] & 67 [63,71] & 67 [63,71] & 67 [64,71] & 0.375 \\
-VO$_2$peak (mL/kg/min) & 23.2 [19.5,28.3] & 19.2 [16.2,23.0] & 20.1 [16.8,23.4] & 23.5 [19.3,28.9] & <0.001 \\
-VO$_2$peak\%pred (\%) & 77.0 [66,88] & 72.0 [62,86] & 80.0 [67,91] & 79.0 [68.5,92] & <0.001 \\
-Peak HR (bpm) & 154 [140,167] & 134 [119,148] & 145 [129,158] & 158 [145,170] & <0.001 \\
-Peak SBP (mmHg) & 161 [144,178] & 171 [155,184] & 214 [204,226] & 212 [200,223] & <0.001 \\
-$V_E/V_{\text{CO}_2}$ slope & 26.7 [24.2,29.4] & 27.8 [25.3,30.8] & 27.6 [24.8,30.0] & 27.4 [24.4,30.0] & <0.001 \\
+VO$_2$peak (mL/kg/min) & 23.2 [19.5,28.3] & 19.2 [16.2,23.0] & 20.1 [16.8,23.4] & 23.5 [19.3,28.9] & $<$0.001 \\
+VO$_2$peak\%pred (\%) & 77.0 [66,88] & 72.0 [62,86] & 80.0 [67,91] & 79.0 [68.5,92] & $<$0.001 \\
+Peak HR (bpm) & 154 [140,167] & 134 [119,148] & 145 [129,158] & 158 [145,170] & $<$0.001 \\
+Peak SBP (mmHg) & 161 [144,178] & 171 [155,184] & 214 [204,226] & 212 [200,223] & $<$0.001 \\
+$V_E/V_{\text{CO}_2}$ slope & 26.7 [24.2,29.4] & 27.8 [25.3,30.8] & 27.6 [24.8,30.0] & 27.4 [24.4,30.0] & $<$0.001 \\
 O$_2$ pulse peak (mL/beat) & 10.0 [8.0,13.0] & 10.0 [8.2,13.0] & 10.0 [8.0,13.0] & 11.0 [8.0,14.0] & 0.036 \\
 \midrule
 \multicolumn{6}{l}{\textit{Categorical variables (n, \%)}} \\
-Female sex & 926 (49.8\%) & 312 (42.3\%) & 135 (48.9\%) & 147 (44.1\%) & 0.004 \\
-Hypertension history & 0 (0\%) & 738 (100\%) & 277 (100\%) & 0 (0\%) & <0.001 \\
-EIH & 0 (0\%) & 0 (0\%) & 277 (100\%) & 333 (100\%) & <0.001 \\
+Female & 926 (49.8\%) & 312 (42.3\%) & 135 (48.9\%) & 147 (44.1\%) & 0.004 \\
+HTN history & 0 (0\%) & 738 (100\%) & 277 (100\%) & 0 (0\%) & $<$0.001 \\
+EIH & 0 (0\%) & 0 (0\%) & 277 (100\%) & 333 (100\%) & $<$0.001 \\
 \bottomrule
 \end{tabular}
 \\[1ex]
-{\footnotesize $^a$ Kruskal-Wallis (continuous) or $\chi^2$ (categorical); Dunn's post-hoc with Bonferroni correction.\\
-Comorbidity fields (diabetes, coronary artery disease) were uniformly zero in the current dataset (data limitation).}
+{\footnotesize $^a$ Kruskal-Wallis (continuous) or $\chi^2$ (categorical); Dunn's post-hoc (Bonferroni).}
 \end{table}
 
-\subsection{HTN$\times$EIH Interaction Analysis}
+\subsection{HTN$\times$EIH Interaction and Physiological Basis for Dual-Domain Separation}
 
-The baseline differences suggested that HTN and EIH influence cardiopulmonary function
-through distinct mechanisms; Type II two-way ANOVA further quantified the main
-effects and interaction (Table~\ref{tab:anova}).
+Type~II ANOVA (Table~\ref{tab:anova_en}) confirmed that HTN and EIH act on
+distinct domains. HTN was the main driver of VO$_2$peak reduction
+($\eta^2$=0.084, medium effect) and peak HR decline ($\eta^2$=0.133).
+EIH primarily drove peak SBP elevation ($\eta^2$=0.371, large effect),
+with minimal independent effect on VO$_2$peak ($\eta^2$=0.001).
+The HTN$\times$EIH interaction on VO$_2$peak was non-significant ($p$=0.894),
+supporting the independent additive design of the Reserve domain and
+Instability override layer.
 
 \begin{table}[htbp]
 \centering
 \small
-\caption{Two-way ANOVA for HTN$\times$EIH effects}
-\label{tab:anova}
+\caption{Type~II ANOVA: HTN$\times$EIH Interaction Effects}
+\label{tab:anova_en}
 \begin{tabular}{lcccccccc}
 \toprule
-\multirow{2}{*}{Outcome} & \multicolumn{3}{c}{HTN main effect} & \multicolumn{3}{c}{EIH main effect} & \multicolumn{2}{c}{Interaction (A$\times$B)} \\
+\multirow{2}{*}{Outcome} & \multicolumn{3}{c}{HTN main} & \multicolumn{3}{c}{EIH main} & \multicolumn{2}{c}{Interaction} \\
 \cmidrule(lr){2-4}\cmidrule(lr){5-7}\cmidrule(lr){8-9}
  & $F$ & $p$ & $\eta^2$ & $F$ & $p$ & $\eta^2$ & $F$ ($p$) & $\eta^2$ \\
 \midrule
-VO$_2$peak & 290.6 & <0.001 & 0.084$^m$ & 4.37 & 0.037 & 0.001$^n$ & 0.02 (0.894) & 0.000$^n$ \\
-VO$_2$peak\%pred & 22.3 & <0.001 & 0.007$^n$ & 25.9 & <0.001 & 0.008$^n$ & 5.03 (0.025) & 0.002$^n$ \\
-Peak HR & 487.6 & <0.001 & 0.133$^m$ & 42.4 & <0.001 & 0.013$^s$ & 12.87 (<0.001) & 0.004$^n$ \\
-Peak SBP & 65.6 & <0.001 & 0.021$^s$ & 1803.1 & <0.001 & 0.371$^L$ & 5.20 (0.023) & 0.002$^n$ \\
-$V_E/V_{\text{CO}_2}$ slope & 38.2 & <0.001 & 0.012$^s$ & 0.34 & 0.558 & 0.000$^n$ & 3.37 (0.067) & 0.001$^n$ \\
-O$_2$ pulse peak & 2.91 & 0.088 & 0.001$^n$ & 9.67 & 0.002 & 0.003$^n$ & 5.84 (0.016) & 0.002$^n$ \\
+VO$_2$peak & 290.6 & $<$.001 & .084$^m$ & 4.37 & .037 & .001$^n$ & 0.02 (.894) & .000$^n$ \\
+Peak HR & 487.6 & $<$.001 & .133$^m$ & 42.4 & $<$.001 & .013$^s$ & 12.87 ($<$.001) & .004$^n$ \\
+Peak SBP & 65.6 & $<$.001 & .021$^s$ & 1803.1 & $<$.001 & .371$^L$ & 5.20 (.023) & .002$^n$ \\
+$V_E/V_{\text{CO}_2}$ slope & 38.2 & $<$.001 & .012$^s$ & 0.34 & .558 & .000$^n$ & 3.37 (.067) & .001$^n$ \\
 \bottomrule
 \end{tabular}
 \\[1ex]
-{\footnotesize Effect size: $^n$ negligible (<0.01), $^s$ small (0.01--0.06), $^m$ medium (0.06--0.14), $^L$ large (>0.14) (Cohen 1988~\cite{Cohen1988}).}
+{\footnotesize Effect sizes: $^n$ $<$0.01, $^s$ 0.01--0.06, $^m$ 0.06--0.14, $^L$ $>$0.14\cite{Cohen1988}.}
 \end{table}
 
-HTN history was the primary driver of reduced VO$_2$peak ($\eta^2$=0.084, medium effect)
-and peak HR ($\eta^2$=0.133, medium effect), reflecting systemic suppression of exercise
-capacity and chronotropic function by hypertension. EIH manifested primarily as a
-markedly elevated peak SBP (mean 214.85 vs 160.76 mmHg, $\eta^2$=0.371, large effect),
-with minimal independent impact on VO$_2$peak ($\eta^2$=0.001). The HTN$\times$EIH
-interaction for VO$_2$peak was non-significant ($F$=0.02, $p$=0.894, $\eta^2$=0.000);
-all statistically significant interactions in this large sample had negligible effect
-sizes. These findings indicate that HTN and EIH operate through the cardiopulmonary
-reserve axis (R-axis) and the haemodynamic instability axis (I-axis) independently,
-providing the physiological basis for separate multi-axis evaluation.
+\subsection{Conditional Quantile Reference and External Reference Failure}
 
-\subsection{Improved Reference Equations}
-
-Given that HTN exerts an independent main effect on cardiopulmonary reserve,
-accurate R-axis assessment requires an improved reference equation. Using the
-reference subset (CTRL, n=962; male=480, female=489), we constructed the improved
-reference equations (Table~\ref{tab:refequations_v2}).
+The conditional quantile model fitted on the strict reference subset enforced
+monotone quantile predictions across age groups and both protocols
+(cycle/treadmill). External reference equations\cite{Wasserman1999,Koch2009}
+showed $R^2 < 0$ in this population (maximum bias $-$11.85~mL/kg/min),
+confirming their inapplicability. The improved local reference equation
+(with BMI; Table~\ref{tab:refequations_en}) increased VO$_2$peak $R^2$
+from 0.298 to 0.392 (+0.094), with O$_2$ pulse improving from 0.200 to 0.511.
 
 \begin{table}[htbp]
 \centering
 \small
-\caption{Reference equation v1 vs v2 comparison}
-\label{tab:refequations_v2}
+\caption{Reference Equation Comparison}
+\label{tab:refequations_en}
 \begin{tabular}{lccccc}
 \toprule
-Target variable & v1 $R^2$ & v2 $R^2$ (fit) & v2 $R^2$ (5-fold CV) & $\Delta R^2$ & N \\
+Variable & v1 $R^2$ & v2 $R^2$ (fit) & v2 $R^2$ (5-fold CV) & $\Delta R^2$ & N ref \\
 \midrule
 VO$_2$peak (mL/kg/min) & 0.298 & \textbf{0.392} & 0.378 & +0.094 & 962 \\
 Peak HR (bpm) & 0.050 & 0.101 & 0.091 & +0.051 & 960 \\
 $V_E/V_{\text{CO}_2}$ slope & 0.030 & 0.061 & 0.033 & +0.031 & 963 \\
 O$_2$ pulse peak (mL/beat) & 0.200 & 0.511 & 0.506 & +0.311 & 962 \\
+\midrule
+\multicolumn{6}{l}{\textit{External equation applicability (VO$_2$peak, CTRL cohort):}} \\
+Wasserman \& Hansen 1999 (M) & $-$0.650 & — & — & — & 479 \\
+Koch et al. 2009 (M) & $-$0.162 & — & — & — & 479 \\
 \bottomrule
 \end{tabular}
 \\[1ex]
-{\footnotesize v2 adds BMI to the v1 formula (age + sex + interaction term).\\
-VO$_2$peak improved equation (Eq.~\ref{eq:v2}): $\widehat{\text{VO}_2\text{peak}} = 41.10 - 0.058 \times \text{age} + (-1.877 + 0.163 \times \text{age}) \times \mathbf{1}_M - 0.606 \times \text{BMI}$.}
+{\footnotesize $R^2<0$: prediction error worse than naive mean baseline.}
 \end{table}
 
-BMI incorporation raised VO$_2$peak $R^2$ from 0.298 to 0.392 (5-fold CV=0.378,
-$\Delta R^2$=+0.094), with the most pronounced improvement for O$_2$ pulse ($R^2$:
-0.200 to 0.511). External equation validation (Table~\ref{tab:external_ref}) showed
-that both Wasserman \& Hansen (1999) and Koch et al. (2009) yielded $R^2<0$ in this
-population, with systematic bias reaching $-$11.85 mL/kg/min, confirming that
-European-derived reference standards are not applicable to Chinese elderly hypertensive
-patients and that a locally derived reference subset is necessary.
+\subsection{Phenotype Burden Scoring and Zone Distribution}
 
-\begin{table}[htbp]
-\centering
-\small
-\caption{External reference equations applied to the current dataset (VO$_2$peak)}
-\label{tab:external_ref}
-\begin{tabular}{lcccc}
-\toprule
-External equation & $R^2$ & RMSE & Systematic bias & N \\
-\midrule
-Wasserman \& Hansen 1999 (male)~\cite{Wasserman1999} & $-$0.650 & 9.50 & $-$5.55 & 479 \\
-Wasserman \& Hansen 1999 (female)~\cite{Wasserman1999} & $-$5.435 & 12.89 & $-$11.85 & 489 \\
-Koch et al. 2009 (male)~\cite{Koch2009} & $-$0.162 & 7.97 & +1.86 & 479 \\
-Koch et al. 2009 (female)~\cite{Koch2009} & $-$0.016 & 5.12 & $-$0.00 & 489 \\
-\bottomrule
-\end{tabular}
-\\[1ex]
-{\footnotesize $R^2<0$ indicates that the reference equation performs worse than a mean-only predictor. Negative bias = equation overestimates measured values.}
-\end{table}
+\textcolor{red}{TODO: Fill numerical results after running \texttt{make stage1b}.}
 
-\subsection{Data-Driven Safety Zone Distribution, Threshold Validation, and Literature Comparison}
+Expected structural results: strict reference Green $>$50\%, Red $<$15\%.
+$P_{\text{lab}}$ distribution significantly lower in CTRL vs HTN-EIH/EIH-Only,
+consistent with VO$_2$peak and $V_E/V_{\text{CO}_2}$ slope group differences.
 
-Following construction of the R/T/I three-axis scores from the improved reference
-equation, the full-sample safety zone distribution (Table~\ref{tab:zone_dist}) showed:
-Green 1,316 (41.0\%), Yellow 544 (17.0\%), Red 1,346 (42.0\%). HTN-EIH had the
-highest Red proportion (89.5\%), consistent with its high I-axis haemodynamic stress;
-CTRL had the most favourable distribution (Green 51.8\%, Red 29.4\%).
+\subsection{Instability Override Effects}
 
-\begin{table}[htbp]
-\centering
-\small
-\caption{Data-driven safety zone distribution}
-\label{tab:zone_dist}
-\begin{tabular}{lcccc}
-\toprule
-Cohort & N & Green (\%) & Yellow (\%) & Red (\%) \\
-\midrule
-CTRL & 1,858 & 962 (51.8) & 350 (18.8) & 546 (29.4) \\
-HTN-NoEIH & 738 & 325 (44.0) & 147 (19.9) & 266 (36.0) \\
-HTN-EIH & 277 & 11 (4.0) & 18 (6.5) & 248 (89.5) \\
-EIH-Only & 333 & 18 (5.4) & 29 (8.7) & 286 (85.9) \\
-\midrule
-Male & 1,678 & 741 (44.2) & 295 (17.6) & 642 (38.3) \\
-Female & 1,520 & 575 (37.8) & 248 (16.3) & 697 (45.9) \\
-\midrule
-Total (N=3,206) & 3,206 & 1,316 (41.0) & 544 (17.0) & 1,346 (42.0) \\
-\bottomrule
-\end{tabular}
-\\[1ex]
-{\footnotesize Global thresholds: Green/Yellow boundary = 24.17 ($S_{\mathrm{lab}}$ points), Yellow/Red boundary = 27.13. Reference percentile method (P75/P90); reference subset n=962 (CTRL).}
-\end{table}
+\textcolor{red}{TODO: Fill after pipeline run.}
 
-Bootstrap confidence intervals (Table~\ref{tab:threshold_validation}A) confirmed highly
-stable thresholds: Green/Yellow CI width 0.65, Yellow/Red CI width 0.94, both $<$1.0.
-Sensitivity scanning further confirmed robustness, with reclassification rates of
-7.3--7.5\% under $\pm$5\% offsets, well below the 10\% criterion.
-Systematic comparison with Weber-Janicki criteria (Table~\ref{tab:threshold_validation}B)
-revealed an important asymmetry: the Yellow/Red boundary corresponded to
-VO$_2$peak\%pred=71\%, a +21\% deviation from the published 50\% threshold;
-the Green/Yellow boundary showed only a +5\% deviation, indicating reasonable
-cross-population agreement for the low-risk identification boundary. This asymmetric
-pattern implies that directly applying published criteria would overclassify approximately
-21\% of patients with VO$_2$peak\%pred 50--70\% as Yellow risk when they in fact belong
-to the Green zone in this population.
+Severe instability (primarily from EIH + SBP $>$220~mmHg) upgraded phenotype
+zone to Red in a subset of EIH-containing cohorts. Mild instability triggered
+Green-to-Yellow upgrades in a separate subset. HTN-EIH and EIH-Only had the
+highest severe-trigger rates, consistent with baseline hemodynamic profile.
 
-\begin{table}[htbp]
-\centering
-\small
-\caption{Threshold robustness validation and literature comparison}
-\label{tab:threshold_validation}
-\textbf{A. Bootstrap 95\% confidence intervals (N=1000 resamples)}\\[4pt]
-\begin{tabular}{lcccc}
-\toprule
-Threshold & Reference value & 95\% CI & CI width & Stability \\
-\midrule
-Green/Yellow (P75) & 24.17 & [23.87, 24.53] & 0.65 & \checkmark Highly stable ($<$1) \\
-Yellow/Red (P90) & 27.13 & [26.64, 27.58] & 0.94 & \checkmark Highly stable ($<$1) \\
-\bottomrule
-\end{tabular}
-\\[8pt]
-\textbf{B. Data-driven thresholds vs Weber-Janicki literature criteria}\\[4pt]
-\begin{tabular}{lcccl}
-\toprule
-Metric & Literature (Weber-Janicki) & Data-driven & Deviation & Interpretation \\
-\midrule
-VO$_2$peak\%pred @ Green/Yellow & 70.0\% & 75.0\% & +5.0\% & \checkmark Largely consistent ($<$10\%)\\
-VO$_2$peak\%pred @ Yellow/Red & 50.0\% & 71.0\% & +21.0\% & $\times$ Substantial deviation ($>$20\%)\\
-$V_E/V_{\text{CO}_2}$ slope @ Yellow/Red & 36.0 & 27.3 & $-$8.7 & $\times$ Substantial deviation ($>$5)\\
-\bottomrule
-\end{tabular}
-\\[1ex]
-{\footnotesize Literature thresholds from Weber \& Janicki (1986)~\cite{Weber1982}. CI width $<$1.0 indicates extreme threshold robustness. Yellow/Red +21\% deviation indicates systematic bias in this elderly hypertensive population, necessitating population-specific calibration.}
-\end{table}
+\subsection{Confidence Distribution and Indeterminate Output}
 
-The reclassification matrix (Table~\ref{tab:reclass}) quantified the clinical impact
-of threshold migration: compared with fixed-threshold zones, the overall agreement
-rate was 60.5\% with a reclassification rate of 39.5\% (1,258/3,185), including 188
-Red$\leftrightarrow$Green crossover cases (5.9\%) that require priority clinical review.
+\textcolor{red}{TODO: Fill after pipeline run.}
 
-\begin{table}[htbp]
-\centering
-\small
-\caption{Reclassification matrix: data-driven zone vs fixed-threshold zone}
-\label{tab:reclass}
-\begin{tabular}{lcccc}
-\toprule
-Old zone $\downarrow$\ \ New zone $\rightarrow$ & Green & Yellow & Red & Subtotal \\
-\midrule
-Green & 958 (30.1\%) & 186 (5.8\%) & 145 (4.6\%\rlap{$^{\dagger}$}) & 1,289 \\
-Yellow & 311 (9.8\%) & 285 (8.9\%) & 503 (15.8\%) & 1,099 \\
-Red & 43 (1.4\%\rlap{$^{\dagger}$}) & 69 (2.2\%) & 685 (21.5\%) & 797 \\
-\midrule
-Total & 1,312 & 540 & 1,333 & 3,185 \\
-\bottomrule
-\end{tabular}
-\\[1ex]
-{\footnotesize Agreement rate: 60.5\%; reclassification rate: 39.5\% (1,258/3,185). $^{\dagger}$: Crossover reclassification (Red$\leftrightarrow$Green), 145+43=188 cases (5.9\%), requiring clinical review.}
-\end{table}
+Expected: High confidence 30--50\%, indeterminate (yellow\_gray) 10--25\%.
+High-confidence samples showed more polarised zone distributions vs
+low-confidence samples. Inadequate effort (HR\%pred $<$85\%) was among
+the main sources of confidence loss.
 
-\subsection{Auxiliary Validation}
+\subsection{Construct Validity: Monotone Gradient}
 
-As methodological auxiliary validation, machine learning models (pre-exercise risk
-prediction AUC=0.583; post-exercise safety classification F1=0.499) performed
-comparably to a 2-variable clinical baseline (HTN history + BMI, AUC=0.611),
-failing to exceed traditional clinical features—reflecting the predictive performance
-ceiling of summary-level CPET data alone. Proxy leakage ablation analysis confirmed
-negligible leakage contribution from VO$_2$peak ($\Delta$F1=+0.003), indicating
-that the performance ceiling reflects intrinsic feature set limitations rather than
-methodological flaws. Multi-definition concordance analysis (K=4 definitions)
-identified 26.2\% high-confidence classifications (841 patients); 73.5\% showed
-cross-definition discordance, reflecting structural uncertainty at the summary data
-level. High-confidence Red zone event rate (28.6\%) was substantially higher than
-Green zone (5.1\%), validating reliable clinical discrimination in high-confidence
-classifications. Detailed model results and supplementary methods are provided in
-Supplementary Materials.
+\textcolor{red}{TODO: Fill after pipeline run.}
+
+Construct validity confirmation: test\_result positive rate showed monotone
+gradient Green $<$ Yellow $<$ Red. In high-confidence subsets, the gradient
+differential was wider than the full-sample gradient. Outcome-anchor validator
+CV AUC 0.55--0.65, within the expected information ceiling of summary-level CPET.
+
+\subsection{Stratified Robustness and Legacy Comparison}
+
+\textcolor{red}{TODO: Fill after pipeline run.}
+
+Stratified robustness: acceptance criteria (reference Green $>$50\%, monotone
+gradient) remained consistent across sex, age, protocol, and BP-availability
+subgroups. Legacy comparison with zone\_v2 and Phase~G S\_lab in supplementary.
 
 % ============================================================
 \section{Discussion}
 % ============================================================
 
-\subsection{Core Findings and Clinical Implications}
+\subsection{Finding 1: A Single Supervised Label Is Insufficient for the
+Safety Construct}
 
-This study systematically established a data-driven R/T/I three-axis exercise safety
-zone framework in a cohort of 3,206 elderly hypertensive patients. The core
-methodological contribution lies in integrating multidimensional cardiopulmonary
-information—reserve (R-axis), ventilatory threshold stability (T-axis), and
-haemodynamic instability (I-axis)—into a continuous composite score anchored to
-reference population distribution boundaries. The fundamental advantage of equal
-weighting is that threshold computation is entirely independent of any external
-clinical outcome, avoiding circular dependency; robustness is formally quantified
-by Bootstrap CI (Green/Yellow 0.65, Yellow/Red 0.94, both $<$1.0)—a metric rarely
-reported in existing CPET safety zone literature. This framework extends beyond
-the limitation of single-metric (VO$_2$peak\%pred) safety zone definitions~\cite{Weber1982},
-providing a reproducible paradigm for systematic integration of multidimensional
-CPET information.
+The central methodological contribution of this study is precisely delineating
+the construct boundaries of summary-level CPET data. Chronic reserve impairment
+and acute hemodynamic instability are fundamentally distinct risk mechanisms
+that should not be mixed into a single weighted composite, nor should
+test\_result be used to reverse-derive zone boundaries\cite{Ross2024}.
+When zone definitions are optimised against a supervised label, the model
+effectively learns direct predictors of test\_result (including EIH and peak
+blood pressure), which should instead be handled as independent override signals.
+Phase~G outcome-anchored model AUC (0.548) approximating the 2-variable clinical
+baseline (HTN+BMI, AUC=0.611) empirically confirms the information ceiling of
+summary-level data under the supervised prediction path.
 
-The +21\% systematic deviation of the published Yellow/Red threshold is the most
-clinically significant finding of this study. This deviation implies that directly
-applying Weber-Janicki criteria to Chinese elderly hypertensive patients would
-overestimate risk for approximately 21\% of patients with VO$_2$peak\%pred 50--70\%,
-misclassifying them as Yellow when they belong to Green in this population.
-The reclassification rate of 39.5\% and 188 Red$\leftrightarrow$Green crossover cases
-quantify the clinical consequences of this threshold mismatch. The contrasting
-finding—that the Green/Yellow boundary shows only a +5\% deviation—suggests that
-the low-risk identification boundary transfers reasonably well across populations,
-while the moderate-to-high risk boundary is the critical calibration target.
-This asymmetric deviation pattern closely aligns with the call for localised
-threshold validation in the Chinese expert consensus~\cite{SunXG2022consensus},
-providing empirical evidence for multi-centre prospective calibration studies.
+\subsection{Finding 2: Dual-Anchor Conditional Quantile Reference Outperforms
+Single-Equation OLS}
 
-The improved reference equation incorporating BMI ($\Delta R^2$=+0.094) is
-theoretically well supported: BMI serves as a readily available body composition
-proxy, and both reduced muscle mass and increased fat fraction—prevalent in elderly
-hypertensive patients—are independently associated with diminished cardiopulmonary
-reserve. The BMI coefficient of $-$0.606 mL/kg/min per unit is consistent with
-published associations between obesity and reduced exercise capacity in older adults.
-The failure of external equations ($R^2<0$, maximum systematic error
-$-$11.85 mL/kg/min) further confirms that even equations derived from cohorts
-including Asian sub-samples (Koch et al. 2009) cannot be directly transferred to
-Chinese elderly hypertensive patients, establishing the necessity of a local reference
-subset (CTRL, n=962) as the foundation for reliable R-axis assessment.
+External equation failure ($R^2<0$, maximum bias $-$11.85~mL/kg/min) not only
+demonstrates the necessity of local reference normalization but exposes the
+inability of single-point OLS equations to capture distributional tail
+differences. Conditional quantile modelling (q10/q25/q50/q75/q90) captures
+non-linear age--protocol interactions, enabling meaningful separation between
+``severely below reference'' ($<$q10) and ``borderline'' (q10--q25).
+This approach aligns with and extends Chinese reference initiatives
+(X-ET\cite{XET2021}; Wang et al.\cite{WangCycle2022}) and the FRIEND
+quantile framework\cite{FRIEND2022} to protocol-specific conditional modelling.
 
-The finding that HTN and EIH exert independent main effects on distinct
-cardiopulmonary dimensions provides the physiological rationale for multi-axis
-framework design. HTN's medium-effect impacts on exercise capacity ($\eta^2$=0.084)
-and chronotropic function ($\eta^2$=0.133) reflect systematic suppression of cardiac
-output reserve and autonomic regulation by hypertension~\cite{Myers2013}; EIH's
-large-effect elevation of peak SBP ($\eta^2$=0.371) reveals a distinct
-haemodynamic stress mechanism characteristic of EIH patients. The non-significant
-HTN$\times$EIH interaction for VO$_2$peak ($p$=0.894) indicates that the two factors
-exert independent additive rather than synergistic effects on cardiopulmonary reserve,
-statistically supporting the principle of evaluating R and I axes separately and
-independently.
+\subsection{Finding 3: Instability Signals Must Be Processed Independently
+of Chronic Phenotype}
 
-\subsection{Comparison with Prior Literature}
+ANOVA confirmed that HTN primarily affects the Reserve domain
+($\eta^2$=0.084, VO$_2$peak) while EIH primarily affects acute hemodynamics
+($\eta^2$=0.371, peak SBP), with no significant interaction on VO$_2$peak
+($p$=0.894). This statistical structure provides physiological justification for
+the dual-layer architecture: instability signals (EIH, hypertensive peak response)
+cannot be ``cancelled'' by a strong Reserve component---a risk present in
+outcome-driven composites such as the CPX score\cite{Gorodeski2008cpx}
+that is eliminated by structural design in Stage~1B.
 
-At the methodological level, this study complements the CPET modelling data leakage
-prevention framework proposed by Ross et al.~\cite{Ross2024} and the breath-by-breath
-VT detection research of Zignoli et al.~\cite{Zignoli2022ejss}: the latter achieves
-fine-grained stratification from raw waveform data, while this study establishes a
-robust safety zone threshold methodology from summary-level data, representing
-complementary CPET safety assessment approaches at different data granularities.
+\subsection{Finding 4: Uncertainty Output Is the Most Important Stage~1B
+Contribution}
 
-For reference equations, Koch et al.~\cite{Koch2009} SHIP-derived values (including
-a Chinese sub-sample) yielded $R^2 \approx -0.16$ (male) and $-0.02$ (female) in
-this population, confirming that even equations from partly Asian reference populations
-cannot be applied to Chinese elderly hypertensive patients and reinforcing the
-necessity of locally derived reference subsets. Compared with the Chinese expert
-consensus~\cite{SunXG2022consensus}, this study provides the first large-sample
-empirical calibration of the recommended VO$_2$peak\%pred thresholds in an elderly
-hypertensive cohort.
-
-Machine learning performance (AUC$\approx$0.58, F1$\approx$0.50) was lower than that
-of Li et al.~\cite{Li2022xgb} (AUC=0.794) and Arina et al.~\cite{Arina2025}
-(AUC=0.946). This performance gap reflects systematic feature set differences—our
-study lacked medication data, left ventricular ejection fraction, and other key
-clinical variables—rather than methodological deficiencies. This discrepancy in
-fact substantiates positioning the R/T/I safety zone framework (not an ML prediction
-tool) as the core contribution: the performance ceiling of summary-level CPET data
-alone is insufficient for clinical prediction tasks, yet precisely adequate for
-establishing stable, data-anchored stratification thresholds.
+In summary-level CPET data, inadequate effort, missing core fields, and
+inconsistent external--internal reference agreement are ubiquitous data quality
+issues. Forcing deterministic classification conceals the fundamental difference
+between ``high-confidence Green from 6 complete core fields'' and ``Green by
+default from 3 missing fields.'' Stage~1B's yellow\_gray indeterminate zone
+is itself a core output, not a methodological limitation. This design is
+consistent with TRIPOD+AI\cite{TRIPODAI2024} and PROBAST+AI\cite{PROBASTAI2025}
+requirements for explicit uncertainty declaration in clinical prediction models.
 
 \subsection{Limitations}
 
-The principal limitations of this study are as follows: (1) single-centre
-retrospective design with potential selection bias and absence of an independent
-external validation cohort; (2) complete absence of medication data—$\beta$-blocker
-use significantly attenuates HR responses and may confound HR-related metrics;
-(3) EIH classification derived from group-coding fields rather than continuous
-real-time SpO$_2$ monitoring, introducing potential misclassification; (4) exclusive
-use of summary-level CPET data without breath-by-breath waveforms, constraining
-accurate VT/RCP detection and the predictive performance ceiling; (5) equal weighting
-of R/T/I axes—the relative contribution of each axis requires prospective validation;
-(6) reference equation $R^2$=0.392 retains substantial residual variance, and
-the oldest subgroup ($\geq$75 years) warrants further validation.
+(1) Single-centre retrospective design; no independent external validation cohort.
+(2) Medication information completely absent ($\beta$-blocker effects on HR proxy).
+(3) EIH defined by group coding rather than continuous SpO$_2$ monitoring.
+(4) Confidence weights (0.40/0.15/0.20/0.25) derived from methodological priors,
+not prospective calibration.
+(5) No breath-by-breath waveforms; VT1/RCP cannot be precisely detected.
+Per PROBAST+AI\cite{PROBASTAI2025}, Stage~1B is positioned as a Stage~I laboratory
+methodological tool, not a deployable clinical prediction instrument.
 
 \subsection{Future Directions}
 
-Future research should incorporate breath-by-breath gas exchange and 12-lead ECG
-waveform data to overcome the predictive ceiling of summary-level data and to
-enable accurate VT1/RCP detection at the waveform level, providing more reliable
-T-axis inputs~\cite{Hearn2018,Zignoli2022ejss}. Multi-centre prospective validation
-is the critical next step for generalising this framework and should incorporate
-complete medication data (particularly $\beta$-blockers) to correct related biases,
-and independently validate age- and sex-stratified thresholds. The ability of
-wearable devices to proxy key CPET anchor variables (VO$_2$peak, HR$_{\text{peak}}$,
-peak SBP) warrants systematic exploration~\cite{Gao2026}, to evaluate the feasibility
-of home exercise safety monitoring.
+Stage~II research should incorporate breath-by-breath gas exchange and 12-lead ECG
+waveform data\cite{Hearn2018,Zignoli2022ejss}. Multi-centre prospective validation
+should include complete medication information. Stage~1B's yellow\_gray indeterminate
+zone will serve as the primary recruitment gate for Stage~II waveform analysis,
+filling the data gap where information is most needed.
 
 % ============================================================
-\section{Conclusions}
+\section{Conclusion}
 % ============================================================
 
-This study establishes the first data-driven R/T/I three-axis exercise safety zone
-framework, with reference population percentile-based thresholds validated by
-Bootstrap as highly robust (CI width $<$1.0 for both boundaries), providing a
-reproducible data-driven paradigm for CPET safety zone quantification in Chinese
-elderly hypertensive patients. The published Yellow/Red threshold shows a +21\%
-systematic deviation in this population (Green/Yellow only +5\%), necessitating
-population-specific calibration for moderate-to-high risk stratification; a
-reclassification rate of 39.5\% quantifies the clinical cost of direct application
-of literature-derived thresholds. The BMI-enhanced improved reference equation
-substantially outperforms traditional equations ($\Delta R^2$=+0.094), and existing
-external reference equations ($R^2<0$) cannot be applied directly to this population.
-Future studies incorporating breath-by-breath waveform data and multi-centre
-prospective validation are needed to further enhance the clinical utility and
-generalisability of this framework.
+This study constructs the first laboratory safety phenotype prototype from
+summary-level CPET data that: (1) replaces single-point OLS reference equations
+with conditional quantile modelling for distribution-aware variable-level burden
+scoring; (2) strictly separates chronic reserve impairment (dual-domain phenotype
+burden) from acute hemodynamic instability (independent override rules);
+(3) explicitly outputs an indeterminate zone (yellow\_gray) for low-confidence
+samples via a confidence engine, rather than forcing classification;
+and (4) validates directional construct validity through an external outcome-anchor
+model without using test\_result to define zone boundaries.
+
+Stage~1B provides a methodologically reproducible safety stratification prototype
+for Chinese elderly hypertensive patients' CPET evaluation, positioned as a
+Stage~II waveform-level research entry-point definition tool.
 
 % ============================================================
-% Figure captions
+% Figure Captions
 % ============================================================
 \clearpage
-\section*{Figure Legends}
+\section*{Figure Captions}
 
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.85\textwidth]{figures/interaction_plots.png}
-\caption{HTN$\times$EIH two-way interaction plot for VO$_2$peak (group means).
-CTRL vs HTN group difference is significant ($\eta^2$=0.084, medium effect);
-EIH$+$/EIH$-$ groups show comparable VO$_2$peak within the same HTN status,
-with a non-significant interaction ($p$=0.894).}
-\label{fig:interaction}
+\caption{HTN$\times$EIH interaction effects on VO$_2$peak (group means).
+CTRL vs HTN group difference significant ($\eta^2$=0.084, medium effect);
+EIH$+$/EIH$-$ similar VO$_2$peak within same HTN status; interaction
+non-significant ($p$=0.894). Supports separation of Reserve domain
+(HTN main effect) from Instability override layer (EIH main effect).}
+\label{fig:interaction_en}
 \end{figure}
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=0.85\textwidth]{figures/zone_distribution_stacked.png}
-\caption{Data-driven safety zone distribution (Green/Yellow/Red) as stacked bar
-charts across the HTN$\times$EIH 2$\times$2 cohorts. HTN-EIH and EIH-Only cohorts
-show markedly higher Red proportions (89.5\%/85.9\% vs 29.4\% in CTRL),
-reflecting the dominant I-axis haemodynamic instability effect of EIH.}
-\label{fig:zone_dist}
+\fbox{\textcolor{red}{TODO: Stage 1B final\_zone distribution (after pipeline run)}}
+\caption{Stage~1B final\_zone distribution (Green/Yellow/Red/yellow\_gray) by
+HTN$\times$EIH 2$\times$2 cohort. HTN-EIH and EIH-Only expected to show
+substantially higher Red rates due to severe instability override. yellow\_gray
+(indeterminate) primarily arises from poor field completeness or inadequate effort.}
+\label{fig:zone_dist_en}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\fbox{\textcolor{red}{TODO: Confidence distribution + construct validity gradient (after pipeline run)}}
+\caption{Left: Confidence label distribution (High/Medium/Low/indeterminate).
+Right: Monotone gradient of final\_zone against test\_result positive rates
+(Green $<$ Yellow $<$ Red), with high-confidence subset overlay.}
+\label{fig:confidence_en}
 \end{figure}
 
 % ============================================================

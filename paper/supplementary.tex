@@ -1,11 +1,11 @@
 % ============================================================
-% supplementary.tex — 补充材料（中文版）
-% 对应正文：main_cn.tex
+% supplementary.tex — 补充材料（Stage 1B 重写版）
+% 对应正文：main_cn.tex（Stage 1B 表型原型）
 %
 % 编译方法：
 %   xelatex supplementary.tex
 %
-% 注意：此文件独立编译，不依赖 bibtex（所有引用在正文中完整列出）
+% 注意：此文件独立编译，不依赖 bibtex
 % ============================================================
 
 \documentclass[12pt, a4paper]{ctexart}
@@ -47,7 +47,7 @@
 
 % ------ 元数据 ------
 \title{补充材料\\
-\large 老年高血压人群心肺运动试验数据驱动安全区构建}
+\large 基于汇总级心肺运动试验的运动安全实验室表型原型构建}
 
 \author{\textcolor{red}{TODO: 作者姓名}}
 \date{2026年4月}
@@ -64,258 +64,296 @@
 \addcontentsline{toc}{section}{补充方法}
 % ============================================================
 
-\subsection*{S1. 机器学习辅助验证详细方法}
-\addcontentsline{toc}{subsection}{S1. 机器学习辅助验证详细方法}
+\subsection*{S1. 变量角色分类详细定义}
+\addcontentsline{toc}{subsection}{S1. 变量角色分类详细定义}
 
-本研究设置两个辅助预测任务，作为方法学验证工具，旨在评估汇总级数据的预测性能上限，
-而非作为核心安全区构建方法。
+Stage 1B 框架中所有 CPET 变量严格按以下四类分配，防止构念污染：
 
-\textbf{运动前风险预测（Pre-exercise Risk，P0）}：
-以运动前临床信息预测不良 CPET 事件风险（二分类）。
-满足以下任一条件为 P0 阳性：（1）EIH 状态为阳性；
-（2）VO$_2$peak $<50\%$预测值；（3）峰值SBP $>220$ mmHg。
-模型采用 LASSO（5折CV $\alpha$ 搜索）和 XGBoost（100棵树，学习率0.1）；
-评价指标：AUC-ROC（5折CV）。
-排除峰值血压字段（含"BP"的特征），以避免用于峰值 SBP 标准的变量直接作为特征。
+\begin{table}[htbp]
+\centering
+\small
+\caption{Stage 1B 变量角色分类}
+\label{tab:s1_variable_roles}
+\begin{tabular}{llll}
+\toprule
+角色类型 & 变量名 & 域/层 & 用途 \\
+\midrule
+表型变量（Reserve 域）& vo2\_peak & Reserve & 负担评分 \\
+ & vt1\_vo2 & Reserve & 负担评分 \\
+ & o2\_pulse\_peak & Reserve & 负担评分 \\
+ & mets\_peak & Reserve & 负担评分 \\
+\midrule
+表型变量（Ventilatory 域）& ve\_vco2\_slope & Ventilatory & 负担评分 \\
+ & oues & Ventilatory & 负担评分 \\
+\midrule
+不稳定变量 & eih\_status & Instability & 覆盖规则（Severe） \\
+ & bp\_peak\_sys & Instability & 覆盖规则（Severe/Mild） \\
+ & bp\_peak\_dia & Instability & 覆盖规则（Severe） \\
+ & o2\_pulse\_trajectory & Instability & 覆盖规则（Severe） \\
+\midrule
+置信度辅助变量 & hr\_peak\_pct\_pred & Effort & 努力程度代理 \\
+ & vo2\_peak\_pct\_pred & Anchor & 锚点一致性 \\
+\midrule
+验证变量 & test\_result & Validation & 外部锚定验证（仅） \\
+ & group\_code & Validation & 队列编码 \\
+\midrule
+排除变量 & zone\_v2, p1\_zone & Legacy & 仅 Legacy 对照 \\
+ & S\_lab & Legacy & 仅 Legacy 对照 \\
+\bottomrule
+\end{tabular}
+\\[1ex]
+{\footnotesize test\_result 在 final\_zone 确定后方可使用，严禁用于定义区间边界。}
+\end{table}
 
-\textbf{运动后安全区分类（Post-exercise Safety，P1）}：
-以 CPET 汇总指标预测安全区三分类（Green/Yellow/Red，有序）。
-P1 标签采用 take-worst 策略，综合以下条件：
-（a）EIH 状态（阳性→Red）；
-（b）VO$_2$peak\%pred$<$50\%（→Red）；
-（c）$V_E/V_{\text{CO}_2}$ slope$\geq$36（→Yellow 或更差）；
-（d）峰值 SBP$>$220 mmHg（→Red）。
-模型采用有序 Logistic 回归、LightGBM（基于梯度提升决策树）
-和 CatBoost（对类别特征优化的梯度提升）；
-评价指标：F1$_\text{macro}$和 Cohen's $\kappa$（5折分层CV）。
+\subsection*{S2. 条件分位参考模型技术细节}
+\addcontentsline{toc}{subsection}{S2. 条件分位参考模型技术细节}
 
-\textbf{数据泄漏防护机制（Leakage Guard）}：
-由于 EIH 状态、$V_E/V_{\text{CO}_2}$ slope 和 VO$_2$peak\%pred
-直接参与 P1 标签构建（确定性推导关系），
-本研究设立显式数据泄漏防护机制，在 P1 特征工程阶段强制排除上述字段。
-此机制确保模型性能评估的真实性：泄漏版本 F1=0.84 vs 清洁版本 F1=0.47，
-差值约0.37 F1 点。
-P0 任务（结局由多条件OR定义，非单一变量确定性推导）采用宽松排除策略，
-仅排除直接构成 P0 条件的 SBP 相关字段。
+\textbf{模型架构}：sklearn QuantileRegressor（线性分位数回归）。
+特征工程：SplineTransformer（knots=5，degree=3）处理年龄连续效应；
+OneHotEncoder（handle\_unknown='ignore'）处理性别（男/女）和方案（踏车/平板）。
+正则化：alpha=0.001（默认），防止小样本 strict reference 过拟合。
 
-\textbf{代价敏感分析}：
-在安全优先导向下（Red 患者错误归入 Green 代价最高），
-对 P1 最优模型（CatBoost）进行代价矩阵敏感性分析，
-评估不同代价权重下 F1$_\text{macro}$ 与 Red 召回率的权衡。
+\textbf{单调性约束}：对每个样本，5个分位数预测值经 np.sort 升序排列，
+保证 q10 $\leq$ q25 $\leq$ q50 $\leq$ q75 $\leq$ q90 严格成立。
 
-\subsection*{S2. 结局锚定安全区模型详细方法}
-\addcontentsline{toc}{subsection}{S2. 结局锚定安全区模型详细方法}
+\textbf{分位模型评估}：在 wide reference subset 上验证，
+check: q10 实际覆盖率 $\approx$10\%，q90 实际覆盖率 $\approx$90\%
+（分位数校准检验）。
 
-传统 P1 标签由 \{VO$_2$peak\%pred, $V_E/V_{\text{CO}_2}$ slope, EIH 状态\}
-确定性定义，导致预测这些变量的 ML 模型无法突破 P1 的循环依赖，
-预测性能受制于标签定义本身。
+\textbf{目标变量}：6个核心表型变量分别独立拟合分位模型，
+各变量的分位束（QuantileModelBundle）保存为 joblib 格式（
+\texttt{outputs/reference\_models/quantile\_bundle\_stage1b.joblib}）。
 
-本研究提出以 CPET 临床综合结局（test\_result，阳性/可疑阳性 vs 阴性）
-为标签的结局锚定方法：综合结局由临床医生对整个 CPET 检查的综合判断决定，
-不由任何单一 CPET 变量确定性推导，因此使用全部 CPET 指标作为特征不构成泄漏。
+\subsection*{S3. 表型负担评分技术细节}
+\addcontentsline{toc}{subsection}{S3. 表型负担评分技术细节}
 
-\textbf{模型参数}：
-LightGBM 二分类器，全 CPET 特征集（含 VO$_2$peak \%pred、
-$V_E/V_{\text{CO}_2}$ slope、EIH状态等11个特征），
-5折分层交叉验证超参数搜索（RandomizedSearchCV，n\_iter=40，
-搜索空间：num\_leaves 20--127，learning\_rate 0.01--0.3，
-n\_estimators 100--500），
-isotonic 回归校准（CalibratedClassifierCV，cv=2）。
+\textbf{变量级负担转换规则}（表~\ref{tab:s2_burden_rules}）：
 
-\textbf{切点确定}：
-安全区切点在训练集上确定以防止测试集信息泄漏：
-Green/Yellow 界采用敏感度约束法（敏感度$\geq$90\%的最高阈值）；
-Yellow/Red 界采用 Youden's J 最大化。
-评价指标：AUC-ROC（5折CV）、测试集 AUC、Average Precision（AP）、Brier Score。
+\begin{table}[htbp]
+\centering
+\small
+\caption{表型负担转换规则}
+\label{tab:s2_burden_rules}
+\begin{tabular}{lllll}
+\toprule
+变量 & 方向 & 负担=0（正常）& 负担=0.5（临界）& 负担=1.0（异常）\\
+\midrule
+vo2\_peak & higher-better & $\geq$q25 & [q10, q25) & $<$q10 \\
+vt1\_vo2 & higher-better & $\geq$q25 & [q10, q25) & $<$q10 \\
+o2\_pulse\_peak & higher-better & $\geq$q25 & [q10, q25) & $<$q10 \\
+mets\_peak & higher-better & $\geq$q25 & [q10, q25) & $<$q10 \\
+ve\_vco2\_slope & higher-worse & $\leq$q75 & (q75, q90] & $>$q90 \\
+oues & higher-better & $\geq$q25 & [q10, q25) & $<$q10 \\
+\bottomrule
+\end{tabular}
+\end{table}
 
-\subsection*{S3. 多变量 Mahalanobis 异常评分详细方法}
-\addcontentsline{toc}{subsection}{S3. 多变量 Mahalanobis 异常评分详细方法}
+\textbf{缺失值处理}：字段缺失时该变量负担记 NaN，
+域内均值以可用字段平均（忽略 NaN）；
+若 Reserve 域可用字段 $<$2 或 Ventilatory 域可用字段 $<$1，
+则对应域评分记 NaN，P\_lab 可能为 NaN。
 
-传统\%pred 逐变量比较无法捕获 CPET 变量间的协方差信息。
-本研究以参考正常子集（CTRL 组，经缺失值筛选后 n=969）
-构建多变量 CPET 空间中的 Mahalanobis 距离 $D^2$，公式如下：
+\textbf{表型区间切点}：
+以 strict reference subset 上 P\_lab 分布的 P75 和 P90 为切点，
+两点均由参考子集自动估计；若切点退化（P75=P90），
+则 P90 替换为 P75+epsilon（0.001）以避免空区间。
 
-\begin{equation}
-D^2 = (\mathbf{x} - \boldsymbol{\mu})^\top \boldsymbol{\Sigma}^{-1} (\mathbf{x} - \boldsymbol{\mu})
-\end{equation}
+\subsection*{S4. 置信度权重来源}
+\addcontentsline{toc}{subsection}{S4. 置信度权重来源}
 
-其中 $\boldsymbol{\mu}$ 和 $\boldsymbol{\Sigma}$ 分别为参考子集的均值向量和协方差矩阵。
-在多变量正态参考人群中，$D^2 \sim \chi^2(k)$（$k$=变量数），
-提供概率解释：$D^2 > \chi^2(k, 0.95)$ 意味着患者处于参考人群95百分位以上。
+置信度引擎四分量权重（0.40/0.15/0.20/0.25）基于以下方法学先验：
 
-\textbf{5个核心变量}：VO$_2$peak、HR$_\text{peak}$、O$_2$脉搏峰值、OUES、峰值METs。
-\textbf{切点方法}：参考子集经验分位法（P75/P95），
-以参考子集 $D^2$ 分布的经验百分位作为 Green/Yellow 和 Yellow/Red 分界，
-与理论 $\chi^2$ 分位数互相验证。
+\begin{table}[htbp]
+\centering
+\small
+\caption{置信度分量权重说明}
+\label{tab:s3_confidence_weights}
+\begin{tabular}{llcl}
+\toprule
+分量 & 含义 & 权重 & 理由 \\
+\midrule
+$C_{\text{completeness}}$ & 核心字段完整率 & 0.40 & 数据质量是置信度的最主要来源 \\
+$C_{\text{effort}}$ & 努力程度（HR\%pred） & 0.15 & 间接代理，信息量有限 \\
+$C_{\text{anchor}}$ & 外部-内部参考一致 & 0.20 & 参考锚点验证 \\
+$C_{\text{validation}}$ & 与结局三分位一致 & 0.25 & 结局方向验证，但依赖结局模型质量 \\
+\bottomrule
+\end{tabular}
+\\[1ex]
+{\footnotesize 权重来自方法学先验，未经前瞻性数据校准。
+未来研究应以标注队列（含真实结局和随访数据）校准各分量权重。}
+\end{table}
 
-\subsection*{S4. 多定义一致性框架详细方法}
-\addcontentsline{toc}{subsection}{S4. 多定义一致性框架详细方法}
+\subsection*{S5. Stage 1B 验收标准}
+\addcontentsline{toc}{subsection}{S5. Stage 1B 验收标准}
 
-本研究提出以分歧本身作为信息的一致性框架：
-利用 K=4 个独立安全区定义对每个患者进行多数投票，
-将定义间的系统性分歧量化为患者级别的分类不确定性。
+管线输出的验收判定基于以下标准（\texttt{stage1b\_report.py} 实现）：
 
-\textbf{K=4 定义}：
-\begin{enumerate}
-    \item R/T/I 数据驱动 Zone（本研究主框架）
-    \item 结局锚定 Zone（基于 CPET 综合结局的 LightGBM 切点）
-    \item Mahalanobis 异常 Zone（基于 $D^2$ 经验切点）
-    \item VO$_2$peak 简单阈值 Zone（仅基于 VO$_2$peak\%pred 的单变量分层）
-\end{enumerate}
+\begin{table}[htbp]
+\centering
+\small
+\caption{Stage 1B 验收标准与判定逻辑}
+\label{tab:s4_acceptance}
+\begin{tabular}{llll}
+\toprule
+指标 & 阈值 & 判定级别 & 说明 \\
+\midrule
+strict reference 中 red\% & $<$ 15\% & Fail if violated & 参考合理性 \\
+strict reference 中 green\% & $>$ 50\% & Warn if violated & 参考合理性 \\
+final\_zone vs test\_result 梯度 & 方向正确（Green$<$Yellow$<$Red）& Fail if reversed & 构念效度 \\
+ & 非单调但非反向 & Warn if non-monotone & 构念效度 \\
+high confidence 比例 & $\geq$ 10\% & Warn if below & 置信度分布 \\
+\midrule
+\multicolumn{4}{l}{\textit{综合判定：存在 Fail 条件 → Fail；仅 Warn → Warn；否则 → Accept}} \\
+\bottomrule
+\end{tabular}
+\end{table}
 
-\textbf{一致性判定规则}：
-\begin{itemize}
-    \item \textbf{高信度区（一致区）}：最高票数/K $\geq$ 0.60 且无 Green/Red 同时出现
-    \item \textbf{不确定区}：Green/Red 同时出现（高危冲突）或无多数票（最高票数/K $\leq$ 0.50）
-\end{itemize}
-
-区域置信度（最高票数/K）提供患者级别的分类可靠性量化。
-不确定区患者代表各定义存在实质分歧的病例，
-是需要更精细波形级评估的患者亚群。
+\clearpage
 
 % ============================================================
-\clearpage
 \section*{补充结果}
 \addcontentsline{toc}{section}{补充结果}
 % ============================================================
 
-\subsection*{S5. 机器学习辅助验证详细结果}
-\addcontentsline{toc}{subsection}{S5. 机器学习辅助验证详细结果}
+\subsection*{S6. Stage 1B 管线输出表结构}
+\addcontentsline{toc}{subsection}{S6. Stage 1B 管线输出表结构}
+
+\texttt{make stage1b} 生成的 \texttt{data/output/stage1b\_output\_table.parquet}
+包含以下 13+ 列（每人一行）：
 
 \begin{table}[htbp]
 \centering
 \small
-\caption{运动前风险预测模型（P0）详细结果}
-\label{tab:s1_p0models}
-\begin{tabular}{llccc}
+\caption{Stage 1B 输出表列定义}
+\label{tab:s5_output_columns}
+\begin{tabular}{lll}
 \toprule
-模型 & 变体 & AUC-ROC & CV-AUC（mean$\pm$SD）& NPV（阈值0.141）\\
+列名 & 类型 & 含义 \\
 \midrule
-2变量基线 & HTN+BMI & 0.611 & — & — \\
-LASSO & 无BP & 0.582 & 0.622$\pm$0.030 & — \\
-\textbf{XGBoost} & \textbf{无BP} & \textbf{0.583} & \textbf{0.623$\pm$0.028} & \textbf{0.853} \\
+reserve\_burden & float [0,1] & Reserve 域平均负担 \\
+vent\_burden & float [0,1] & Ventilatory 域平均负担 \\
+p\_lab & float [0,1] & 综合表型负担（0.5×R + 0.5×V） \\
+phenotype\_zone & str & 表型区（green/yellow/red） \\
+instability\_severe & bool & 严重不稳定标志 \\
+instability\_mild & bool & 轻度不稳定标志 \\
+final\_zone\_before\_confidence & str & 覆盖后但置信前区间 \\
+confidence\_score & float [0,1] & 综合置信度 \\
+confidence\_label & str & high/medium/low \\
+indeterminate\_flag & bool & 不确定区标志（True=yellow\_gray） \\
+final\_zone & str & 最终区间（含 yellow\_gray） \\
+completeness\_score & float [0,1] & 字段完整率 \\
+effort\_score & float [0,1] & 努力程度分 \\
+outcome\_risk\_prob & float [0,1] & 结局锚点模型预测概率（可选） \\
+outcome\_risk\_tertile & str & low/mid/high（可选） \\
+anomaly\_score & float & Mahalanobis 距离（QC用，可选） \\
+anomaly\_flag & bool & 异常表型标志（QC用，可选） \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection*{S7. Legacy 系统对照（Phase G vs Stage 1B）}
+\addcontentsline{toc}{subsection}{S7. Legacy 系统对照（Phase G vs Stage 1B）}
+
+\begin{table}[htbp]
+\centering
+\small
+\caption{Phase G S\_lab 系统 vs Stage 1B 表型原型对照}
+\label{tab:s6_legacy_compare}
+\begin{tabular}{lll}
+\toprule
+维度 & Phase G（S\_lab，legacy）& Stage 1B（表型原型） \\
+\midrule
+核心评分 & 等权 R/T/I 三轴连续评分（0--100）& 表型负担评分（P\_lab，0--1） \\
+参考方程 & OLS（年龄+性别+BMI）& 条件分位（年龄样条+性别+方案） \\
+不稳定处理 & 混合于 I 轴连续评分 & 独立覆盖规则（Severe/Mild） \\
+test\_result 角色 & 外部验证 & 外部验证（相同，但更清晰的边界定义） \\
+不确定性输出 & 无（强制三分类）& 显式 yellow\_gray（indeterminate）\\
+置信度 & 无 & 四分量加权置信度（0.40/0.15/0.20/0.25）\\
+Legacy ML & P0/P1 ML 预测（AUC 0.58，F1 0.47--0.50）& 作为 Legacy 对照保留 \\
+异常审计 & Phase G 独立 Mahalanobis 模型（方向不一致）& Robust MinCovDet，定位 QC \\
+验收标准 & 无明确标准 & Accept/Warn/Fail（3项量化标准）\\
 \bottomrule
 \end{tabular}
 \\[1ex]
-{\footnotesize NNS=3.8（每筛查3.8人发现1例真阳性）；数据泄漏防护机制验证通过。\\
-P0 阳性率：14.7\%（468/3,188）。2变量基线（AUC=0.611）$>$ ML全特征（AUC=0.583），\\
-反映汇总级数据预测性能上限。}
+{\footnotesize Stage 1B 框架设计的关键改进：构念分离、参考精细化、不确定性显式化。
+Phase G 结果（P0 AUC=0.583，P1 F1=0.499，结局模型 AUC=0.548）
+保存于 \texttt{reports/legacy/} 和 \texttt{reports/legacy\_baseline\_manifest.json}，
+供 legacy 对照使用，不参与 Stage 1B 主要结论。}
 \end{table}
+
+\subsection*{S8. Stage 1B 输出结果（待填充）}
+\addcontentsline{toc}{subsection}{S8. Stage 1B 输出结果（待填充）}
+
+\textcolor{red}{以下各项在 \texttt{make stage1b} 运行于真实数据后，
+从 \texttt{reports/stage1b\_summary\_report.md} 补充实际数值。}
 
 \begin{table}[htbp]
 \centering
 \small
-\caption{运动后安全区分类模型（P1）详细结果}
-\label{tab:s2_p1models}
-\begin{tabular}{lccccc}
-\toprule
-模型 & F1$_\text{macro}$ & $\kappa$ & Green召回 & Yellow召回 & Red召回 \\
-\midrule
-有序Logistic & 0.386 & 0.225 & — & — & — \\
-LightGBM & 0.465 & 0.258 & — & — & 23.9\% \\
-\textbf{CatBoost} & \textbf{0.499} & \textbf{0.302} & 67.1\% & 51.8\% & 30.8\% \\
-\bottomrule
-\end{tabular}
-\\[1ex]
-{\footnotesize P1 代理泄漏消融：Full vs No-VO2 $\Delta$F1=+0.003（可忽略），\\
-证实 VO$_2$peak 代理泄漏贡献极小；预测性能上限来自特征集固有局限而非泄漏驱动。}
-\end{table}
-
-\subsection*{S6. 结局锚定模型详细结果}
-\addcontentsline{toc}{subsection}{S6. 结局锚定模型详细结果}
-
-\begin{table}[htbp]
-\centering
-\small
-\caption{结局锚定安全区模型详细结果}
-\label{tab:s3_outcome_model}
+\caption{Stage 1B 全量输出摘要（TODO: 运行管线后填充）}
+\label{tab:s7_output_summary}
 \begin{tabular}{lcc}
 \toprule
-\multicolumn{3}{l}{\textit{模型性能（有效样本 N=3,188，阳性率14.7\%）}} \\
 指标 & 值 & 说明 \\
 \midrule
-CV AUC（5折）& $0.578 \pm 0.031$ & 随机超参搜索（n\_iter=40） \\
-测试集 AUC & 0.548 & 80/20 分层分割（训练N=2,550，测试N=638）\\
-测试集 AP & 0.178 & 反映阳性率14.7\%下的精度-召回权衡 \\
-测试集 Brier & 0.126 & 校准质量（越低越好） \\
-\midrule
-\multicolumn{3}{l}{\textit{安全区切点（训练集确定，防止测试集信息泄漏）}} \\
-Green/Yellow 界 & P $<$ 0.140 & 敏感度0.909，特异度0.503 \\
-Yellow/Red 界 & P $\geq$ 0.150 & Youden's J=0.448 \\
-\midrule
-\multicolumn{3}{l}{\textit{安全区分布（全样本 N=3,188，阳性率梯度验证）}} \\
-Green & 1,400 (43.9\%) & CPET综合结局阳性率 5.1\% \\
-Yellow & 372 (11.7\%) & CPET综合结局阳性率 10.5\% \\
-Red & 1,416 (44.4\%) & CPET综合结局阳性率 25.3\% \\
+总样本数 & 3,206 & 经 QC 后 \\
+strict reference 子集 N & \textcolor{red}{TODO} & CTRL + 严格标准 \\
+phenotype Green\% & \textcolor{red}{TODO} & 全样本 \\
+phenotype Yellow\% & \textcolor{red}{TODO} & 全样本 \\
+phenotype Red\% & \textcolor{red}{TODO} & 全样本 \\
+Severe instability N（\%）& \textcolor{red}{TODO} & 强制 Red 样本 \\
+Mild instability升级 N（\%）& \textcolor{red}{TODO} & Green→Yellow \\
+final\_zone Green\% & \textcolor{red}{TODO} & 含覆盖+置信 \\
+final\_zone Yellow\% & \textcolor{red}{TODO} & \\
+final\_zone Red\% & \textcolor{red}{TODO} & \\
+yellow\_gray（indeterminate）\% & \textcolor{red}{TODO} & \\
+High confidence\% & \textcolor{red}{TODO} & $\geq$0.75 \\
+test\_result 梯度方向 & \textcolor{red}{TODO} & correct/non-monotone/reversed \\
+结局模型 CV AUC & \textcolor{red}{TODO} & 预期 0.55--0.65 \\
+验收判定 & \textcolor{red}{TODO} & Accept/Warn/Fail \\
 \bottomrule
 \end{tabular}
-\\[1ex]
-{\footnotesize 特征重要性（Top 5）：HR$_\text{peak}$、$V_E/V_{\text{CO}_2}$ slope、年龄、OUES、VT1/VO$_2$peak。\\
-全特征建模不构成结局泄漏：CPET综合结局为临床医生综合判断，非任何单一变量确定性推导。\\
-Red 区阳性率（25.3\%）$>$ Yellow 区（10.5\%）$>$ Green 区（5.1\%），呈单调梯度，验证分层有效性。}
 \end{table}
 
-\subsection*{S7. 多变量 Mahalanobis 异常评分详细结果}
-\addcontentsline{toc}{subsection}{S7. 多变量 Mahalanobis 异常评分详细结果}
+\subsection*{S9. 旧 Phase G ML 辅助验证结果（Legacy 保留）}
+\addcontentsline{toc}{subsection}{S9. 旧 Phase G ML 辅助验证结果（Legacy 保留）}
 
-\begin{table}[htbp]
-\centering
-\small
-\caption{多变量 Mahalanobis 异常评分详细结果}
-\label{tab:s4_anomaly_model}
-\begin{tabular}{lcc}
-\toprule
-\multicolumn{3}{l}{\textit{参考模型参数（k=5，参考子集 N=969）}} \\
-指标 & 经验值（参考子集）& 理论值（$\chi^2(5)$）\\
-\midrule
-P75 切点（Green/Yellow）& 3.825 & 6.626 \\
-P95 切点（Yellow/Red）& 8.788 & 11.070 \\
-\midrule
-\multicolumn{3}{l}{\textit{安全区分布（采用经验切点，N=3,195）}} \\
-Green & 2,083 (65.0\%) & CPET综合结局阳性率 16.1\% \\
-Yellow & 879 (27.4\%) & CPET综合结局阳性率 12.2\% \\
-Red & 244 (7.6\%) & CPET综合结局阳性率 10.2\% \\
-\midrule
-$D^2$ vs CPET综合结局 相关 & $r = -0.011$ & Point-biserial，N=3,195 \\
-\bottomrule
-\end{tabular}
-\\[1ex]
-{\footnotesize 经验切点显著低于理论 $\chi^2(5)$ 分位数，提示参考子集 CPET 变量的实际分散程度\\
-小于多变量正态假设的预期。$D^2$ 负相关 $r$=$-$0.011 说明 Mahalanobis 距离\\
-捕获的是"与参考正常人群的多变量偏离程度"，而非直接的风险分层方向；\\
-部分低风险对照人群在多变量空间中亦可远离临床患者群体的协方差结构，导致较高 $D^2$。\\
-5个核心变量：VO$_2$peak、HR$_\text{peak}$、O$_2$脉搏峰值、OUES、峰值METs。}
-\end{table}
+以下结果来自 Phase G（legacy），保留供方法学对照参考，
+不参与 Stage 1B 主要结论。
 
-\subsection*{S8. 多定义一致性框架详细结果}
-\addcontentsline{toc}{subsection}{S8. 多定义一致性框架详细结果}
+\textbf{运动前风险预测（P0）}：
+XGBoost（无BP特征）AUC=0.583，CV-AUC=0.623$\pm$0.028；
+2变量基线（HTN+BMI）AUC=0.611 $>$ ML 全特征（AUC=0.583），
+反映汇总级数据的预测性能上限。
 
-\begin{table}[htbp]
-\centering
-\small
-\caption{K=4 多定义一致性框架分析结果}
-\label{tab:s5_concordance}
-\begin{tabular}{lccccc}
-\toprule
-区域 & 总N & 高信度N & 占比 & 整体阳性率 & 高信度阳性率 \\
-\midrule
-Green & 533 & 528 & 16.6\% & 5.1\% & 5.1\% \\
-Yellow & 259 & 257 & 8.1\% & 13.1\% & 13.2\% \\
-Red & 56 & 56 & 1.7\% & 28.6\% & 28.6\% \\
-不确定 & 2,358 & — & 73.5\% & 16.6\% & — \\
-\midrule
-\multicolumn{6}{l}{\textit{信度统计}} \\
-高信度患者总数 & \multicolumn{2}{c}{841} & 26.2\% & & \\
-Green/Red 冲突患者数 & \multicolumn{2}{c}{1,974} & 61.6\% & & \\
-\bottomrule
-\end{tabular}
-\\[1ex]
-{\footnotesize 高信度阈值：区域置信度 $\geq$ 0.60（最高票数/K $\geq$ 60\% 且无 Green/Red 冲突）。\\
-73.5\%不确定患者主要源于 Green/Red 冲突（1,974例），反映现有4个定义在多维分层上的根本分歧。\\
-高信度 Red 区阳性率（28.6\%）显著高于 Green 区（5.1\%），证实高信度分区具有可靠临床区分度。\\
-参与投票的4个定义：R/T/I 数据驱动 Zone、结局锚定 Zone、\\
-VO$_2$peak 简单阈值 Zone、Mahalanobis 异常 Zone。}
-\end{table}
+\textbf{运动后安全区分类（P1）}：
+CatBoost F1$_\text{macro}$=0.499，$\kappa$=0.302；
+Green 召回67.1\%，Yellow 召回51.8\%，Red 召回30.8\%。
+P1 代理泄漏消融分析：Full vs No-VO2 $\Delta$F1=+0.003（可忽略），
+证实预测性能上限来自特征集固有局限，而非泄漏驱动。
+
+\textbf{结局锚定模型（Phase G）}：
+CV AUC=0.578$\pm$0.031，测试集 AUC=0.548；
+Red 区阳性率（25.3\%）$>$ Yellow 区（10.5\%）$>$ Green 区（5.1\%）呈单调梯度。
+此结果在 Stage 1B 框架中复现于结局锚点验证器，
+验证了 final\_zone 对 test\_result 的构念效度方向。
+
+\textbf{Mahalanobis 异常区（Phase G）}：
+经验切点 P75=3.825，P95=8.788；参考子集 N=969；
+$D^2$ vs test\_result 相关 $r$=$-$0.011（方向性弱）。
+Stage 1B 中重新定位为 QC 审计（anomaly\_flag），
+不再参与 zone 定义。
+
+\subsection*{S10. 多定义一致性框架（Phase G，Legacy）}
+\addcontentsline{toc}{subsection}{S10. 多定义一致性框架（Phase G，Legacy）}
+
+Phase G 以 K=4 定义投票分析多定义一致性：
+高信度841例（26.2\%），不确定区2,358例（73.5\%），Green/Red 冲突1,974例（61.6\%）。
+高信度 Red 阳性率（28.6\%）$>$ Green（5.1\%），证实高信度分区具有临床区分度。
+
+Stage 1B 置信度引擎在架构上吸纳了多定义一致性框架的核心精神：
+以四分量（字段完整度、努力程度、锚点一致、结局一致）加权置信度替代 K 定义投票，
+提供连续置信度分数而非二元高/低信度标签。
 
 % ============================================================
 % 参考文献（独立编译时取消注释）

@@ -26,13 +26,13 @@
 | **Phase G — 方法学优化（结局锚定+Mahalanobis+一致性框架）** | ✅ 完成（62新测试，240/0总通过）| 2026-04-21 |
 | **Phase G Step 7-8 — CLI集成+真实数据运行+论文更新** | ✅ 完成（3 CLI命令，3报告，论文Tables 11-13）| 2026-04-21 |
 | **Stage 1B Step 1 — 冻结旧主线 + 变量角色定义** | ✅ 完成（legacy归档 + variable_roles_stage1b.yaml + PLANNING.md更新）| 2026-04-22 |
-| **Stage 1B Step 2 — 条件分位参考模型** | 🔲 待做 | — |
-| **Stage 1B Step 3 — Phenotype Burden Engine** | 🔲 待做 | — |
-| **Stage 1B Step 4 — Instability Override Engine** | 🔲 待做 | — |
-| **Stage 1B Step 5 — Confidence Engine** | 🔲 待做 | — |
-| **Stage 1B Step 6 — Outcome-Anchor + Anomaly Audit** | 🔲 待做 | — |
-| **Stage 1B Step 7 — 报告聚合 + 全管线** | 🔲 待做 | — |
-| **Stage 1B Step 8 — 论文重写（表型原型叙事）** | 🔲 待做 | — |
+| **Stage 1B Step 2 — 条件分位参考模型** | ✅ 完成（reference_quantiles.py + 28 测试）| 2026-04-22 |
+| **Stage 1B Step 3 — Phenotype Burden Engine** | ✅ 完成（phenotype_engine.py + 32 测试）| 2026-04-22 |
+| **Stage 1B Step 4 — Instability Override Engine** | ✅ 完成（instability_rules.py + 32 测试）| 2026-04-22 |
+| **Stage 1B Step 5 — Confidence Engine** | ✅ 完成（confidence_engine.py + 44 测试）| 2026-04-22 |
+| **Stage 1B Step 6 — Outcome-Anchor + Anomaly Audit** | ✅ 完成（train_outcome_anchor.py + anomaly_audit.py + 25 测试）| 2026-04-22 |
+| **Stage 1B Step 7 — 报告聚合 + 全管线** | ✅ 完成（stage1b_report.py + 37 测试 + pipeline CLI + Makefile stage1b）| 2026-04-22 |
+| **Stage 1B Step 8 — 论文重写（表型原型叙事）** | ✅ 完成（main_cn/en.tex 全面重写 + supplementary.tex 重写 + references.bib +13条）| 2026-04-22 |
 
 ---
 
@@ -57,10 +57,48 @@
 | `v2.1.0` | 2026-04-21 | Phase G Step 7-8：CLI 集成（3 新命令）+ Makefile Phase G targets + 真实数据运行（3 报告生成）+ 论文更新（Methods 2.8-2.10，Results 3.7-3.9，Tables 11-13，Discussion/Conclusions，+2条参考文献）|
 | `v2.2.0` | 2026-04-22 | 论文深度重写：main_cn/en.tex 从"项目报告"重构为 IMRAD 期刊论文；引言4段逻辑链；方法6节；结果5节；讨论整合段落；补充材料 supplementary.tex 新建；清除所有"阶段II/III"/"Stage 2"项目语言；正文表格8张 |
 | `v2.3.0` | 2026-04-22 | Stage 1B Step 1：冻结旧主线（legacy reports/parquets）+ variable_roles_stage1b.yaml + stage1b_variable_roles.md + legacy_baseline_manifest.json + PLANNING.md Stage 1B 主线章节 |
+| `v2.4.0` | 2026-04-22 | Stage 1B Steps 2-8 全部完成：reference_quantiles(28)+phenotype_engine(32)+instability_rules(32)+confidence_engine(44)+outcome_anchor+anomaly_audit(25)+stage1b_report(37) = 198 Stage 1B 新测试；总计 748 通过；pipeline stage1b CLI + Makefile stage1b targets；论文全面重写（表型原型叙事）+ references.bib 新增13条中国参考值/TRIPOD+AI/MECKI/CPX文献 |
 
 ---
 
 ## 会话记录
+
+---
+
+### [2026-04-22] 会话 #21 — Stage 1B Steps 2-8 全部完成 + 论文重写
+
+**完成内容**：
+
+1. **Step 7：Stage 1B 总报告聚合 + 全管线（本会话起点）**
+   - `src/cpet_stage1/reporting/stage1b_report.py` — build_stage1b_output_table / compute_construct_validity / compute_reference_validity / assess_acceptance / generate_stage1b_summary_report
+   - `tests/reporting/test_stage1b_report.py` — 37 个测试，全部通过
+   - `cli.py` — 新增 `pipeline stage1b` 命令（聚合所有中间 parquet → 输出表 + 摘要报告 + 验收判定）
+   - `Makefile` — 新增 stage1b-reference/phenotype/instability/confidence/outcome/anomaly/report/stage1b 8个 targets
+
+2. **Step 8：论文全面重写（表型原型叙事）**
+   - `paper/main_cn.tex` — 全面重写：新标题（实验室表型原型）+ 新摘要（四层方法学）+ 引言三缺口 + Methods 2.1-2.10（变量角色→条件分位→phenotype burden→instability override→confidence engine→outcome-anchor→anomaly audit→统计分析）+ Results 3.1-3.8（含现有数据表格保留 + TODO 新结果占位）+ Discussion 四主要发现 + 结论重写
+   - `paper/main_en.tex` — 同步重写，英文版结构与中文版对齐
+   - `paper/supplementary.tex` — 全面重写：变量角色表 + 分位模型技术细节 + 负担转换规则表 + 置信度权重说明 + 验收标准表 + 输出列定义表 + Legacy系统对照表 + TODO占位 + Phase G legacy 结果保留
+   - `paper/references.bib` — 新增 13 条参考文献：WangCycle2022, HuangTreadmill2024, PUTHCycle2025, XET2021, FRIEND2022, FRIEND2016cycle, Gorodeski2008cpx, CPXvalidation2013, MECKI2023, TRIPODAI2024, PROBASTAI2025, BMJuncertainty2025
+   - `docs/DEVLOG.md` — 本条目 + 里程碑进度表全部标为完成 + v2.4.0 版本历史
+
+**关键决策**：
+- test\_result 角色：验证锚点（确定 final\_zone 后方可用），严禁定义区间
+- main_cn/en.tex 保留 Table 1、ANOVA、参考方程表（有真实数据）；新增 Stage 1B 结果章节带 TODO 占位（等待 make stage1b 在真实数据上运行）
+- supplementary.tex 以 S7 Legacy 对照表呈现 Phase G vs Stage 1B 的架构差异
+- TRIPOD+AI 和 PROBAST+AI 作为方法论透明度框架引用，为不确定性输出提供外部标准支撑
+
+**测试结果**：748 passed, 0 failed（含 198 Stage 1B 新测试）
+
+**遗留问题**：
+- 需要在真实数据上运行 `make stage1b`，填充论文中所有 `\textcolor{red}{TODO}` 占位
+- papers 的 LaTeX 编译需要本地 xelatex + gbt7714 环境
+- Stage 1B confidence 权重尚未经前瞻性数据校准（置信度引擎四个分量的相对重要性）
+
+**下一步**（未来会话）：
+- 在真实 staging.parquet 上运行 `make stage1b`，生成真实 Stage 1B 结果
+- 填充 paper TODO 占位：final\_zone 分布、构念效度梯度数值、置信度分布
+- 编译论文 PDF 验证 LaTeX 排版
 
 ---
 
