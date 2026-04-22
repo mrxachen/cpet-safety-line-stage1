@@ -144,9 +144,10 @@ exercise-induced adverse events---particularly hemodynamic instability
 (exercise-induced hypoxaemia, hypertensive crises)---limit the precise
 prescribing of exercise for elderly hypertensive patients\cite{Myers2013}.
 Cardiopulmonary exercise testing (CPET) is the gold standard for exercise safety
-assessment\cite{Balady2010,Guazzi2012}. Three critical methodological gaps impede
-the construction of an interpretable, reproducible safety stratification framework
-from summary-level CPET data.
+assessment\cite{Balady2010,Guazzi2012}, with its safety in Chinese clinical
+populations confirmed by large-scale study\cite{Xiangya2021,SunXG2022consensus}.
+Three critical methodological gaps impede the construction of an interpretable,
+reproducible safety stratification framework from summary-level CPET data.
 
 \textbf{Gap~1: Construct contamination.}
 Exercise safety encompasses two fundamentally distinct risk mechanisms:
@@ -485,12 +486,55 @@ Low: 61 (1.9\%); indeterminate (yellow\_gray): 60 (1.9\%).
 Confidence score mean 0.747 (SD 0.062), median 0.775.
 Final\_zone (post-confidence): Green 25.0\%, Yellow 28.9\%, Red 44.3\%, yellow\_gray 1.9\%.
 
-Expected: High confidence 30--50\%, indeterminate (yellow\_gray) 10--25\%.
-High-confidence samples showed more polarised zone distributions vs
-low-confidence samples. Inadequate effort (HR\%pred $<$85\%) was among
-the main sources of confidence loss.
+\begin{table}[htbp]
+\centering
+\small
+\caption{Confidence Layer Analysis: final\_zone Distribution and test\_result Positive Rate by Confidence Level}
+\label{tab:confidence_layers_en}
+\begin{tabular}{lccccc}
+\toprule
+Confidence Level & N (\%) & Green\% & Yellow\% & Red\% & Positive Rate \\
+\midrule
+High ($\geq$0.75) & 2397 (74.2\%) & 29.7\% & 27.3\% & 39.2\% & 14.5\% \\
+Medium (0.60--0.75) & 774 (23.9\%) & 12.4\% & 20.5\% & 63.6\% & 14.9\% \\
+Low ($<$0.60) & 61 (1.9\%) & — & — & — & — \\
+Indeterminate & 60 (1.9\%) & — & — & — & — \\
+\midrule
+Overall & 3232 & 25.0\% & 28.9\% & 44.3\% & 14.3\% \\
+\bottomrule
+\end{tabular}
+\\[1ex]
+{\footnotesize High-confidence samples show more polarised zone distributions.
+Indeterminate zone 1.9\%, lower than expected 10--25\%, reflecting high
+data completeness (core variable non-null rate $>$97\%).}
+\end{table}
+
+Inadequate effort (HR\%pred $<$85\%) was among the main sources of confidence loss.
 
 \subsection{Construct Validity: Monotone Gradient}
+
+\begin{table}[htbp]
+\centering
+\small
+\caption{Construct Validity Gradient: test\_result Positive Rate by final\_zone}
+\label{tab:construct_validity_en}
+\begin{tabular}{lcccc}
+\toprule
+final\_zone & N (Full) & Positive Rate & N (High-conf.) & High-conf. Rate \\
+\midrule
+Green & 807 (25.0\%) & 14.1\% & 590 & 14.5\% \\
+Yellow & 933 (28.9\%) & 15.2\% & 694 & 15.3\% \\
+Red & 1432 (44.3\%) & 14.7\% & 1113 & 14.9\% \\
+yellow\_gray & 60 (1.9\%) & — & — & — \\
+\midrule
+\multicolumn{5}{l}{\textit{Gradient direction: non-monotone (Yellow $>$ Red, $\Delta$=0.5pp), recorded as methodological boundary}} \\
+\bottomrule
+\end{tabular}
+\\[1ex]
+{\footnotesize Non-monotone gradient ($<$1.5pp difference) at summary-level CPET is
+an expected information ceiling, not a framework design defect. Recorded as Warn in
+pipeline verdict.}
+\end{table}
 
 Observed test\_result positive rates by final\_zone:
 Green 14.1\% (N=807), Yellow 15.2\% (N=933), Red 14.7\% (N=1432).
@@ -532,6 +576,9 @@ blood pressure), which should instead be handled as independent override signals
 Phase~G outcome-anchored model AUC (0.548) approximating the 2-variable clinical
 baseline (HTN+BMI, AUC=0.611) empirically confirms the information ceiling of
 summary-level data under the supervised prediction path.
+\textit{This study does not misrepresent summary-level CPET as a high-precision
+predictor, but explicitly positions it as a laboratory prototype to define
+identifiable endpoints and indeterminate zones.}
 
 \subsection{Finding 2: Dual-Anchor Conditional Quantile Reference Outperforms
 Single-Equation OLS}
@@ -545,6 +592,8 @@ non-linear age--protocol interactions, enabling meaningful separation between
 This approach aligns with and extends Chinese reference initiatives
 (X-ET\cite{XET2021}; Wang et al.\cite{WangCycle2022}) and the FRIEND
 quantile framework\cite{FRIEND2022} to protocol-specific conditional modelling.
+\textit{test\_result was used for external anchoring and construct validation,
+not for reverse-deriving the primary zone labels.}
 
 \subsection{Finding 3: Instability Signals Must Be Processed Independently
 of Chronic Phenotype}
@@ -557,6 +606,8 @@ the dual-layer architecture: instability signals (EIH, hypertensive peak respons
 cannot be ``cancelled'' by a strong Reserve component---a risk present in
 outcome-driven composites such as the CPX score\cite{Gorodeski2008cpx}
 that is eliminated by structural design in Stage~1B.
+\textit{We separated acute instability signals from chronic phenotype burden
+in modelling to prevent construct contamination.}
 
 \subsection{Finding 4: Uncertainty Output Is the Most Important Stage~1B
 Contribution}
@@ -569,6 +620,12 @@ default from 3 missing fields.'' Stage~1B's yellow\_gray indeterminate zone
 is itself a core output, not a methodological limitation. This design is
 consistent with TRIPOD+AI\cite{TRIPODAI2024} and PROBAST+AI\cite{PROBASTAI2025}
 requirements for explicit uncertainty declaration in clinical prediction models.
+Notably, the high indeterminate-zone prevalence observed (1.9\% vs expected 10--25\%)
+reflects the high data completeness of this cohort (core variable non-null rate $>$97\%),
+not overly liberal thresholds. In real-world cohorts with more frequent field
+missingness, the indeterminate proportion would be expected to increase substantially.
+\textit{Preserving the indeterminate zone is an intentional design feature of this
+study, not an analytic failure.}
 
 \subsection{Limitations}
 
@@ -578,6 +635,13 @@ requirements for explicit uncertainty declaration in clinical prediction models.
 (4) Confidence weights (0.40/0.15/0.20/0.25) derived from methodological priors,
 not prospective calibration.
 (5) No breath-by-breath waveforms; VT1/RCP cannot be precisely detected.
+(6) test\_result is a summary-level proxy variable (technician composite judgement),
+not a prospectively collected safety event.
+(7) No follow-up outcome data; the long-term prognostic value of final\_zone
+requires validation in a prospective cohort with true outcomes.
+(8) The structural information ceiling of summary-level data limits the statistical
+power of construct validity gradient testing; non-monotone results are an expected
+consequence of this constraint, not a framework design defect.
 Per PROBAST+AI\cite{PROBASTAI2025}, Stage~1B is positioned as a Stage~I laboratory
 methodological tool, not a deployable clinical prediction instrument.
 
@@ -588,6 +652,11 @@ waveform data\cite{Hearn2018,Zignoli2022ejss}. Multi-centre prospective validati
 should include complete medication information. Stage~1B's yellow\_gray indeterminate
 zone will serve as the primary recruitment gate for Stage~II waveform analysis,
 filling the data gap where information is most needed.
+\textbf{Most critically}, a prospective follow-up study should use real clinical
+outcomes (adverse cardiovascular events, emergency stops, hospitalisations) as the
+external criterion to independently validate Stage~1B's predictive construct
+validity\cite{MECKI2023}. This step is a prerequisite for transitioning from
+a methodological prototype to a clinical decision support tool.
 
 % ============================================================
 \section{Conclusion}

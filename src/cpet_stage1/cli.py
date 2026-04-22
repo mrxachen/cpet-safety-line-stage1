@@ -1935,6 +1935,13 @@ def stats_reference_quantiles(
     console.print(f"[green]✓ report: {report_output}[/green]")
     console.print(f"\n{report[:800]}")
 
+    # 导出参考子集标记（P7）
+    ref_subset_output = Path("data/cohort/reference_subset_stage1b.parquet")
+    ref_subset_output.parent.mkdir(parents=True, exist_ok=True)
+    flag_cols = [c for c in ["reference_flag_strict", "reference_flag_wide"] if c in df.columns]
+    df[flag_cols].to_parquet(ref_subset_output)
+    console.print(f"[green]✓ 参考子集标记: {ref_subset_output}[/green]")
+
 
 @stats_app.command("instability")
 def stats_instability(
@@ -2292,6 +2299,14 @@ def pipeline_stage1b(
     Path(output_table).parent.mkdir(parents=True, exist_ok=True)
     out_df.to_parquet(output_table)
     console.print(f"[green]✓ 输出表: {output_table} ({len(out_df)} 行, {len(out_df.columns)} 列)[/green]")
+
+    # 导出独立 final_zone 标签表（P8）
+    zone_output = Path("data/labels/final_zone_stage1b.parquet")
+    zone_output.parent.mkdir(parents=True, exist_ok=True)
+    zone_cols = ["final_zone", "confidence_label", "indeterminate_flag", "phenotype_zone",
+                 "instability_severe", "instability_mild"]
+    out_df[[c for c in zone_cols if c in out_df.columns]].to_parquet(zone_output)
+    console.print(f"[green]✓ final_zone 标签表: {zone_output}[/green]")
 
     # 生成报告
     report = generate_stage1b_summary_report(
