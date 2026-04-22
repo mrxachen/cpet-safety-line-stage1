@@ -1713,6 +1713,84 @@ def release(
     console.print(f"\n[green]✓ release_manifest.json: {result.manifest_path}[/green]")
 
 
+@stats_app.command("confidence")
+def stats_confidence(
+    staging: str = typer.Option(
+        "data/staging/cpet_staging_v1.parquet",
+        help="staging parquet 路径",
+    ),
+    instability_parquet: str = typer.Option(
+        "data/features/instability_stage1b.parquet",
+        help="instability parquet（由 stats instability 生成）",
+    ),
+    zone_rules: str = typer.Option(
+        "configs/data/zone_rules_stage1b.yaml",
+        help="zone_rules_stage1b.yaml 路径",
+    ),
+    variable_roles: str = typer.Option(
+        "configs/data/variable_roles_stage1b.yaml",
+        help="variable_roles_stage1b.yaml 路径",
+    ),
+    output_parquet: str = typer.Option(
+        "data/features/confidence_stage1b.parquet",
+        help="输出 parquet 路径",
+    ),
+    report_output: str = typer.Option(
+        "reports/confidence_report.md",
+        help="报告输出路径",
+    ),
+) -> None:
+    """Stage 1B — 置信度引擎（completeness/effort/anchor/validation → confidence/indeterminate）"""
+    import pandas as pd
+
+    from cpet_stage1.anchors.confidence_engine import (
+        generate_confidence_report,
+        run_confidence_engine,
+    )
+
+    logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
+    console.print("[bold blue]Stage 1B: Confidence Engine[/bold blue]")
+
+    staging_path = Path(staging)
+    inst_path = Path(instability_parquet)
+
+    if not staging_path.exists():
+        console.print(f"[red]staging 不存在: {staging_path}[/red]")
+        raise typer.Exit(1)
+    if not inst_path.exists():
+        console.print(f"[red]instability parquet 不存在: {inst_path}[/red]")
+        raise typer.Exit(1)
+
+    df = pd.read_parquet(staging_path)
+    inst_df = pd.read_parquet(inst_path)
+
+    zone_col = "final_zone_before_confidence"
+    severe_col = "instability_severe"
+    if zone_col not in inst_df.columns or severe_col not in inst_df.columns:
+        console.print(f"[red]缺少必要列: {zone_col} / {severe_col}[/red]")
+        raise typer.Exit(1)
+
+    zone_before = inst_df[zone_col].reindex(df.index)
+    severe = inst_df[severe_col].reindex(df.index).fillna(False)
+
+    result = run_confidence_engine(
+        df, zone_before, severe,
+        cfg_path=zone_rules,
+        variable_roles_path=variable_roles,
+    )
+    console.print(result.summary())
+
+    out_df = inst_df.copy()
+    for col in result.df.columns:
+        out_df[col] = result.df[col]
+    Path(output_parquet).parent.mkdir(parents=True, exist_ok=True)
+    out_df.to_parquet(output_parquet)
+    console.print(f"[green]✓ output: {output_parquet}[/green]")
+
+    report = generate_confidence_report(result, df_original=df, output_path=report_output)
+    console.print(f"[green]✓ report: {report_output}[/green]")
+
+
 @stats_app.command("reference-quantiles")
 def stats_reference_quantiles(
     staging: str = typer.Option(
