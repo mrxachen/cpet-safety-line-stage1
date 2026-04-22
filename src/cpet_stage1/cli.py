@@ -2143,5 +2143,119 @@ def stats_anomaly_audit(
     console.print(f"[green]✓ report: {report_output}[/green]")
 
 
+# ─────────────────────────────────────────────────────
+# Stage 1B Pipeline（全管线）
+# ─────────────────────────────────────────────────────
+
+pipeline_app = typer.Typer(help="Stage 1B 全管线命令")
+app.add_typer(pipeline_app, name="pipeline")
+
+
+@pipeline_app.command("stage1b")
+def pipeline_stage1b(
+    staging: str = typer.Option(
+        "data/staging/cpet_staging_v1.parquet",
+        help="staging parquet 路径",
+    ),
+    output_table: str = typer.Option(
+        "data/output/stage1b_output_table.parquet",
+        help="全量输出表路径",
+    ),
+    report_output: str = typer.Option(
+        "reports/stage1b_summary_report.md",
+        help="汇总报告路径",
+    ),
+    reference_spec: str = typer.Option(
+        "configs/data/reference_spec_stage1b.yaml",
+        help="reference_spec_stage1b.yaml 路径",
+    ),
+    # 各阶段中间 parquet 路径
+    phenotype_parquet: str = typer.Option(
+        "data/features/phenotype_burden_stage1b.parquet",
+        help="phenotype parquet 路径",
+    ),
+    instability_parquet: str = typer.Option(
+        "data/features/instability_stage1b.parquet",
+        help="instability parquet 路径",
+    ),
+    confidence_parquet: str = typer.Option(
+        "data/features/confidence_stage1b.parquet",
+        help="confidence parquet 路径",
+    ),
+    outcome_parquet: str = typer.Option(
+        "data/features/outcome_anchor_stage1b.parquet",
+        help="outcome parquet 路径",
+    ),
+    anomaly_parquet: str = typer.Option(
+        "data/features/anomaly_audit_stage1b.parquet",
+        help="anomaly parquet 路径",
+    ),
+) -> None:
+    """Stage 1B 全管线聚合报告（汇聚所有中间输出 → 最终输出表 + 摘要报告）"""
+    import pandas as pd
+
+    from cpet_stage1.reporting.stage1b_report import (
+        build_stage1b_output_table,
+        generate_stage1b_summary_report,
+    )
+    from cpet_stage1.stats.reference_quantiles import (
+        build_reference_subset_stage1b,
+        load_reference_spec,
+    )
+
+    logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
+    console.print("[bold blue]Stage 1B Pipeline: 全管线聚合[/bold blue]")
+
+    staging_path = Path(staging)
+    if not staging_path.exists():
+        console.print(f"[red]staging 不存在: {staging_path}[/red]")
+        raise typer.Exit(1)
+
+    df = pd.read_parquet(staging_path)
+    console.print(f"  staging: {len(df)} 行")
+
+    # 构建输出表（合并各阶段中间结果）
+    def _opt_path(p: str) -> str | None:
+        return p if Path(p).exists() else None
+
+    out_df = build_stage1b_output_table(
+        df,
+        phenotype_parquet=_opt_path(phenotype_parquet),
+        instability_parquet=_opt_path(instability_parquet),
+        confidence_parquet=_opt_path(confidence_parquet),
+        outcome_parquet=_opt_path(outcome_parquet),
+        anomaly_parquet=_opt_path(anomaly_parquet),
+    )
+
+    # 获取 reference mask
+    ref_mask = None
+    try:
+        spec_cfg = load_reference_spec(reference_spec)
+        df_with_flags = build_reference_subset_stage1b(df, spec_cfg)
+        ref_mask = df_with_flags["reference_flag_strict"].reindex(out_df.index)
+    except Exception as exc:
+        console.print(f"[yellow]Warning: 无法构建 reference mask: {exc}[/yellow]")
+
+    # 保存输出表
+    Path(output_table).parent.mkdir(parents=True, exist_ok=True)
+    out_df.to_parquet(output_table)
+    console.print(f"[green]✓ 输出表: {output_table} ({len(out_df)} 行, {len(out_df.columns)} 列)[/green]")
+
+    # 生成报告
+    report = generate_stage1b_summary_report(
+        out_df,
+        reference_mask=ref_mask,
+        output_path=report_output,
+    )
+    console.print(f"[green]✓ 报告: {report_output}[/green]")
+
+    # 在控制台显示验收判定
+    if "验收判定" in report or "Accept" in report or "Warn" in report or "Fail" in report:
+        for line in report.split("\n"):
+            if "验收判定" in line or "verdict" in line.lower():
+                console.print(f"  [bold]{line.strip()}[/bold]")
+                break
+
+
 if __name__ == "__main__":
     app()

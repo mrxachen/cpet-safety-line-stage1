@@ -6,6 +6,8 @@
         features anchors \
         model-p0 model-p1 model-evaluate model-interpret model-report model \
         model-outcome stats-anomaly stats-concordance phase-g \
+        stage1b-reference stage1b-phenotype stage1b-instability stage1b-confidence \
+        stage1b-outcome stage1b-anomaly stage1b-report stage1b \
         reports bridge-prep release clean
 
 PYTHON  := python
@@ -49,6 +51,16 @@ help:
 	@echo "    stats-anomaly  Run Mahalanobis anomaly scoring (Method 2)"
 	@echo "    stats-concordance Run multi-definition concordance analysis (Method 3)"
 	@echo "    phase-g        Run all Phase G methods"
+	@echo ""
+	@echo "  Stage 1B Phenotype Pipeline"
+	@echo "    stage1b-reference  Build conditional quantile reference models"
+	@echo "    stage1b-phenotype  Run phenotype burden engine"
+	@echo "    stage1b-instability Run instability override engine"
+	@echo "    stage1b-confidence Run confidence scoring engine"
+	@echo "    stage1b-outcome    Run outcome-anchor validation model"
+	@echo "    stage1b-anomaly    Run anomaly audit (QC)"
+	@echo "    stage1b-report     Generate Stage 1B summary report"
+	@echo "    stage1b            Run full Stage 1B pipeline"
 	@echo ""
 	@echo "  Output"
 	@echo "    reports        Generate summary figures and tables"
@@ -223,6 +235,30 @@ stats-concordance:
 	$(CLI) stats concordance
 
 phase-g: model-outcome stats-anomaly stats-concordance
+
+# --------------- Stage 1B Phenotype Pipeline ---------------
+stage1b-reference:
+	$(CLI) stats reference-quantiles
+
+stage1b-phenotype:
+	$(CLI) stats phenotype
+
+stage1b-instability:
+	$(CLI) stats instability
+
+stage1b-confidence:
+	$(CLI) stats confidence
+
+stage1b-outcome:
+	$(CLI) stats outcome-anchor
+
+stage1b-anomaly:
+	$(CLI) stats anomaly-audit
+
+stage1b-report:
+	$(CLI) pipeline stage1b
+
+stage1b: stage1b-reference stage1b-phenotype stage1b-instability stage1b-confidence stage1b-outcome stage1b-anomaly stage1b-report
 
 # --------------- Utility ---------------
 clean:
