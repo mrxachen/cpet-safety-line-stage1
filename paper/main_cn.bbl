@@ -1,4 +1,4 @@
-\begin{thebibliography}{17}
+\begin{thebibliography}{19}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{#1}
 \expandafter\ifx\csname urlstyle\endcsname\relax\else
@@ -71,6 +71,43 @@ GUAZZI M, ADAMS V, CONRAADS V, et~al.
 \newblock Circulation, 2012, 126\allowbreak (18): 2261-2274.
 \newblock DOI: \doi{10.1161/CIR.0b013e31826fb946}.
 
+\bibitem[Weber et~al.(1986)Weber and Janicki]{Weber1982}
+WEBER K~T, JANICKI J~S.
+\newblock Cardiopulmonary exercise testing: physiologic principles and clinical
+  applications\allowbreak[M].
+\newblock Philadelphia, PA: W. B. Saunders, 1986.
+
+\bibitem[Sun et~al.(2022)Sun, Han, et~al.]{SunXG2022consensus}
+SUN X~G, HAN F, et~al.
+\newblock Chinese expert consensus on cardiopulmonary exercise testing in
+  patients with cardiovascular diseases\allowbreak[J/OL].
+\newblock Zhonghua Xinxueguanbing Zazhi (Chinese Journal of Cardiology), 2022,
+  50\allowbreak (5): 443-458.
+\newblock DOI: \doi{10.3760/cma.j.cn112148-20220113-00034}.
+
+\bibitem[Wasserman et~al.(1999)Wasserman, Hansen, Sue, Stringer, and
+  Whipp]{Wasserman1999}
+WASSERMAN K, HANSEN J~E, SUE D~Y, et~al.
+\newblock Principles of exercise testing and interpretation: including
+  pathophysiology and clinical applications\allowbreak[M].
+\newblock 3rd ed.
+\newblock Philadelphia, PA: Lippincott Williams \& Wilkins, 1999.
+
+\bibitem[Hansen et~al.(1984)Hansen, Sue, and Wasserman]{Hansen1984}
+HANSEN J~E, SUE D~Y, WASSERMAN K.
+\newblock Predicted values for clinical exercise testing\allowbreak[J/OL].
+\newblock The American Review of Respiratory Disease, 1984, 129\allowbreak (2
+  Pt 2): S49-S55.
+\newblock DOI: \doi{10.1164/arrd.1984.129.2P2.S49}.
+
+\bibitem[Koch et~al.(2009)Koch, Sch{\"a}per, Ittermann, Spielhagen, D{\"o}rr,
+  V{\"o}lzke, and Opitz]{Koch2009}
+KOCH B, SCH{\"A}PER C, ITTERMANN T, et~al.
+\newblock Reference values for cardiopulmonary exercise testing in healthy
+  volunteers: the {SHIP} study\allowbreak[J/OL].
+\newblock European Respiratory Journal, 2009, 33\allowbreak (2): 389-397.
+\newblock DOI: \doi{10.1183/09031936.00074008}.
+
 \bibitem[Ross et~al.(2016)Ross, Blair, Arena, Church, Despres, Franklin,
   Haskell, Kaminsky, Levine, Lavie, Myers, Niebauer, Sallis, Sawada, Sui, and
   Wisløff]{Ross2024}
@@ -79,6 +116,20 @@ ROSS R, BLAIR S~N, ARENA R, et~al.
   practice: a case for fitness as a clinical vital sign\allowbreak[J/OL].
 \newblock Circulation, 2016, 134\allowbreak (24): e653-e699.
 \newblock DOI: \doi{10.1161/CIR.0000000000000461}.
+
+\bibitem[Cohen(1988)]{Cohen1988}
+COHEN J.
+\newblock Statistical power analysis for the behavioral sciences\allowbreak[M].
+\newblock 2nd ed.
+\newblock Hillsdale, NJ: Lawrence Erlbaum Associates, 1988.
+
+\bibitem[Zignoli et~al.(2022)Zignoli, Fornasiero, Stella, Pellegrini,
+  Pramsohler, Pernett, Schena, and Biral]{Zignoli2022ejss}
+ZIGNOLI A, FORNASIERO A, STELLA F, et~al.
+\newblock Oxynet: a collective intelligence that detects ventilatory thresholds
+  in cardiopulmonary exercise tests\allowbreak[J/OL].
+\newblock European Journal of Sport Science, 2022, 22\allowbreak (3): 351-361.
+\newblock DOI: \doi{10.1080/17461391.2020.1866081}.
 
 \bibitem[Li et~al.(2022)Li, Wang, Yang, Zhang, Liu, Zhao, et~al.]{Li2022xgb}
 LI J, WANG F, YANG J, et~al.
@@ -105,43 +156,6 @@ HEARN J, THOMPSON J, BARKER M, et~al.
 \newblock European Journal of Preventive Cardiology, 2018, 25\allowbreak (12):
   1231-1243.
 \newblock DOI: \doi{10.1177/2047487318784522}.
-
-\bibitem[Zignoli et~al.(2022)Zignoli, Fornasiero, Stella, Pellegrini,
-  Pramsohler, Pernett, Schena, and Biral]{Zignoli2022ejss}
-ZIGNOLI A, FORNASIERO A, STELLA F, et~al.
-\newblock Oxynet: a collective intelligence that detects ventilatory thresholds
-  in cardiopulmonary exercise tests\allowbreak[J/OL].
-\newblock European Journal of Sport Science, 2022, 22\allowbreak (3): 351-361.
-\newblock DOI: \doi{10.1080/17461391.2020.1866081}.
-
-\bibitem[Sun et~al.(2022)Sun, Han, et~al.]{SunXG2022consensus}
-SUN X~G, HAN F, et~al.
-\newblock Chinese expert consensus on cardiopulmonary exercise testing in
-  patients with cardiovascular diseases\allowbreak[J/OL].
-\newblock Zhonghua Xinxueguanbing Zazhi (Chinese Journal of Cardiology), 2022,
-  50\allowbreak (5): 443-458.
-\newblock DOI: \doi{10.3760/cma.j.cn112148-20220113-00034}.
-
-\bibitem[Lundberg et~al.(2017)Lundberg and Lee]{Lundberg2017}
-LUNDBERG S~M, LEE S~I.
-\newblock A unified approach to interpreting model predictions\allowbreak[J].
-\newblock Advances in Neural Information Processing Systems, 2017, 30:
-  4765-4774.
-
-\bibitem[Hastie et~al.(2009)Hastie, Tibshirani, and Friedman]{Hastie2009}
-HASTIE T, TIBSHIRANI R, FRIEDMAN J.
-\newblock The elements of statistical learning\allowbreak[M/OL].
-\newblock 2nd ed.
-\newblock Springer, 2009.
-\newblock DOI: \doi{10.1007/978-0-387-84858-7}.
-
-\bibitem[Ntalianis et~al.(2024)Ntalianis, Tentes, Kontogiannis, and
-  Koulouris]{Ntalianis2024}
-NTALIANIS A, TENTES I, KONTOGIANNIS N, et~al.
-\newblock Clinical significance of exercise-induced hypertension: a systematic
-  review\allowbreak[J/OL].
-\newblock Hypertension Research, 2024, 47\allowbreak (3): 456-470.
-\newblock DOI: \doi{10.1038/s41440-024-01547-6}.
 
 \bibitem[Gao et~al.(2026)Gao, Wu, Zhang, et~al.]{Gao2026}
 GAO Y, WU X, ZHANG L, et~al.

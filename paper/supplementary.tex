@@ -1,0 +1,325 @@
+% ============================================================
+% supplementary.tex — 补充材料（中文版）
+% 对应正文：main_cn.tex
+%
+% 编译方法：
+%   xelatex supplementary.tex
+%
+% 注意：此文件独立编译，不依赖 bibtex（所有引用在正文中完整列出）
+% ============================================================
+
+\documentclass[12pt, a4paper]{ctexart}
+
+% ------ 基础包 ------
+\usepackage{geometry}
+\geometry{left=2.5cm, right=2.5cm, top=3cm, bottom=3cm}
+\usepackage{setspace}
+\onehalfspacing
+
+% ------ 参考文献 ------
+\usepackage[super,square,sort&compress]{natbib}
+\usepackage{gbt7714}
+\bibliographystyle{gbt7714-numerical}
+
+% ------ 图表 ------
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{caption}
+\captionsetup{font=small, labelfont=bf}
+
+% ------ 数学 ------
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+% ------ 颜色与链接 ------
+\usepackage[dvipsnames]{xcolor}
+\usepackage[hidelinks]{hyperref}
+
+% ------ 其他 ------
+\usepackage{enumitem}
+\usepackage{float}
+
+% 补充材料编号重置：表格前缀 S，图片前缀 S
+\renewcommand{\thetable}{S\arabic{table}}
+\renewcommand{\thefigure}{S\arabic{figure}}
+
+% ------ 元数据 ------
+\title{补充材料\\
+\large 老年高血压人群心肺运动试验数据驱动安全区构建}
+
+\author{\textcolor{red}{TODO: 作者姓名}}
+\date{2026年4月}
+
+% ============================================================
+\begin{document}
+\maketitle
+
+\tableofcontents
+\clearpage
+
+% ============================================================
+\section*{补充方法}
+\addcontentsline{toc}{section}{补充方法}
+% ============================================================
+
+\subsection*{S1. 机器学习辅助验证详细方法}
+\addcontentsline{toc}{subsection}{S1. 机器学习辅助验证详细方法}
+
+本研究设置两个辅助预测任务，作为方法学验证工具，旨在评估汇总级数据的预测性能上限，
+而非作为核心安全区构建方法。
+
+\textbf{运动前风险预测（Pre-exercise Risk，P0）}：
+以运动前临床信息预测不良 CPET 事件风险（二分类）。
+满足以下任一条件为 P0 阳性：（1）EIH 状态为阳性；
+（2）VO$_2$peak $<50\%$预测值；（3）峰值SBP $>220$ mmHg。
+模型采用 LASSO（5折CV $\alpha$ 搜索）和 XGBoost（100棵树，学习率0.1）；
+评价指标：AUC-ROC（5折CV）。
+排除峰值血压字段（含"BP"的特征），以避免用于峰值 SBP 标准的变量直接作为特征。
+
+\textbf{运动后安全区分类（Post-exercise Safety，P1）}：
+以 CPET 汇总指标预测安全区三分类（Green/Yellow/Red，有序）。
+P1 标签采用 take-worst 策略，综合以下条件：
+（a）EIH 状态（阳性→Red）；
+（b）VO$_2$peak\%pred$<$50\%（→Red）；
+（c）$V_E/V_{\text{CO}_2}$ slope$\geq$36（→Yellow 或更差）；
+（d）峰值 SBP$>$220 mmHg（→Red）。
+模型采用有序 Logistic 回归、LightGBM（基于梯度提升决策树）
+和 CatBoost（对类别特征优化的梯度提升）；
+评价指标：F1$_\text{macro}$和 Cohen's $\kappa$（5折分层CV）。
+
+\textbf{数据泄漏防护机制（Leakage Guard）}：
+由于 EIH 状态、$V_E/V_{\text{CO}_2}$ slope 和 VO$_2$peak\%pred
+直接参与 P1 标签构建（确定性推导关系），
+本研究设立显式数据泄漏防护机制，在 P1 特征工程阶段强制排除上述字段。
+此机制确保模型性能评估的真实性：泄漏版本 F1=0.84 vs 清洁版本 F1=0.47，
+差值约0.37 F1 点。
+P0 任务（结局由多条件OR定义，非单一变量确定性推导）采用宽松排除策略，
+仅排除直接构成 P0 条件的 SBP 相关字段。
+
+\textbf{代价敏感分析}：
+在安全优先导向下（Red 患者错误归入 Green 代价最高），
+对 P1 最优模型（CatBoost）进行代价矩阵敏感性分析，
+评估不同代价权重下 F1$_\text{macro}$ 与 Red 召回率的权衡。
+
+\subsection*{S2. 结局锚定安全区模型详细方法}
+\addcontentsline{toc}{subsection}{S2. 结局锚定安全区模型详细方法}
+
+传统 P1 标签由 \{VO$_2$peak\%pred, $V_E/V_{\text{CO}_2}$ slope, EIH 状态\}
+确定性定义，导致预测这些变量的 ML 模型无法突破 P1 的循环依赖，
+预测性能受制于标签定义本身。
+
+本研究提出以 CPET 临床综合结局（test\_result，阳性/可疑阳性 vs 阴性）
+为标签的结局锚定方法：综合结局由临床医生对整个 CPET 检查的综合判断决定，
+不由任何单一 CPET 变量确定性推导，因此使用全部 CPET 指标作为特征不构成泄漏。
+
+\textbf{模型参数}：
+LightGBM 二分类器，全 CPET 特征集（含 VO$_2$peak \%pred、
+$V_E/V_{\text{CO}_2}$ slope、EIH状态等11个特征），
+5折分层交叉验证超参数搜索（RandomizedSearchCV，n\_iter=40，
+搜索空间：num\_leaves 20--127，learning\_rate 0.01--0.3，
+n\_estimators 100--500），
+isotonic 回归校准（CalibratedClassifierCV，cv=2）。
+
+\textbf{切点确定}：
+安全区切点在训练集上确定以防止测试集信息泄漏：
+Green/Yellow 界采用敏感度约束法（敏感度$\geq$90\%的最高阈值）；
+Yellow/Red 界采用 Youden's J 最大化。
+评价指标：AUC-ROC（5折CV）、测试集 AUC、Average Precision（AP）、Brier Score。
+
+\subsection*{S3. 多变量 Mahalanobis 异常评分详细方法}
+\addcontentsline{toc}{subsection}{S3. 多变量 Mahalanobis 异常评分详细方法}
+
+传统\%pred 逐变量比较无法捕获 CPET 变量间的协方差信息。
+本研究以参考正常子集（CTRL 组，经缺失值筛选后 n=969）
+构建多变量 CPET 空间中的 Mahalanobis 距离 $D^2$，公式如下：
+
+\begin{equation}
+D^2 = (\mathbf{x} - \boldsymbol{\mu})^\top \boldsymbol{\Sigma}^{-1} (\mathbf{x} - \boldsymbol{\mu})
+\end{equation}
+
+其中 $\boldsymbol{\mu}$ 和 $\boldsymbol{\Sigma}$ 分别为参考子集的均值向量和协方差矩阵。
+在多变量正态参考人群中，$D^2 \sim \chi^2(k)$（$k$=变量数），
+提供概率解释：$D^2 > \chi^2(k, 0.95)$ 意味着患者处于参考人群95百分位以上。
+
+\textbf{5个核心变量}：VO$_2$peak、HR$_\text{peak}$、O$_2$脉搏峰值、OUES、峰值METs。
+\textbf{切点方法}：参考子集经验分位法（P75/P95），
+以参考子集 $D^2$ 分布的经验百分位作为 Green/Yellow 和 Yellow/Red 分界，
+与理论 $\chi^2$ 分位数互相验证。
+
+\subsection*{S4. 多定义一致性框架详细方法}
+\addcontentsline{toc}{subsection}{S4. 多定义一致性框架详细方法}
+
+本研究提出以分歧本身作为信息的一致性框架：
+利用 K=4 个独立安全区定义对每个患者进行多数投票，
+将定义间的系统性分歧量化为患者级别的分类不确定性。
+
+\textbf{K=4 定义}：
+\begin{enumerate}
+    \item R/T/I 数据驱动 Zone（本研究主框架）
+    \item 结局锚定 Zone（基于 CPET 综合结局的 LightGBM 切点）
+    \item Mahalanobis 异常 Zone（基于 $D^2$ 经验切点）
+    \item VO$_2$peak 简单阈值 Zone（仅基于 VO$_2$peak\%pred 的单变量分层）
+\end{enumerate}
+
+\textbf{一致性判定规则}：
+\begin{itemize}
+    \item \textbf{高信度区（一致区）}：最高票数/K $\geq$ 0.60 且无 Green/Red 同时出现
+    \item \textbf{不确定区}：Green/Red 同时出现（高危冲突）或无多数票（最高票数/K $\leq$ 0.50）
+\end{itemize}
+
+区域置信度（最高票数/K）提供患者级别的分类可靠性量化。
+不确定区患者代表各定义存在实质分歧的病例，
+是需要更精细波形级评估的患者亚群。
+
+% ============================================================
+\clearpage
+\section*{补充结果}
+\addcontentsline{toc}{section}{补充结果}
+% ============================================================
+
+\subsection*{S5. 机器学习辅助验证详细结果}
+\addcontentsline{toc}{subsection}{S5. 机器学习辅助验证详细结果}
+
+\begin{table}[htbp]
+\centering
+\small
+\caption{运动前风险预测模型（P0）详细结果}
+\label{tab:s1_p0models}
+\begin{tabular}{llccc}
+\toprule
+模型 & 变体 & AUC-ROC & CV-AUC（mean$\pm$SD）& NPV（阈值0.141）\\
+\midrule
+2变量基线 & HTN+BMI & 0.611 & — & — \\
+LASSO & 无BP & 0.582 & 0.622$\pm$0.030 & — \\
+\textbf{XGBoost} & \textbf{无BP} & \textbf{0.583} & \textbf{0.623$\pm$0.028} & \textbf{0.853} \\
+\bottomrule
+\end{tabular}
+\\[1ex]
+{\footnotesize NNS=3.8（每筛查3.8人发现1例真阳性）；数据泄漏防护机制验证通过。\\
+P0 阳性率：14.7\%（468/3,188）。2变量基线（AUC=0.611）$>$ ML全特征（AUC=0.583），\\
+反映汇总级数据预测性能上限。}
+\end{table}
+
+\begin{table}[htbp]
+\centering
+\small
+\caption{运动后安全区分类模型（P1）详细结果}
+\label{tab:s2_p1models}
+\begin{tabular}{lccccc}
+\toprule
+模型 & F1$_\text{macro}$ & $\kappa$ & Green召回 & Yellow召回 & Red召回 \\
+\midrule
+有序Logistic & 0.386 & 0.225 & — & — & — \\
+LightGBM & 0.465 & 0.258 & — & — & 23.9\% \\
+\textbf{CatBoost} & \textbf{0.499} & \textbf{0.302} & 67.1\% & 51.8\% & 30.8\% \\
+\bottomrule
+\end{tabular}
+\\[1ex]
+{\footnotesize P1 代理泄漏消融：Full vs No-VO2 $\Delta$F1=+0.003（可忽略），\\
+证实 VO$_2$peak 代理泄漏贡献极小；预测性能上限来自特征集固有局限而非泄漏驱动。}
+\end{table}
+
+\subsection*{S6. 结局锚定模型详细结果}
+\addcontentsline{toc}{subsection}{S6. 结局锚定模型详细结果}
+
+\begin{table}[htbp]
+\centering
+\small
+\caption{结局锚定安全区模型详细结果}
+\label{tab:s3_outcome_model}
+\begin{tabular}{lcc}
+\toprule
+\multicolumn{3}{l}{\textit{模型性能（有效样本 N=3,188，阳性率14.7\%）}} \\
+指标 & 值 & 说明 \\
+\midrule
+CV AUC（5折）& $0.578 \pm 0.031$ & 随机超参搜索（n\_iter=40） \\
+测试集 AUC & 0.548 & 80/20 分层分割（训练N=2,550，测试N=638）\\
+测试集 AP & 0.178 & 反映阳性率14.7\%下的精度-召回权衡 \\
+测试集 Brier & 0.126 & 校准质量（越低越好） \\
+\midrule
+\multicolumn{3}{l}{\textit{安全区切点（训练集确定，防止测试集信息泄漏）}} \\
+Green/Yellow 界 & P $<$ 0.140 & 敏感度0.909，特异度0.503 \\
+Yellow/Red 界 & P $\geq$ 0.150 & Youden's J=0.448 \\
+\midrule
+\multicolumn{3}{l}{\textit{安全区分布（全样本 N=3,188，阳性率梯度验证）}} \\
+Green & 1,400 (43.9\%) & CPET综合结局阳性率 5.1\% \\
+Yellow & 372 (11.7\%) & CPET综合结局阳性率 10.5\% \\
+Red & 1,416 (44.4\%) & CPET综合结局阳性率 25.3\% \\
+\bottomrule
+\end{tabular}
+\\[1ex]
+{\footnotesize 特征重要性（Top 5）：HR$_\text{peak}$、$V_E/V_{\text{CO}_2}$ slope、年龄、OUES、VT1/VO$_2$peak。\\
+全特征建模不构成结局泄漏：CPET综合结局为临床医生综合判断，非任何单一变量确定性推导。\\
+Red 区阳性率（25.3\%）$>$ Yellow 区（10.5\%）$>$ Green 区（5.1\%），呈单调梯度，验证分层有效性。}
+\end{table}
+
+\subsection*{S7. 多变量 Mahalanobis 异常评分详细结果}
+\addcontentsline{toc}{subsection}{S7. 多变量 Mahalanobis 异常评分详细结果}
+
+\begin{table}[htbp]
+\centering
+\small
+\caption{多变量 Mahalanobis 异常评分详细结果}
+\label{tab:s4_anomaly_model}
+\begin{tabular}{lcc}
+\toprule
+\multicolumn{3}{l}{\textit{参考模型参数（k=5，参考子集 N=969）}} \\
+指标 & 经验值（参考子集）& 理论值（$\chi^2(5)$）\\
+\midrule
+P75 切点（Green/Yellow）& 3.825 & 6.626 \\
+P95 切点（Yellow/Red）& 8.788 & 11.070 \\
+\midrule
+\multicolumn{3}{l}{\textit{安全区分布（采用经验切点，N=3,195）}} \\
+Green & 2,083 (65.0\%) & CPET综合结局阳性率 16.1\% \\
+Yellow & 879 (27.4\%) & CPET综合结局阳性率 12.2\% \\
+Red & 244 (7.6\%) & CPET综合结局阳性率 10.2\% \\
+\midrule
+$D^2$ vs CPET综合结局 相关 & $r = -0.011$ & Point-biserial，N=3,195 \\
+\bottomrule
+\end{tabular}
+\\[1ex]
+{\footnotesize 经验切点显著低于理论 $\chi^2(5)$ 分位数，提示参考子集 CPET 变量的实际分散程度\\
+小于多变量正态假设的预期。$D^2$ 负相关 $r$=$-$0.011 说明 Mahalanobis 距离\\
+捕获的是"与参考正常人群的多变量偏离程度"，而非直接的风险分层方向；\\
+部分低风险对照人群在多变量空间中亦可远离临床患者群体的协方差结构，导致较高 $D^2$。\\
+5个核心变量：VO$_2$peak、HR$_\text{peak}$、O$_2$脉搏峰值、OUES、峰值METs。}
+\end{table}
+
+\subsection*{S8. 多定义一致性框架详细结果}
+\addcontentsline{toc}{subsection}{S8. 多定义一致性框架详细结果}
+
+\begin{table}[htbp]
+\centering
+\small
+\caption{K=4 多定义一致性框架分析结果}
+\label{tab:s5_concordance}
+\begin{tabular}{lccccc}
+\toprule
+区域 & 总N & 高信度N & 占比 & 整体阳性率 & 高信度阳性率 \\
+\midrule
+Green & 533 & 528 & 16.6\% & 5.1\% & 5.1\% \\
+Yellow & 259 & 257 & 8.1\% & 13.1\% & 13.2\% \\
+Red & 56 & 56 & 1.7\% & 28.6\% & 28.6\% \\
+不确定 & 2,358 & — & 73.5\% & 16.6\% & — \\
+\midrule
+\multicolumn{6}{l}{\textit{信度统计}} \\
+高信度患者总数 & \multicolumn{2}{c}{841} & 26.2\% & & \\
+Green/Red 冲突患者数 & \multicolumn{2}{c}{1,974} & 61.6\% & & \\
+\bottomrule
+\end{tabular}
+\\[1ex]
+{\footnotesize 高信度阈值：区域置信度 $\geq$ 0.60（最高票数/K $\geq$ 60\% 且无 Green/Red 冲突）。\\
+73.5\%不确定患者主要源于 Green/Red 冲突（1,974例），反映现有4个定义在多维分层上的根本分歧。\\
+高信度 Red 区阳性率（28.6\%）显著高于 Green 区（5.1\%），证实高信度分区具有可靠临床区分度。\\
+参与投票的4个定义：R/T/I 数据驱动 Zone、结局锚定 Zone、\\
+VO$_2$peak 简单阈值 Zone、Mahalanobis 异常 Zone。}
+\end{table}
+
+% ============================================================
+% 参考文献（独立编译时取消注释）
+% ============================================================
+% \bibliography{references}
+
+\end{document}

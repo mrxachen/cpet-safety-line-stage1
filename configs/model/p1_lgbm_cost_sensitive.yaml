@@ -1,0 +1,35 @@
+# P1 — LightGBM (cost-sensitive variant)
+# 代价敏感训练：增大 Red 类权重，提升高危识别率（召回率 Red 目前仅 26%）
+# Red 类权重 = 4x（Green=1, Yellow=2, Red=4）
+model_type: lightgbm
+task: multiclass
+num_class: 3
+target: p1_zone_ordinal
+
+hyperparameters:
+  n_estimators: [200, 500]
+  max_depth: [4, 6, -1]
+  learning_rate: [0.03, 0.05, 0.1]
+  num_leaves: [31, 63]
+  subsample: [0.8, 1.0]
+  colsample_bytree: [0.7, 0.9]
+  min_child_samples: [10, 20]
+  # 显式类权重（green=0, yellow=1, red=2）
+  class_weight:
+    0: 1.0   # green — 低风险，正常权重
+    1: 2.0   # yellow — 中等风险，2x
+    2: 4.0   # red — 高风险，4x（提升召回率）
+
+cv:
+  n_folds: 5
+  scoring: f1_macro
+  search_method: random
+  n_iter: 40
+
+calibration:
+  method: temperature_scaling
+
+# 注：
+# - 标准版（class_weight: balanced）P1 Red 召回率仅 26%
+# - 此版本牺牲 Green/Yellow 精度，换取 Red 召回率提升（目标 >45%）
+# - 在论文中对比两版本：平衡版 vs 代价敏感版

@@ -1,0 +1,25 @@
+# P1 — CatBoost (cost-sensitive variant)
+# 代价敏感训练：增大 Red 类权重
+# Red 类权重 = 4x（Green=1, Yellow=2, Red=4）
+model_type: catboost
+task: multiclass
+num_class: 3
+target: p1_zone_ordinal
+
+hyperparameters:
+  iterations: [300, 500]
+  depth: [4, 6]
+  learning_rate: [0.03, 0.1]
+  l2_leaf_reg: [1, 3]
+  # CatBoost 使用 class_weights 列表（按 class label 顺序：green=0, yellow=1, red=2）
+  class_weights: [1.0, 2.0, 4.0]
+
+cv:
+  n_folds: 5
+  scoring: f1_macro
+  search_method: random
+  n_iter: 30
+
+# 注：
+# - auto_class_weights 替换为显式 class_weights
+# - 对比标准版（Balanced）与代价敏感版（Red=4x）的 Red 召回率变化

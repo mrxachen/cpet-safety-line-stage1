@@ -1,4 +1,4 @@
-\begin{thebibliography}{18}
+\begin{thebibliography}{19}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -77,6 +77,49 @@ Marco Guazzi, Volker Adams, Viviane Conraads, Martin Halle, Alessandro Mezzani,
 \newblock \emph{Circulation}, 126\penalty0 (18):\penalty0 2261--2274, 2012.
 \newblock \doi{10.1161/CIR.0b013e31826fb946}.
 
+\bibitem[Weber and Janicki(1986)]{Weber1982}
+Karl~T. Weber and Joseph~S. Janicki.
+\newblock \emph{Cardiopulmonary Exercise Testing: Physiologic Principles and
+  Clinical Applications}.
+\newblock W. B. Saunders, Philadelphia, PA, 1986.
+\newblock Weber-Janicki functional classification (Class A--D).
+
+\bibitem[Sun et~al.(2022)Sun, Han, et~al.]{SunXG2022consensus}
+Xing-Guo Sun, Fang Han, et~al.
+\newblock Chinese expert consensus on cardiopulmonary exercise testing in
+  patients with cardiovascular diseases.
+\newblock \emph{Zhonghua Xinxueguanbing Zazhi (Chinese Journal of Cardiology)},
+  50\penalty0 (5):\penalty0 443--458, 2022.
+\newblock \doi{10.3760/cma.j.cn112148-20220113-00034}.
+\newblock Chinese 2022 CPET Expert Consensus.
+
+\bibitem[Wasserman et~al.(1999)Wasserman, Hansen, Sue, Stringer, and
+  Whipp]{Wasserman1999}
+Karlman Wasserman, James~E. Hansen, Darryl~Y. Sue, William~W. Stringer, and
+  Brian~J. Whipp.
+\newblock \emph{Principles of Exercise Testing and Interpretation: Including
+  Pathophysiology and Clinical Applications}.
+\newblock Lippincott Williams \& Wilkins, Philadelphia, PA, 3rd edition, 1999.
+\newblock Standard predicted equations for VO$_2$max.
+
+\bibitem[Hansen et~al.(1984)Hansen, Sue, and Wasserman]{Hansen1984}
+James~E. Hansen, Darryl~Y. Sue, and Karlman Wasserman.
+\newblock Predicted values for clinical exercise testing.
+\newblock \emph{The American Review of Respiratory Disease}, 129\penalty0 (2 Pt
+  2):\penalty0 S49--S55, 1984.
+\newblock \doi{10.1164/arrd.1984.129.2P2.S49}.
+
+\bibitem[Koch et~al.(2009)Koch, Sch{\"a}per, Ittermann, Spielhagen, D{\"o}rr,
+  V{\"o}lzke, and Opitz]{Koch2009}
+Beate Koch, Christoph Sch{\"a}per, Till Ittermann, Thomas Spielhagen, Marcus
+  D{\"o}rr, Henry V{\"o}lzke, and Christian~F. Opitz.
+\newblock Reference values for cardiopulmonary exercise testing in healthy
+  volunteers: the {SHIP} study.
+\newblock \emph{European Respiratory Journal}, 33\penalty0 (2):\penalty0
+  389--397, 2009.
+\newblock \doi{10.1183/09031936.00074008}.
+\newblock German reference equations including Chinese reference subset.
+
 \bibitem[Ross et~al.(2016)Ross, Blair, Arena, Church, Despres, Franklin,
   Haskell, Kaminsky, Levine, Lavie, Myers, Niebauer, Sallis, Sawada, Sui, and
   Wisløff]{Ross2024}
@@ -88,6 +131,21 @@ Robert Ross, Steven~N. Blair, Ross Arena, Timothy~S. Church, Jean-Pierre
   practice: A case for fitness as a clinical vital sign.
 \newblock \emph{Circulation}, 134\penalty0 (24):\penalty0 e653--e699, 2016.
 \newblock \doi{10.1161/CIR.0000000000000461}.
+
+\bibitem[Cohen(1988)]{Cohen1988}
+Jacob Cohen.
+\newblock \emph{Statistical Power Analysis for the Behavioral Sciences}.
+\newblock Lawrence Erlbaum Associates, Hillsdale, NJ, 2nd edition, 1988.
+
+\bibitem[Zignoli et~al.(2022)Zignoli, Fornasiero, Stella, Pellegrini,
+  Pramsohler, Pernett, Schena, and Biral]{Zignoli2022ejss}
+Andrea Zignoli, Alessandro Fornasiero, Federico Stella, Barbara Pellegrini,
+  Stephan Pramsohler, Franz Pernett, Federico Schena, and Francesco Biral.
+\newblock Oxynet: A collective intelligence that detects ventilatory thresholds
+  in cardiopulmonary exercise tests.
+\newblock \emph{European Journal of Sport Science}, 22\penalty0 (3):\penalty0
+  351--361, 2022.
+\newblock \doi{10.1080/17461391.2020.1866081}.
 
 \bibitem[Li et~al.(2022)Li, Wang, Yang, Zhang, Liu, Zhao, et~al.]{Li2022xgb}
 Jian Li, Fang Wang, Jun Yang, Hong Zhang, Wei Liu, Xu~Zhao, et~al.
@@ -117,52 +175,6 @@ James Hearn, John Thompson, Matthew Barker, Helen~K. Reddel, James Geake,
 \newblock \emph{European Journal of Preventive Cardiology}, 25\penalty0
   (12):\penalty0 1231--1243, 2018.
 \newblock \doi{10.1177/2047487318784522}.
-
-\bibitem[Zignoli et~al.(2022)Zignoli, Fornasiero, Stella, Pellegrini,
-  Pramsohler, Pernett, Schena, and Biral]{Zignoli2022ejss}
-Andrea Zignoli, Alessandro Fornasiero, Federico Stella, Barbara Pellegrini,
-  Stephan Pramsohler, Franz Pernett, Federico Schena, and Francesco Biral.
-\newblock Oxynet: A collective intelligence that detects ventilatory thresholds
-  in cardiopulmonary exercise tests.
-\newblock \emph{European Journal of Sport Science}, 22\penalty0 (3):\penalty0
-  351--361, 2022.
-\newblock \doi{10.1080/17461391.2020.1866081}.
-
-\bibitem[Sun et~al.(2022)Sun, Han, et~al.]{SunXG2022consensus}
-Xing-Guo Sun, Fang Han, et~al.
-\newblock Chinese expert consensus on cardiopulmonary exercise testing in
-  patients with cardiovascular diseases.
-\newblock \emph{Zhonghua Xinxueguanbing Zazhi (Chinese Journal of Cardiology)},
-  50\penalty0 (5):\penalty0 443--458, 2022.
-\newblock \doi{10.3760/cma.j.cn112148-20220113-00034}.
-\newblock Chinese 2022 CPET Expert Consensus.
-
-\bibitem[Lundberg and Lee(2017)]{Lundberg2017}
-Scott~M. Lundberg and Su-In Lee.
-\newblock A unified approach to interpreting model predictions.
-\newblock \emph{Advances in Neural Information Processing Systems},
-  30:\penalty0 4765--4774, 2017.
-
-\bibitem[Cohen(1988)]{Cohen1988}
-Jacob Cohen.
-\newblock \emph{Statistical Power Analysis for the Behavioral Sciences}.
-\newblock Lawrence Erlbaum Associates, Hillsdale, NJ, 2nd edition, 1988.
-
-\bibitem[Hastie et~al.(2009)Hastie, Tibshirani, and Friedman]{Hastie2009}
-Trevor Hastie, Robert Tibshirani, and Jerome Friedman.
-\newblock \emph{The Elements of Statistical Learning}.
-\newblock Springer, 2nd edition, 2009.
-\newblock \doi{10.1007/978-0-387-84858-7}.
-
-\bibitem[Ntalianis et~al.(2024)Ntalianis, Tentes, Kontogiannis, and
-  Koulouris]{Ntalianis2024}
-Aristotelis Ntalianis, Ioannis Tentes, Nikolaos Kontogiannis, and Nikolaos~G.
-  Koulouris.
-\newblock Clinical significance of exercise-induced hypertension: a systematic
-  review.
-\newblock \emph{Hypertension Research}, 47\penalty0 (3):\penalty0 456--470,
-  2024.
-\newblock \doi{10.1038/s41440-024-01547-6}.
 
 \bibitem[Gao et~al.(2026)Gao, Wu, Zhang, et~al.]{Gao2026}
 Yuan Gao, Xiangjun Wu, Li~Zhang, et~al.
