@@ -1,0 +1,68 @@
+# concordance_config.yaml — 多定义一致性框架配置（Method 3 / Phase G）
+#
+# 核心思想：不争论"哪个安全区定义最正确"（不可回答），
+# 而是利用多个定义的一致性/分歧本身作为信息。
+# 一致 = 高信度分区；分歧 = 不确定区域（临床需重点关注）。
+
+# ── 投票源（K 个安全区定义）─────────────────────────────────────────────────
+sources:
+  - name: p1_rules
+    column: p1_zone_label           # P1 规则标签（Weber-Janicki 阈值）
+    type: rule_based
+    weight: 1.0
+    description: "P1 标签规则（vo2_peak_pct_pred + ve_vco2_slope + eih_status 阈值）"
+
+  - name: zone_engine_v2
+    column: z_lab_zone              # Zone Engine v2（数据驱动参考分位法）
+    type: data_driven
+    weight: 1.0
+    description: "数据驱动 R/T/I 三轴评分（参考分位切点）"
+
+  - name: outcome_anchored
+    column: outcome_zone            # 结局锚定模型（Method 1 / Phase G）
+    type: outcome_anchored
+    weight: 1.0
+    description: "校准概率→安全区（直接预测 test_result）"
+
+  - name: vo2_threshold
+    column: vo2_zone_simple         # 简单 VO₂peak 阈值规则（辅助参考）
+    type: simple_threshold
+    weight: 1.0
+    description: "VO₂peak 简单阈值规则（<16→Red，16-22→Yellow，>22→Green）"
+
+  - name: anomaly_score
+    column: anomaly_zone            # Mahalanobis 异常评分区（Method 2 / Phase G）
+    type: anomaly_score
+    weight: 1.0
+    description: "Mahalanobis D² 距离 → 安全区（P75/P95 切点）"
+
+# ── 投票规则 ──────────────────────────────────────────────────────────────────
+voting:
+  method: majority                  # 多数票（>50% 投票）
+  tie_resolution: uncertain         # 平票时标记为不确定
+  min_votes_for_consensus: 3        # 至少 3 票一致才算高信度
+
+# ── 信度阈值 ──────────────────────────────────────────────────────────────────
+confidence:
+  # 高信度：K/K 或 (K-1)/K 的投票一致
+  high_threshold: 0.60              # 一致性比例 ≥ 60% → 高信度
+  # 不确定标准（任何以下条件满足→标记为 Uncertain）
+  uncertain_conditions:
+    - "no_definition_exceeds_50pct"   # 无定义获得 >50% 投票
+    - "green_red_conflict"            # Green 和 Red 同时出现（最大分歧）
+  # 预期：高信度子集 ≥ 55%
+
+# ── 输出列名 ──────────────────────────────────────────────────────────────────
+output:
+  consensus_col: zone_consensus        # 多数票区（green/yellow/red/uncertain）
+  confidence_col: zone_confidence      # 一致性比例（0.0-1.0）
+  vote_detail_col: zone_vote_detail    # 详细投票结果（JSON 字符串）
+  high_confidence_col: is_high_confidence  # 是否为高信度患者（bool）
+  green_red_conflict_col: has_green_red_conflict  # 是否出现 Green/Red 冲突（bool）
+
+# ── 简单 VO₂peak 阈值规则配置（用于 vo2_zone_simple 的生成）────────────────
+vo2_simple_thresholds:
+  red_upper: 16.0       # VO₂peak < 16 → Red（重度受损）
+  yellow_upper: 22.0    # 16 ≤ VO₂peak < 22 → Yellow（中度受损）
+  # VO₂peak ≥ 22 → Green
+  unit: ml/kg/min

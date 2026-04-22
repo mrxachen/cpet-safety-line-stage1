@@ -1,0 +1,68 @@
+# outcome_lgbm.yaml — 结局锚定安全区模型配置（Method 1 / Phase G）
+#
+# 直接预测 test_result（阳性+可疑阳性 vs 阴性），消除 P1 循环依赖。
+# 特征集包含 vo2_peak_pct_pred / ve_vco2_slope / eih_status（无需 leakage_guard 排除）。
+
+model_type: lightgbm
+task: binary_outcome
+target: test_result_binary    # 1=阳性/可疑阳性, 0=阴性
+
+# 特征集（全量 CPET 指标 + 人口学）
+features:
+  # CPET 峰值指标
+  - vo2_peak
+  - vo2_peak_pct_pred        # 注意：此处不是泄漏字段！test_result 不由它确定性定义
+  - hr_peak
+  - o2_pulse_peak
+  - mets_peak
+  # 通气效率
+  - ve_vco2_slope             # 注意：此处不是泄漏字段！
+  - oues
+  # 运动习惯 / 反应
+  - vt1_vo2
+  # 异常标志
+  - eih_status                # 注意：此处不是泄漏字段！
+  # 人口学
+  - age
+  - sex_binary               # M=0, F=1（派生）
+  - bmi                      # 派生自 height_cm + weight_kg
+  # 队列
+  - htn_history
+
+# 正类定义
+positive_values:
+  - 阳性
+  - 可疑阳性
+
+negative_values:
+  - 阴性
+
+# LightGBM 超参数搜索空间
+hyperparameters:
+  n_estimators: [100, 200, 400]
+  max_depth: [3, 4, 6]
+  learning_rate: [0.03, 0.05, 0.1]
+  num_leaves: [15, 31, 63]
+  subsample: [0.8, 1.0]
+  colsample_bytree: [0.7, 0.9]
+  min_child_samples: [10, 20, 30]
+  class_weight: balanced        # 应对 ~14.7% 阳性率的不平衡
+
+cv:
+  n_folds: 5
+  scoring: roc_auc
+  search_method: random
+  n_iter: 40
+  random_state: 42
+
+calibration:
+  method: isotonic             # 等渗回归，适合中等样本量
+
+# 安全区切点策略
+zone_cutpoints:
+  method: youden_dca           # Youden's J + DCA net benefit 联合优化
+  green_yellow_sensitivity: 0.90   # Green/Yellow 界：敏感度 ≥ 90%（不漏掉高风险）
+  yellow_red_method: youden        # Yellow/Red 界：Youden's J 最优
+  # 备用固定切点（当数据量不足时退化）
+  fallback_green_yellow: 0.10
+  fallback_yellow_red: 0.25

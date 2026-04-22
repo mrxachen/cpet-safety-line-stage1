@@ -1,0 +1,119 @@
+version: "3.0"
+# label_rules_v3.yaml — P0/P1 标签规则（EIH-clean 版）
+#
+# 核心变更（相对 v2）：
+#   P1 zone 定义中**移除 eih_status 条件**。
+#   原因：EIH+ 100% Red（"EIH-Red 公理"）导致模型无法学习真正的心肺储备模式。
+#   EIH 仍保留在 P0 先验风险中（不变）。
+#
+# 预期效果：
+#   - Red 占比从 ~25% 降至 ~8–12%（纯心肺储备指标驱动）
+#   - P1 模型真正学到 VO2peak/VE-VCO2 slope 决策边界
+#   - 在论文中与 v2 对比呈现（方案A vs 方案B）
+#
+# 参照：PLANNING.md 十五节 Phase C3
+
+data_availability:
+  available:
+    - vo2_peak_pct_pred
+    - ve_vco2_slope
+    - bp_peak_sys
+  derived:
+    - eih_status
+    - htn_history
+  sparse_nan_absent:
+    - cad_history
+    - hf_history
+  unavailable:
+    - arrhythmia_flag
+    - test_terminated_early
+    - termination_reason
+    - st_depression_mm
+    - rer_peak
+    - nyha_class
+
+# ===========================================================================
+# P0：与 v2 完全一致（不变）
+# ===========================================================================
+p0:
+  description: "运动安全事件代理（binary）— 基于可用字段的部分实现（与 v2 一致）"
+
+  positive_if_any:
+    - field: eih_status
+      value: true
+      source: derived
+      description: "运动性高血压（从 group_code 推导）"
+    - field: vo2_peak_pct_pred
+      less_than: 50
+      source: available
+      description: "VO2peak < 50% pred（严重运动耐量下降）"
+    - field: bp_peak_sys
+      greater_than: 220
+      source: available
+      description: "峰值收缩压 > 220 mmHg（极端高血压反应）"
+
+  inactive_criteria:
+    - field: arrhythmia_flag
+      value: true
+      reason: "字段不存在于当前数据集"
+    - field: test_terminated_early
+      reason: "字段不存在于当前数据集"
+    - field: st_depression_mm
+      greater_than_eq: 1.0
+      reason: "字段不存在于当前数据集"
+
+  leakage_guard:
+    exclude_from_features:
+      - bp_peak_sys
+
+# ===========================================================================
+# P1：移除 eih_status 条件（关键变更）
+# 纯基于心肺储备指标：vo2_peak_pct_pred + ve_vco2_slope
+# ===========================================================================
+p1:
+  description: "运动安全区（3类有序）— 纯心肺储备指标（v3: EIH 已从区间定义中移除）"
+
+  # v3 关键说明：
+  # EIH+ 患者不再自动归 Red，由其 VO2peak%pred + VE/VCO2 slope 决定区间
+  # 这使模型能学习真正的心肺储备分布差异
+
+  zone_rules:
+    green:
+      label: 0
+      criteria:
+        vo2_peak_pct_pred: {gte: 70}
+        ve_vco2_slope: {lte: 30}
+        # eih_status 条件已移除（v3）
+      description: "低风险区：运动耐量充足（VO2peak≥70%pred）且通气效率正常（VE/VCO2≤30）"
+
+    yellow:
+      label: 1
+      criteria_any:
+        - vo2_peak_pct_pred: {gte: 50, lt: 70}
+        - ve_vco2_slope: {gt: 30, lte: 36}
+      description: "中风险区：运动耐量中等或通气效率轻度异常"
+
+    red:
+      label: 2
+      criteria_any:
+        - vo2_peak_pct_pred: {lt: 50}
+        - ve_vco2_slope: {gt: 36}
+        # eih_status: true 条件已移除（v3）
+      description: "高风险区：严重运动耐量下降（VO2peak<50%pred）或通气效率显著异常（VE/VCO2>36）"
+
+  conflict_resolution: take_worst
+
+  effort_required:
+    rer_min: null
+    hr_fallback:
+      use: true
+      threshold_pct_pred: 0.85
+      action_if_below: flag
+
+  inactive_criteria:
+    - field: rer_peak
+      reason: "字段不存在于当前数据集"
+    - field: nyha_class
+      reason: "字段不存在于当前数据集"
+    - field: eih_status
+      reason: "v3 主动移除：EIH 不再参与 P1 zone 定义（保留于 P0）"
