@@ -1,0 +1,219 @@
+version: "1.0"
+# table1_config.yaml — M4 统计分析全局配置
+# 规则外置：变量列表、检验方法、双因素/参考/绘图/敏感性配置
+
+# ============================================================
+# Table 1：基线特征表配置
+# ============================================================
+table1:
+  group_column: "group_code"
+  group_order:
+    - "CTRL"
+    - "HTN_HISTORY_NO_EHT"
+    - "HTN_HISTORY_WITH_EHT"
+    - "EHT_ONLY"
+  group_labels:
+    CTRL: "健康对照"
+    HTN_HISTORY_NO_EHT: "HTN无EIH"
+    HTN_HISTORY_WITH_EHT: "HTN有EIH"
+    EHT_ONLY: "单纯EIH"
+
+  # 连续变量列表（约18个）
+  continuous_variables:
+    - name: "age"
+      label: "年龄（岁）"
+    - name: "bmi"
+      label: "BMI（kg/m²）"
+    - name: "systolic_bp"
+      label: "静息收缩压（mmHg）"
+    - name: "diastolic_bp"
+      label: "静息舒张压（mmHg）"
+    - name: "hr_rest"
+      label: "静息心率（bpm）"
+    - name: "vo2_peak"
+      label: "VO₂peak（mL/kg/min）"
+    - name: "vo2_peak_pct_pred"
+      label: "VO₂peak占预测值（%）"
+    - name: "hr_peak"
+      label: "峰值心率（bpm）"
+    - name: "bp_peak_sys"
+      label: "峰值收缩压（mmHg）"
+      # bp_peak_sys 在 EHT_ONLY 组缺失较多，报告有效N
+    - name: "ve_vco2_slope"
+      label: "VE/VCO₂斜率"
+    - name: "met_peak"
+      label: "峰值MET"
+    - name: "work_rate_peak"
+      label: "峰值功率（W）"
+    - name: "o2_pulse_peak"
+      label: "O₂脉搏峰值（mL/beat）"
+    - name: "breathing_reserve"
+      label: "呼吸储备（%）"
+    - name: "exercise_duration"
+      label: "运动时长（min）"
+    - name: "height"
+      label: "身高（cm）"
+    - name: "weight"
+      label: "体重（kg）"
+
+  # 分类变量列表（约12个）
+  categorical_variables:
+    - name: "sex"
+      label: "女性（n, %）"
+      positive_value: "F"
+    - name: "htn_history"
+      label: "高血压病史（n, %）"
+      positive_value: true
+    - name: "eih_status"
+      label: "运动性高血压（n, %）"
+      positive_value: true
+    - name: "cad_history"
+      label: "冠心病病史（n, %）"
+      positive_value: true
+    - name: "hf_history"
+      label: "心衰病史（n, %）"
+      positive_value: true
+    - name: "diabetes"
+      label: "糖尿病（n, %）"
+      positive_value: true
+    - name: "smoking"
+      label: "吸烟史（n, %）"
+      positive_value: true
+    - name: "exercise_protocol_cycle"
+      label: "功率车协议（n, %）"
+      positive_value: true
+    - name: "effort_hr_adequate"
+      label: "HR努力度充足（n, %）"
+      positive_value: true
+    - name: "p0_event"
+      label: "P0安全事件（n, %）"
+      positive_value: true
+
+  # 统计检验配置
+  tests:
+    normality:
+      method: "shapiro"
+      alpha: 0.05
+      # n>5000 时抽样
+      max_n_for_exact: 5000
+      sample_n: 5000
+    continuous:
+      method: "kruskal"        # Kruskal-Wallis（非参数，稳健）
+    categorical:
+      method: "chi2"           # χ² 检验
+      min_expected: 5          # 期望频数 < 5 时使用 Fisher（简化版：报告警告）
+
+# ============================================================
+# Two-way ANOVA（HTN × EIH 双因素效应）
+# ============================================================
+twobytwo:
+  factor_a: "htn_history"      # 高血压病史（bool）
+  factor_b: "eih_status"       # 运动性高血压（bool）
+  # 结局变量（约9个核心 CPET 变量）
+  outcomes:
+    - name: "vo2_peak"
+      label: "VO₂peak（mL/kg/min）"
+    - name: "vo2_peak_pct_pred"
+      label: "VO₂peak%pred"
+    - name: "hr_peak"
+      label: "峰值心率（bpm）"
+    - name: "bp_peak_sys"
+      label: "峰值收缩压（mmHg）"
+    - name: "ve_vco2_slope"
+      label: "VE/VCO₂斜率"
+    - name: "met_peak"
+      label: "峰值MET"
+    - name: "work_rate_peak"
+      label: "峰值功率（W）"
+    - name: "o2_pulse_peak"
+      label: "O₂脉搏峰值（mL/beat）"
+    - name: "exercise_duration"
+      label: "运动时长（min）"
+  method: "anova_2way"         # Type II SS
+  effect_size: "eta_squared"   # 偏eta²
+  # 效应量解读阈值（Cohen 1988）
+  effect_size_thresholds:
+    small: 0.01
+    medium: 0.06
+    large: 0.14
+
+# ============================================================
+# Reference-normal 参考方程
+# ============================================================
+reference:
+  subset_flag: "reference_flag_wide"   # 参考子集标志列
+  predictors:
+    - "age"
+    - "sex"
+  interaction: true                    # age × sex 交互项
+  # 目标变量（约7个）
+  target_variables:
+    - name: "vo2_peak"
+      label: "VO₂peak（mL/kg/min）"
+      expected_age_direction: "negative"   # 预期年龄系数为负
+    - name: "vo2_peak_pct_pred"
+      label: "VO₂peak%pred"
+      expected_age_direction: "negative"
+    - name: "hr_peak"
+      label: "峰值心率（bpm）"
+      expected_age_direction: "negative"
+    - name: "ve_vco2_slope"
+      label: "VE/VCO₂斜率"
+      expected_age_direction: "positive"
+    - name: "met_peak"
+      label: "峰值MET"
+      expected_age_direction: "negative"
+    - name: "work_rate_peak"
+      label: "峰值功率（W）"
+      expected_age_direction: "negative"
+    - name: "o2_pulse_peak"
+      label: "O₂脉搏峰值（mL/beat）"
+      expected_age_direction: "negative"
+  # 输出后缀
+  pct_pred_suffix: "_pct_ref"    # %pred 列后缀
+  z_score_suffix: "_z_ref"       # z-score 列后缀
+  # 最小参考子集要求
+  min_per_sex: 20                # 每性别最少样本量（否则退化为无交互模型）
+
+# ============================================================
+# 绘图配置
+# ============================================================
+plots:
+  style: "whitegrid"
+  figsize: [10, 6]
+  dpi: 300
+  palette: "Set2"
+  output_dir: "reports/figures/m4"
+  # 绘图任务列表
+  boxplot_variables:
+    - "vo2_peak"
+    - "vo2_peak_pct_pred"
+    - "bp_peak_sys"
+    - "ve_vco2_slope"
+    - "hr_peak"
+  violin_variables:
+    - "vo2_peak"
+    - "ve_vco2_slope"
+  interaction_outcomes:
+    - "vo2_peak"
+    - "bp_peak_sys"
+    - "ve_vco2_slope"
+
+# ============================================================
+# 协议分层敏感性分析
+# ============================================================
+sensitivity:
+  # 协议推导规则：从现有字段推导 protocol_type
+  protocol_derivation:
+    # 若存在 exercise_protocol_cycle 列（bool）
+    from_column: "exercise_protocol_cycle"
+    mapping:
+      true: "cycle"
+      false: "treadmill"
+    fallback: "unknown"
+  # 敏感性分析：在各协议子组重跑 Table 1
+  stratify_column: "protocol_type"
+  strata:
+    - "cycle"
+    - "treadmill"
+  output_report: "reports/sensitivity_protocol.md"

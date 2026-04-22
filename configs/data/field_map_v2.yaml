@@ -1,0 +1,576 @@
+# =============================================================================
+# Field Mapping v2 — Chinese column names → English canonical names
+# 覆盖真实 Excel 87 列（含 v1 全部字段 + 新增人口学/药物/协议/CPET扩展字段）
+# Source: CPET Excel files — BATCH_CPET_EXAMPLE/S01_GROUPED/raw/
+# Last updated: 2026-04-14
+# =============================================================================
+version: "2.0"
+
+# --------------- Identity ---------------
+subject_id:
+  aliases: ["ID", "编号", "患者编号", "受试者编号", "序号"]
+test_date:
+  aliases: ["DATE", "检测日期", "测试日期", "检查日期", "日期"]
+group_code:
+  aliases: ["分组", "组别", "group"]
+diagnosis_notes:
+  aliases: ["DIAGNOSIS", "诊断", "诊断备注", "初步诊断"]
+
+# --------------- Demographics ---------------
+age:
+  aliases: ["AGE", "年龄", "Age", "年龄(岁)"]
+sex:
+  aliases: ["SEX", "性别", "Sex", "Gender"]
+  value_map:
+    男: M
+    女: F
+    male: M
+    female: F
+    "1": M
+    "2": F
+height_cm:
+  aliases: ["身高", "身高(cm)", "Height", "身高cm"]
+weight_kg:
+  aliases: ["体重", "体重(kg)", "Weight", "体重kg"]
+bmi:
+  aliases: ["BMI", "体重指数", "体质指数"]
+
+# --------------- Education & Occupation ---------------
+education_level:
+  aliases: ["文化程度", "教育程度", "学历"]
+  # value_map 留白：根据实际数据补充
+employed:
+  aliases: ["在职", "就业状态", "职业状态"]
+  value_map:
+    "是": 1
+    "否": 0
+    "1": 1
+    "0": 0
+mental_stress:
+  aliases: ["工作中的精神紧张程度", "精神紧张", "工作紧张", "心理压力"]
+physical_labor:
+  aliases: ["工作中的体力消耗程度", "体力消耗", "体力劳动", "劳动强度"]
+
+# --------------- Clinical Background ---------------
+htn_history:
+  aliases: ["高血压", "高血压史", "HTN", "高血压病史", "高血压（年）"]
+htn_years:
+  aliases: ["高血压年", "高血压年数", "高血压病史（年）", "高血压时间"]
+cad_history:
+  aliases: ["冠心病", "冠心病史", "CAD", "冠状动脉疾病", "冠心病（年）"]
+cad_years:
+  aliases: ["冠心病年数", "冠心病病史（年）"]
+hf_history:
+  aliases: ["心衰", "心力衰竭", "HF", "心功能不全", "心衰（年）"]
+hf_years:
+  aliases: ["心衰年数", "心力衰竭病史（年）"]
+lvef_pct:
+  aliases: ["LVEF", "左室射血分数", "EF(%)", "射血分数", "EF(%)"]
+nyha_class:
+  aliases: ["NYHA", "NYHA分级", "心功能分级"]
+bp_rest_sys:
+  aliases: ["静息收缩压", "安静收缩压", "SBP(mmHg)", "静息SBP", "安静SBP"]
+bp_rest_dia:
+  aliases: ["静息舒张压", "安静舒张压", "DBP(mmHg)", "静息DBP", "安静DBP"]
+
+# --------------- Comorbidities ---------------
+hyperlipidemia:
+  aliases: ["高脂血症", "血脂异常", "高血脂"]
+  value_map:
+    "是": 1
+    "否": 0
+    "1": 1
+    "0": 0
+hyperlipidemia_years:
+  aliases: ["高脂血症年", "高脂血症（年）", "高血脂年数"]
+diabetes:
+  aliases: ["糖尿病", "DM", "2型糖尿病"]
+  value_map:
+    "是": 1
+    "否": 0
+    "1": 1
+    "0": 0
+diabetes_years:
+  aliases: ["糖尿病年", "糖尿病（年）", "糖尿病年数"]
+tumor_history:
+  aliases: ["肿瘤", "恶性肿瘤", "肿瘤病史"]
+  value_map:
+    "是": 1
+    "否": 0
+    "1": 1
+    "0": 0
+musculoskeletal_disease:
+  aliases: ["运动系统疾病", "骨骼肌肉疾病", "肌肉骨骼病变"]
+  value_map:
+    "是": 1
+    "否": 0
+    "1": 1
+    "0": 0
+stroke_history:
+  aliases: ["脑卒中", "卒中", "脑梗死", "脑出血"]
+  value_map:
+    "是": 1
+    "否": 0
+    "1": 1
+    "0": 0
+copd_history:
+  aliases: ["慢阻肺", "COPD", "慢性阻塞性肺病"]
+  value_map:
+    "是": 1
+    "否": 0
+    "1": 1
+    "0": 0
+
+# --------------- Smoking History ---------------
+smoking_status:
+  aliases: ["吸烟", "吸烟状态", "吸烟史"]
+  value_map:
+    "是": 1
+    "否": 0
+    "从不": 0
+    "现在": 1
+    "已戒": 2
+    "1": 1
+    "0": 0
+smoking_years:
+  aliases: ["吸烟年数", "吸烟时间（年）", "烟龄"]
+smoking_daily_amount:
+  aliases: ["日吸烟量", "吸烟量", "每日支数"]
+quit_smoking_years:
+  aliases: ["吸烟戒年", "戒烟年数", "戒烟时间（年）"]
+quit_smoking_months:
+  aliases: ["吸烟-月", "戒烟月数", "戒烟时间（月）"]
+
+# --------------- Family History & Lifestyle ---------------
+family_hx_cad:
+  aliases: ["冠心病家族史", "家族史-冠心病", "CAD家族史"]
+  value_map:
+    "是": 1
+    "否": 0
+    "1": 1
+    "0": 0
+household_activity:
+  aliases: ["家务", "家务劳动", "日常家务"]
+exercise_habit:
+  aliases: ["运动锻炼", "规律运动", "体育锻炼"]
+  value_map:
+    "无": "none"
+    "有规律（类型、频率）": "regular"
+    "偶尔": "occasional"
+    "是": "regular"
+    "否": "none"
+    "1": "regular"
+    "0": "none"
+exercise_duration_min:
+  aliases: ["运动时间", "每次运动时间（分钟）", "锻炼时间"]
+exercise_type:
+  aliases: ["类型", "运动类型", "锻炼方式", "运动方式"]
+exercise_frequency_per_week:
+  aliases: ["频率", "运动频率", "每周频率", "运动次数/周"]
+exercise_intensity:
+  aliases: ["强度", "运动强度", "锻炼强度"]
+
+# --------------- Medications: Antihypertensive ---------------
+med_ccb:
+  aliases: ["钙拮抗剂", "CCB", "钙通道阻滞剂"]
+  value_map:
+    "是": 1
+    "否": 0
+    "1": 1
+    "0": 0
+med_acei:
+  aliases: ["ACEI", "血管紧张素转换酶抑制剂"]
+  value_map:
+    "是": 1
+    "否": 0
+    "1": 1
+    "0": 0
+med_arb:
+  aliases: ["ARB", "血管紧张素受体拮抗剂"]
+  value_map:
+    "是": 1
+    "否": 0
+    "1": 1
+    "0": 0
+med_betablocker:
+  aliases: ["β受体阻滞剂", "β-blocker", "倍他乐克", "美托洛尔", "比索洛尔"]
+  value_map:
+    "是": 1
+    "否": 0
+    "1": 1
+    "0": 0
+med_diuretic:
+  aliases: ["利尿剂", "利尿药"]
+  value_map:
+    "是": 1
+    "否": 0
+    "1": 1
+    "0": 0
+med_digoxin:
+  aliases: ["洋地黄", "地高辛", "Digoxin"]
+  value_map:
+    "是": 1
+    "否": 0
+    "1": 1
+    "0": 0
+
+# --------------- Medications: Lipid-lowering ---------------
+med_statin:
+  aliases: ["他汀", "他汀类", "Statin", "瑞舒伐他汀", "阿托伐他汀"]
+  value_map:
+    "是": 1
+    "否": 0
+    "1": 1
+    "0": 0
+med_fibrate:
+  aliases: ["贝特", "贝特类", "Fibrate", "非诺贝特"]
+  value_map:
+    "是": 1
+    "否": 0
+    "1": 1
+    "0": 0
+med_niacin:
+  aliases: ["烟酸", "Niacin", "烟酸类"]
+  value_map:
+    "是": 1
+    "否": 0
+    "1": 1
+    "0": 0
+
+# --------------- Medications: Antiplatelet / Anticoagulant ---------------
+med_aspirin:
+  aliases: ["阿司匹林", "Aspirin", "ASA"]
+  value_map:
+    "是": 1
+    "否": 0
+    "1": 1
+    "0": 0
+med_clopidogrel:
+  aliases: ["氯吡格雷", "Clopidogrel", "波立维"]
+  value_map:
+    "是": 1
+    "否": 0
+    "1": 1
+    "0": 0
+med_ticagrelor:
+  aliases: ["替格瑞洛", "Ticagrelor"]
+  value_map:
+    "是": 1
+    "否": 0
+    "1": 1
+    "0": 0
+med_warfarin:
+  aliases: ["华法林", "Warfarin"]
+  value_map:
+    "是": 1
+    "否": 0
+    "1": 1
+    "0": 0
+med_dabigatran:
+  aliases: ["达比加群酯", "Dabigatran"]
+  value_map:
+    "是": 1
+    "否": 0
+    "1": 1
+    "0": 0
+med_rivaroxaban:
+  aliases: ["利伐沙班", "Rivaroxaban"]
+  value_map:
+    "是": 1
+    "否": 0
+    "1": 1
+    "0": 0
+med_other_antiplatelet:
+  aliases: ["其他-抗血小板", "其他抗血小板"]
+  value_map:
+    "是": 1
+    "否": 0
+    "1": 1
+    "0": 0
+med_other_anticoagulant:
+  aliases: ["其他-抗凝", "其他抗凝"]
+  value_map:
+    "是": 1
+    "否": 0
+    "1": 1
+    "0": 0
+
+# --------------- Medications: Antidiabetic ---------------
+med_metformin:
+  aliases: ["双胍类", "二甲双胍", "Metformin"]
+  value_map:
+    "是": 1
+    "否": 0
+    "1": 1
+    "0": 0
+med_sulfonylurea:
+  aliases: ["磺脲类", "Sulfonylurea", "格列本脲", "格列齐特"]
+  value_map:
+    "是": 1
+    "否": 0
+    "1": 1
+    "0": 0
+med_alpha_glucosidase_inhib:
+  aliases: ["α甘酶抑制剂", "α葡萄糖苷酶抑制剂", "α糖苷酶抑制剂", "阿卡波糖"]
+  value_map:
+    "是": 1
+    "否": 0
+    "1": 1
+    "0": 0
+med_glinide:
+  aliases: ["格列奈类", "Glinide", "瑞格列奈"]
+  value_map:
+    "是": 1
+    "否": 0
+    "1": 1
+    "0": 0
+med_insulin:
+  aliases: ["胰岛素", "Insulin"]
+  value_map:
+    "是": 1
+    "否": 0
+    "1": 1
+    "0": 0
+med_tzd:
+  aliases: ["胰岛素增敏剂", "TZD", "噻唑烷二酮", "吡格列酮", "罗格列酮"]
+  value_map:
+    "是": 1
+    "否": 0
+    "1": 1
+    "0": 0
+med_other_antidiabetic:
+  aliases: ["其他-降糖", "其他降糖药"]
+  value_map:
+    "是": 1
+    "否": 0
+    "1": 1
+    "0": 0
+med_dpp4i:
+  aliases: ["DPP-4抑制剂", "DPP4抑制剂", "沙格列汀", "西格列汀"]
+  value_map:
+    "是": 1
+    "否": 0
+    "1": 1
+    "0": 0
+med_sglt2i:
+  aliases: ["SGLT2抑制剂", "达格列净", "恩格列净"]
+  value_map:
+    "是": 1
+    "否": 0
+    "1": 1
+    "0": 0
+
+# --------------- Medications: Other Cardioprotective ---------------
+med_trimetazidine:
+  aliases: ["曲美他嗪", "Trimetazidine", "万爽力"]
+  value_map:
+    "是": 1
+    "否": 0
+    "1": 1
+    "0": 0
+med_nicorandil:
+  aliases: ["尼可地尔", "Nicorandil"]
+  value_map:
+    "是": 1
+    "否": 0
+    "1": 1
+    "0": 0
+med_ppi:
+  aliases: ["PPI", "质子泵抑制剂", "奥美拉唑", "泮托拉唑"]
+  value_map:
+    "是": 1
+    "否": 0
+    "1": 1
+    "0": 0
+med_liver_protect:
+  aliases: ["保肝药", "护肝药", "肝保护药"]
+  value_map:
+    "是": 1
+    "否": 0
+    "1": 1
+    "0": 0
+med_gastric_protectant:
+  aliases: ["胃黏膜保护剂", "胃黏膜保护药", "胃保护剂"]
+  value_map:
+    "是": 1
+    "否": 0
+    "1": 1
+    "0": 0
+med_other:
+  aliases: ["其他药物", "其他"]
+med_nitrate:
+  aliases: ["硝酸酯", "硝酸酯类", "硝酸甘油", "单硝酸异山梨酯"]
+  value_map:
+    "是": 1
+    "否": 0
+    "1": 1
+    "0": 0
+
+# --------------- CPET Protocol ---------------
+protocol_bruce:
+  aliases: ["Bruce平板", "Bruce方案", "标准Bruce"]
+  value_map:
+    "是": 1
+    "否": 0
+    "1": 1
+    "0": 0
+protocol_modified_bruce:
+  aliases: ["改良Bruce平板", "改良Bruce", "改良Bruce方案", "Modified Bruce"]
+  value_map:
+    "是": 1
+    "否": 0
+    "1": 1
+    "0": 0
+protocol_cycle:
+  aliases: ["踏车", "自行车", "Cycle", "功率踏车"]
+  value_map:
+    "是": 1
+    "否": 0
+    "1": 1
+    "0": 0
+protocol_ramp_watts:
+  aliases: ["功率车递增瓦数", "递增功率", "Ramp瓦数", "每分钟递增功率(W)"]
+exercise_mode:
+  aliases: ["运动方式", "测试方式", "Exercise mode", "运动模式"]
+test_duration_min:
+  aliases: ["结果-时间-分", "运动时间-分", "测试时长（分）"]
+test_duration_sec:
+  aliases: ["结果-时间-秒", "运动时间-秒", "测试时长（秒）"]
+
+# --------------- CPET Resting ---------------
+hr_rest:
+  aliases: ["静息心率", "安静心率", "Rest HR", "HR_rest", "静息-HR"]
+
+# --------------- CPET Peak Parameters ---------------
+vo2_peak:
+  aliases: ["峰值摄氧量", "VO2peak", "VO2 Peak", "峰值VO2(ml/kg/min)", "最大值-VO2",
+            "峰值VO2", "VO2max(ml/kg/min)", "最大摄氧量"]
+vo2_peak_abs:
+  aliases: ["最大值-VO2*", "峰值VO2*", "峰值摄氧量(ml/min)", "VO2peak(ml/min)",
+            "最大VO2(ml/min)"]
+  unit: mL/min
+vo2_peak_pct_pred:
+  aliases: ["最大值VO2占预计百分比", "VO2peak%pred", "峰值VO2占预计值%", "VO2max预计值%",
+            "最大值-VO2%pred", "%pred-VO2"]
+hr_peak:
+  aliases: ["峰值心率", "Peak HR", "HR_peak", "最大心率", "最大值-HR", "最高心率"]
+hr_peak_pct_pred:
+  aliases: ["峰值心率%pred", "峰值心率占预计值", "最大值-HR%pred", "%pred-HR"]
+load_peak_w:
+  aliases: ["峰值功率", "峰值负荷", "Peak Load(W)", "最大功率(W)", "最大值-W", "最大负荷(W)"]
+rer_peak:
+  aliases: ["峰值RER", "RER", "呼吸交换率", "Peak RER", "最大值-RER", "最大RER"]
+o2_pulse_peak:
+  aliases: ["氧脉搏", "O2 Pulse", "O2Pulse", "氧脉搏(ml/beat)", "最大值-VO2/HR",
+            "峰值氧脉搏", "O2脉搏"]
+ve_vco2_slope:
+  aliases: ["VE/VCO2slope", "VE/VCO2斜率", "VE/VCO2 slope", "通气效率斜率", "VE-VCO2斜率"]
+bp_peak_sys:
+  aliases: ["最大值-SBP", "峰值收缩压", "运动峰值SBP", "Peak SBP", "运动最高收缩压", "最大SBP"]
+bp_peak_dia:
+  aliases: ["最大值-DBP", "峰值舒张压", "运动峰值DBP", "Peak DBP", "运动最高舒张压", "最大DBP"]
+ve_peak:
+  aliases: ["最大值-VE", "峰值VE", "峰值通气量(L/min)", "最大通气量"]
+mets_peak:
+  aliases: ["最大值-METs", "METs", "峰值METs", "代谢当量", "最大代谢当量"]
+oues:
+  aliases: ["OUES", "摄氧效率斜率", "oxygen uptake efficiency slope"]
+exercise_capacity:
+  aliases: ["运动耐量", "运动能力", "运动耐力"]
+
+# --------------- CPET Threshold ---------------
+vt1_vo2:
+  aliases: ["AT摄氧量", "VT1 VO2", "无氧阈VO2", "AT VO2(ml/kg/min)", "无氧阈-VO2",
+            "AT-VO2", "无氧阈摄氧量"]
+vt1_vo2_abs:
+  aliases: ["无氧阈-VO2*", "AT VO2*", "无氧阈VO2(ml/min)", "AT-VO2(ml/min)"]
+  unit: mL/min
+vt1_hr:
+  aliases: ["AT心率", "VT1 HR", "无氧阈心率", "无氧阈-HR", "AT-HR"]
+vt1_load_w:
+  aliases: ["AT功率", "VT1功率", "无氧阈功率(W)", "无氧阈-W", "AT-W"]
+vt1_pct_vo2peak:
+  aliases: ["AT占峰值%", "VT1/VO2peak%", "AT%VO2peak", "无氧阈%peak"]
+rcp_vo2:
+  aliases: ["RCP摄氧量", "VT2 VO2", "呼吸代偿点VO2", "RCP-VO2", "RCP VO2"]
+rcp_hr:
+  aliases: ["RCP心率", "VT2心率", "呼吸代偿点心率", "RCP-HR"]
+rcp_load_w:
+  aliases: ["RCP功率", "VT2功率", "RCP-W"]
+rcp_pct_vo2peak:
+  aliases: ["RCP占峰值%", "VT2/VO2peak%", "RCP%peak"]
+
+# --------------- Pulmonary Function ---------------
+pulmonary_ventilation:
+  aliases: ["肺通气功能", "肺通气", "通气功能"]
+small_airway_function:
+  aliases: ["小气道功能", "小气道"]
+fvc_pct_pred:
+  aliases: ["FVC%pred", "FVC占预计值%", "用力肺活量%"]
+fev1_pct_pred:
+  aliases: ["FEV1%pred", "FEV1占预计值%", "第1秒用力呼气量%"]
+fev1_fvc_ratio:
+  aliases: ["FEV1/FVC", "FEV1/FVC比值", "一秒率"]
+
+# --------------- Safety Flags & Outcomes ---------------
+eih_status:
+  aliases: ["运动低氧", "EIH", "低氧血症", "SpO2下降", "运动性低氧血症"]
+  value_map:
+    "是": 1
+    "否": 0
+    "有": 1
+    "无": 0
+    "1": 1
+    "0": 0
+eih_nadir_spo2:
+  aliases: ["最低SpO2", "SpO2最低值", "Nadir SpO2(%)", "最小SpO2"]
+bp_response_abnormal:
+  aliases: ["血压反应异常", "BP反应", "高血压反应", "运动高血压"]
+  value_map:
+    "是": 1
+    "否": 0
+    "有": 1
+    "无": 0
+    "1": 1
+    "0": 0
+exercise_hypertension:
+  aliases: ["运动高血压", "运动性高血压", "EHT", "exertional hypertension"]
+  value_map:
+    "是": 1
+    "否": 0
+    "有": 1
+    "无": 0
+    "1": 1
+    "0": 0
+st_depression_mm:
+  aliases: ["ST压低", "ST段压低(mm)", "ST Depression", "ST改变(mm)"]
+arrhythmia_flag:
+  aliases: ["心律失常", "运动心律失常", "Arrhythmia", "心律不整"]
+  value_map:
+    "是": 1
+    "否": 0
+    "有": 1
+    "无": 0
+    "1": 1
+    "0": 0
+test_terminated_early:
+  aliases: ["提前终止", "试验终止", "Early Stop", "提前停止"]
+  value_map:
+    "是": 1
+    "否": 0
+    "有": 1
+    "无": 0
+    "1": 1
+    "0": 0
+termination_reason:
+  aliases: ["终止原因", "停止原因", "Termination Reason", "终止理由"]
+test_result:
+  aliases: ["运动试验结果", "试验结果", "检查结果", "运动结果"]
+o2_pulse_trajectory:
+  aliases: ["氧脉搏轨迹", "O2脉搏轨迹", "氧脉搏变化", "O2Pulse轨迹"]
+hr_recovery:
+  aliases: ["心率恢复", "HR恢复", "HR recovery", "恢复期心率恢复"]
+hr_recovery_1min:
+  aliases: ["心率恢复1分钟", "HR恢复1min", "1分钟心率恢复", "HRR1"]
+hr_recovery_2min:
+  aliases: ["心率恢复2分钟", "HR恢复2min", "2分钟心率恢复", "HRR2"]

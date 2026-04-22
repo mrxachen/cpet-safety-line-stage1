@@ -17,7 +17,7 @@ import pytest
 def test_package_importable():
     """cpet_stage1 package can be imported."""
     import cpet_stage1
-    assert cpet_stage1.__version__ == "0.1.0"
+    assert cpet_stage1.__version__ == "1.0.0-stage1"
     assert cpet_stage1.__stage__ == 1
 
 

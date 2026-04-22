@@ -1,0 +1,55 @@
+# anomaly_config.yaml — 多变量异常评分配置（Method 2 / Phase G）
+#
+# Mahalanobis 距离：捕获患者在多变量 CPET 空间中相对参考人群的偏离程度。
+# 优势：考虑变量间协方差，单变量 %pred 无法区分的模式（如 vo2 低+HR 高 = 变时不全）
+# 可被 Mahalanobis 距离天然捕获。
+
+# ── 参考子集定义 ──────────────────────────────────────────────────────────────
+reference:
+  flag_column: reference_flag_wide   # 用于标记参考人群的列
+  min_n: 30                          # 最小参考样本量（不足则降级到全 CTRL）
+  group_fallback: CTRL               # 参考子集不足时的兜底组
+
+# ── 变量选择（5个非泄漏 CPET 变量）─────────────────────────────────────────
+variables:
+  primary:
+    - vo2_peak          # VO₂峰值（心肺储备核心）
+    - hr_peak           # 心率峰值（变时功能）
+    - o2_pulse_peak     # O₂脉搏峰值（每搏量代理）
+    - oues              # 摄氧量效率斜率（通气效率积分）
+    - mets_peak         # 代谢当量峰值（功能容量）
+  # 备用变量（当 primary 变量缺失率过高时替换）
+  backup:
+    - vt1_vo2           # AT处VO₂（运动耐量参考点）
+    - ve_vco2_slope     # VE/VCO₂斜率（通气效率）
+
+# ── 分层计算配置（可选）────────────────────────────────────────────────────
+stratification:
+  enabled: true
+  # 按 age 和 sex 分组的条件 μ, Σ（样本量充足时）
+  factors:
+    - sex               # M/F 分层
+    - age_group         # 年龄组（按中位年龄67岁分层）
+  min_stratum_n: 30     # 分层最小样本量（不足则退化为整体参考）
+
+# ── 安全区切点 ────────────────────────────────────────────────────────────
+zone_cutpoints:
+  # D² 服从 χ²(k) 分布（k = 变量数），P75/P95 是自然切点
+  method: percentile_reference         # 基于参考子集分位
+  green_yellow_percentile: 75          # P75: Green/Yellow 界
+  yellow_red_percentile: 95            # P95: Yellow/Red 界
+  # 备用：卡方分布理论切点（k=5时: P75≈6.63, P95≈11.07）
+  fallback_low: 6.63
+  fallback_high: 11.07
+
+# ── 缺失值处理 ────────────────────────────────────────────────────────────
+imputation:
+  method: median_reference   # 用参考子集中位数填充缺失值
+  max_missing_pct: 0.50      # 缺失率超过50%则从分析中排除该变量
+
+# ── 输出 ──────────────────────────────────────────────────────────────────
+output:
+  score_col: mahal_d2             # Mahalanobis D² 分数列名
+  zone_col: anomaly_zone          # 安全区列名（green/yellow/red）
+  pvalue_col: mahal_pvalue        # χ² 检验 p 值列名（概率解释）
+  percentile_col: mahal_pct_ref   # 在参考人群中的百分位

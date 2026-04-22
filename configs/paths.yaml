@@ -29,3 +29,8 @@ paths:
 
   # Configs
   configs_dir: ./configs
+
+  # External data root（真实患者数据，不入 Git）
+  # 设置 EXTERNAL_DATA_DIR 环境变量指向 Dataset/ 父目录
+  external_data_dir: ${EXTERNAL_DATA_DIR:../Dataset}
+  batch_cpet_dir: ${EXTERNAL_DATA_DIR:../Dataset}/clinical_structured/BATCH_CPET_EXAMPLE/S01_GROUPED/raw

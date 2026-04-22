@@ -1,0 +1,558 @@
+# =============================================================================
+# CPET Stage I — Core Data Schema v2
+# 扩展 v1，覆盖全部 87 列真实字段（人口学/合并症/用药/协议/CPET/安全标志）
+# =============================================================================
+version: "2.0"
+description: "Summary-level CPET data schema for older adults with cardiovascular disease (full 87-column)"
+
+# --------------- Identity & Demographics ---------------
+identity:
+  subject_id:
+    dtype: string
+    required: true
+    description: "受试者匿名编号"
+  session_id:
+    dtype: string
+    required: false
+    description: "检测会话ID（subject_id + date hash）"
+  test_date:
+    dtype: date
+    required: false
+    description: "CPET检测日期（YYYY-MM-DD）"
+  group_code:
+    dtype: category
+    categories: [CTRL, HTN_HISTORY_NO_EHT, HTN_HISTORY_WITH_EHT, EHT_ONLY]
+    required: true
+    description: "受试者分组编码"
+
+demographics:
+  age:
+    dtype: float
+    unit: years
+    range: [18, 100]
+    required: true
+  sex:
+    dtype: category
+    categories: [M, F]
+    required: true
+  height_cm:
+    dtype: float
+    unit: cm
+    range: [130, 220]
+  weight_kg:
+    dtype: float
+    unit: kg
+    range: [30, 180]
+  bmi:
+    dtype: float
+    unit: kg/m2
+    range: [13, 55]
+
+# --------------- Education & Occupation ---------------
+socioeconomic:
+  education_level:
+    dtype: category
+    description: "文化程度"
+  employed:
+    dtype: category
+    categories: [0, 1]
+    description: "在职状态（0=否，1=是）"
+  mental_stress:
+    dtype: category
+    categories: [0, 1]
+    description: "精神紧张（0=否，1=是）"
+  physical_labor:
+    dtype: string
+    description: "体力消耗程度"
+
+# --------------- Clinical Background ---------------
+clinical:
+  htn_history:
+    dtype: bool
+    description: "高血压病史"
+    required: true
+  htn_years:
+    dtype: float
+    unit: years
+    range: [0, 60]
+    description: "高血压病史年数"
+  cad_history:
+    dtype: bool
+    description: "冠心病病史"
+  cad_years:
+    dtype: float
+    unit: years
+    range: [0, 60]
+  hf_history:
+    dtype: bool
+    description: "心衰病史"
+  hf_years:
+    dtype: float
+    unit: years
+    range: [0, 60]
+  lvef_pct:
+    dtype: float
+    unit: "%"
+    range: [10, 80]
+    description: "左室射血分数"
+  nyha_class:
+    dtype: category
+    categories: [1, 2, 3, 4]
+    description: "NYHA心功能分级"
+  bp_rest_sys:
+    dtype: float
+    unit: mmHg
+    range: [80, 230]
+    description: "静息收缩压"
+  bp_rest_dia:
+    dtype: float
+    unit: mmHg
+    range: [40, 140]
+    description: "静息舒张压"
+
+# --------------- Comorbidities ---------------
+comorbidities:
+  hyperlipidemia:
+    dtype: category
+    categories: [0, 1]
+    description: "高脂血症"
+  hyperlipidemia_years:
+    dtype: float
+    unit: years
+    range: [0, 50]
+  diabetes:
+    dtype: category
+    categories: [0, 1]
+    description: "糖尿病"
+  diabetes_years:
+    dtype: float
+    unit: years
+    range: [0, 50]
+  tumor_history:
+    dtype: category
+    categories: [0, 1]
+    description: "肿瘤病史"
+  musculoskeletal_disease:
+    dtype: category
+    categories: [0, 1]
+    description: "运动系统疾病"
+  stroke_history:
+    dtype: category
+    categories: [0, 1]
+    description: "脑卒中病史"
+  copd_history:
+    dtype: category
+    categories: [0, 1]
+    description: "COPD病史"
+
+# --------------- Smoking History ---------------
+smoking:
+  smoking_status:
+    dtype: category
+    description: "吸烟状态（0=从不，1=现在，2=已戒）"
+  smoking_years:
+    dtype: float
+    unit: years
+    range: [0, 80]
+    description: "吸烟年数"
+  smoking_daily_amount:
+    dtype: float
+    unit: 支/天
+    range: [0, 100]
+    description: "日吸烟量"
+  quit_smoking_years:
+    dtype: float
+    unit: years
+    range: [0, 60]
+    description: "戒烟年数"
+  quit_smoking_months:
+    dtype: float
+    unit: months
+    range: [0, 12]
+    description: "戒烟月数"
+
+# --------------- Family History & Lifestyle ---------------
+lifestyle:
+  family_hx_cad:
+    dtype: category
+    categories: [0, 1]
+    description: "冠心病家族史"
+  household_activity:
+    dtype: string
+    description: "家务劳动情况"
+  exercise_habit:
+    dtype: category
+    categories: [0, 1]
+    description: "规律运动习惯"
+  exercise_duration_min:
+    dtype: float
+    unit: min
+    range: [0, 300]
+    description: "每次运动时间（分钟）"
+  exercise_type:
+    dtype: string
+    description: "运动类型"
+  exercise_frequency_per_week:
+    dtype: float
+    unit: times/week
+    range: [0, 14]
+    description: "每周运动频率"
+  exercise_intensity:
+    dtype: string
+    description: "运动强度描述"
+
+# --------------- Medications: Antihypertensive ---------------
+medications_antihypertensive:
+  med_ccb:
+    dtype: category
+    categories: [0, 1]
+    description: "钙拮抗剂"
+  med_acei:
+    dtype: category
+    categories: [0, 1]
+    description: "ACEI"
+  med_arb:
+    dtype: category
+    categories: [0, 1]
+    description: "ARB"
+  med_betablocker:
+    dtype: category
+    categories: [0, 1]
+    description: "β受体阻滞剂"
+  med_diuretic:
+    dtype: category
+    categories: [0, 1]
+    description: "利尿剂"
+  med_digoxin:
+    dtype: category
+    categories: [0, 1]
+    description: "洋地黄"
+
+# --------------- Medications: Lipid-lowering ---------------
+medications_lipid:
+  med_statin:
+    dtype: category
+    categories: [0, 1]
+    description: "他汀类"
+  med_fibrate:
+    dtype: category
+    categories: [0, 1]
+    description: "贝特类"
+  med_niacin:
+    dtype: category
+    categories: [0, 1]
+    description: "烟酸类"
+
+# --------------- Medications: Antithrombotic ---------------
+medications_antithrombotic:
+  med_aspirin:
+    dtype: category
+    categories: [0, 1]
+    description: "阿司匹林"
+  med_clopidogrel:
+    dtype: category
+    categories: [0, 1]
+    description: "氯吡格雷"
+  med_ticagrelor:
+    dtype: category
+    categories: [0, 1]
+    description: "替格瑞洛"
+  med_warfarin:
+    dtype: category
+    categories: [0, 1]
+    description: "华法林"
+  med_dabigatran:
+    dtype: category
+    categories: [0, 1]
+    description: "达比加群酯"
+  med_rivaroxaban:
+    dtype: category
+    categories: [0, 1]
+    description: "利伐沙班"
+
+# --------------- Medications: Antidiabetic ---------------
+medications_antidiabetic:
+  med_metformin:
+    dtype: category
+    categories: [0, 1]
+    description: "双胍类（二甲双胍）"
+  med_sulfonylurea:
+    dtype: category
+    categories: [0, 1]
+    description: "磺脲类"
+  med_alpha_glucosidase_inhib:
+    dtype: category
+    categories: [0, 1]
+    description: "α葡萄糖苷酶抑制剂"
+  med_glinide:
+    dtype: category
+    categories: [0, 1]
+    description: "格列奈类"
+  med_insulin:
+    dtype: category
+    categories: [0, 1]
+    description: "胰岛素"
+  med_dpp4i:
+    dtype: category
+    categories: [0, 1]
+    description: "DPP-4抑制剂"
+  med_sglt2i:
+    dtype: category
+    categories: [0, 1]
+    description: "SGLT-2抑制剂"
+
+# --------------- Medications: Other ---------------
+medications_other:
+  med_trimetazidine:
+    dtype: category
+    categories: [0, 1]
+    description: "曲美他嗪"
+  med_nicorandil:
+    dtype: category
+    categories: [0, 1]
+    description: "尼可地尔"
+  med_ppi:
+    dtype: category
+    categories: [0, 1]
+    description: "质子泵抑制剂"
+  med_liver_protect:
+    dtype: category
+    categories: [0, 1]
+    description: "保肝药"
+  med_nitrate:
+    dtype: category
+    categories: [0, 1]
+    description: "硝酸酯类"
+
+# --------------- CPET Protocol ---------------
+cpet_protocol:
+  protocol_bruce:
+    dtype: category
+    categories: [0, 1]
+    description: "标准Bruce平板方案"
+  protocol_modified_bruce:
+    dtype: category
+    categories: [0, 1]
+    description: "改良Bruce方案"
+  protocol_cycle:
+    dtype: category
+    categories: [0, 1]
+    description: "功率踏车方案"
+  protocol_ramp_watts:
+    dtype: float
+    unit: W/min
+    range: [5, 30]
+    description: "踏车递增功率（W/min）"
+  exercise_mode:
+    dtype: string
+    description: "运动方式描述"
+
+# --------------- CPET Resting Parameters ---------------
+cpet_rest:
+  hr_rest:
+    dtype: float
+    unit: bpm
+    range: [30, 120]
+    description: "静息心率"
+  vo2_rest:
+    dtype: float
+    unit: mL/kg/min
+    range: [2, 8]
+  vco2_rest:
+    dtype: float
+    unit: mL/kg/min
+
+# --------------- CPET Peak Parameters (P0 inputs) ---------------
+cpet_peak:
+  vo2_peak:
+    dtype: float
+    unit: mL/kg/min
+    range: [3, 70]
+    required: true
+    description: "峰值摄氧量（相对值）"
+  vo2_peak_abs:
+    dtype: float
+    unit: mL/min
+    range: [100, 6000]
+    description: "峰值摄氧量（绝对值）"
+  vo2_peak_pct_pred:
+    dtype: float
+    unit: "%"
+    range: [10, 170]
+    description: "峰值VO2占预计值%"
+  hr_peak:
+    dtype: float
+    unit: bpm
+    range: [50, 230]
+  hr_peak_pct_pred:
+    dtype: float
+    unit: "%"
+    range: [30, 130]
+  load_peak_w:
+    dtype: float
+    unit: W
+    range: [0, 500]
+  rer_peak:
+    dtype: float
+    range: [0.7, 1.6]
+    description: "峰值呼吸交换率（努力度指标）"
+  o2_pulse_peak:
+    dtype: float
+    unit: mL/beat
+    range: [2, 30]
+    description: "峰值氧脉搏"
+  ve_vco2_slope:
+    dtype: float
+    range: [15, 70]
+    description: "VE/VCO2斜率（通气效率）"
+  ve_peak:
+    dtype: float
+    unit: L/min
+    range: [10, 200]
+    description: "峰值通气量"
+  bp_peak_sys:
+    dtype: float
+    unit: mmHg
+    range: [80, 300]
+    description: "运动峰值收缩压"
+  bp_peak_dia:
+    dtype: float
+    unit: mmHg
+    range: [40, 160]
+    description: "运动峰值舒张压"
+  mets_peak:
+    dtype: float
+    unit: METs
+    range: [1, 20]
+    description: "峰值代谢当量"
+  exercise_capacity:
+    dtype: string
+    description: "运动耐量描述"
+
+# --------------- CPET Threshold Parameters (P1 inputs) ---------------
+cpet_threshold:
+  vt1_vo2:
+    dtype: float
+    unit: mL/kg/min
+    description: "无氧阈摄氧量（相对值）"
+  vt1_vo2_abs:
+    dtype: float
+    unit: mL/min
+    description: "无氧阈摄氧量（绝对值）"
+  vt1_hr:
+    dtype: float
+    unit: bpm
+    description: "无氧阈心率"
+  vt1_load_w:
+    dtype: float
+    unit: W
+    description: "无氧阈功率"
+  vt1_pct_vo2peak:
+    dtype: float
+    unit: "%"
+    description: "VT1占VO2peak%"
+  rcp_vo2:
+    dtype: float
+    unit: mL/kg/min
+    description: "呼吸代偿点摄氧量"
+  rcp_hr:
+    dtype: float
+    unit: bpm
+  rcp_load_w:
+    dtype: float
+    unit: W
+  rcp_pct_vo2peak:
+    dtype: float
+    unit: "%"
+
+# --------------- Pulmonary Function ---------------
+pulmonary:
+  pulmonary_ventilation:
+    dtype: string
+    description: "肺通气功能描述（正常/轻度/中度/重度异常）"
+  small_airway_function:
+    dtype: string
+    description: "小气道功能描述"
+  fvc_pct_pred:
+    dtype: float
+    unit: "%"
+    range: [20, 150]
+    description: "FVC占预计值%"
+  fev1_pct_pred:
+    dtype: float
+    unit: "%"
+    range: [20, 150]
+    description: "FEV1占预计值%"
+  fev1_fvc_ratio:
+    dtype: float
+    unit: "%"
+    range: [30, 100]
+    description: "FEV1/FVC比值"
+
+# --------------- Safety Flags & Exercise Outcomes ---------------
+cpet_safety:
+  eih_status:
+    dtype: bool
+    description: "运动低氧血症（SpO2下降≥4%或<88%）"
+  eih_nadir_spo2:
+    dtype: float
+    unit: "%"
+    range: [60, 100]
+    description: "运动最低SpO2"
+  bp_response_abnormal:
+    dtype: bool
+    description: "血压反应异常（过度或钝化）"
+  exercise_hypertension:
+    dtype: bool
+    description: "运动高血压（收缩压>220mmHg或舒张压>100mmHg）"
+  st_depression_mm:
+    dtype: float
+    unit: mm
+    description: "峰值ST段压低（≥1mm=阳性）"
+  arrhythmia_flag:
+    dtype: bool
+    description: "运动中显著心律失常"
+  test_terminated_early:
+    dtype: bool
+    description: "未到力竭终止"
+  termination_reason:
+    dtype: string
+    description: "早终止原因"
+  test_result:
+    dtype: string
+    description: "运动试验总体结果"
+  o2_pulse_trajectory:
+    dtype: string
+    description: "氧脉搏轨迹特征（上升/平台/下降）"
+  hr_recovery:
+    dtype: float
+    unit: bpm
+    description: "心率恢复（运动后1分钟心率下降值）"
+  hr_recovery_1min:
+    dtype: float
+    unit: bpm
+    range: [0, 80]
+    description: "运动后1分钟心率恢复值"
+  hr_recovery_2min:
+    dtype: float
+    unit: bpm
+    range: [0, 80]
+    description: "运动后2分钟心率恢复值"
+
+# --------------- Outcomes / Labels (generated by label_engine) ---------------
+# 这些字段不在原始数据中，由标签引擎生成
+labels:
+  p0_event:
+    dtype: bool
+    description: "P0: 不良安全事件代理标签（生成）"
+  p1_zone:
+    dtype: category
+    categories: [green, yellow, red]
+    description: "P1: 运动安全区分类（生成）"
+  p1_zone_ordinal:
+    dtype: int
+    range: [0, 2]
+    description: "P1区间序数（0=绿，1=黄，2=红）"
+  effort_adequate:
+    dtype: bool
+    description: "努力度充分标志（RER≥1.05或HR≥85%pred）"

@@ -12,7 +12,7 @@ completeness:
     - sex
     - vo2_peak
     - hr_peak
-    - rer_peak
+    # rer_peak: 本数据集设备未输出 RER，不作为必填字段
   warn_missing_threshold: 0.10   # warn if >10% missing for a field
   reject_missing_threshold: 0.50 # reject record if >50% key fields missing
 
@@ -68,4 +68,63 @@ outliers:
     - ve_vco2_slope
     - o2_pulse_peak
     - vt1_pct_vo2peak
+    - hr_recovery_1min
+    - bp_peak_sys
+    - hr_peak           # 新增：检测录入错误（如 147148 bpm）
   action: flag  # flag | winsorize | remove
+
+# --------------- Schema Range Clip ---------------
+# clip_to_schema_range: 超出 schema_v2.yaml range 定义的值替换为 NaN
+# 在 apply_qc_flags() 之前执行，保护后续统计分析和模型训练不受录入错误影响
+clip_to_schema_range:
+  enabled: true
+  # 需要 clip 的字段及其 schema 定义 range（冗余写在此处便于审计）
+  fields:
+    hr_peak:        [50, 230]
+    bp_peak_sys:    [80, 300]
+    ve_vco2_slope:  [15, 70]
+    vo2_peak:       [3, 60]
+    o2_pulse_peak:  [2, 30]
+    eih_nadir_spo2: [60, 100]
+    vt1_pct_vo2peak: [30, 90]
+
+# --------------- Extended Range Checks (v2 新增字段) ---------------
+range_checks_extended:
+  # 病史年限
+  htn_years: {min: 0, max: 60}
+  cad_years: {min: 0, max: 60}
+  hf_years: {min: 0, max: 60}
+  hyperlipidemia_years: {min: 0, max: 50}
+  diabetes_years: {min: 0, max: 50}
+  # 吸烟
+  smoking_years: {min: 0, max: 80}
+  smoking_daily_amount: {min: 0, max: 100}
+  quit_smoking_years: {min: 0, max: 60}
+  quit_smoking_months: {min: 0, max: 12}
+  # 生活方式
+  exercise_duration_min: {min: 0, max: 300}
+  exercise_frequency_per_week: {min: 0, max: 14}
+  # 肺功能
+  fvc_pct_pred: {min: 20, max: 150}
+  fev1_pct_pred: {min: 20, max: 150}
+  fev1_fvc_ratio: {min: 30, max: 100}
+  # CPET 扩展
+  vo2_peak_abs: {min: 100, max: 6000}
+  ve_peak: {min: 10, max: 200}
+  mets_peak: {min: 1, max: 20}
+  vt1_vo2_abs: {min: 50, max: 4000}
+  hr_recovery_1min: {min: 0, max: 80}
+  hr_recovery_2min: {min: 0, max: 80}
+  # 协议
+  protocol_ramp_watts: {min: 5, max: 30}
+
+# --------------- Extended Logic Checks (v2 新增) ---------------
+logic_checks_extended:
+  # 无氧阈绝对值 < 峰值绝对值
+  vt1_abs_lt_peak_abs:
+    condition: "vt1_vo2_abs < vo2_peak_abs"
+    action: warn
+  # 运动高血压时峰值收缩压有记录
+  eht_check_bp_peak:
+    condition: "exercise_hypertension == 0 or bp_peak_sys is not null"
+    action: warn

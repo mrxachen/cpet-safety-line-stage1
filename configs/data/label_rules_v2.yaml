@@ -1,0 +1,115 @@
+version: "2.0"
+# label_rules_v2.yaml — P0/P1 标签规则（优雅降级版）
+# 基于真实数据字段可用性分析（会话 #3）设计
+# 不可用字段标 inactive，可推导字段从 group_code 推导
+
+data_availability:
+  # 数据集中直接可用的字段
+  available:
+    - vo2_peak_pct_pred   # 可用，23 个缺失
+    - ve_vco2_slope       # 可用，15 个缺失
+    - bp_peak_sys         # 可用，139 个缺失（EHT_ONLY 组偏多）
+  # 可从 group_code 推导的字段
+  derived:
+    - eih_status          # group_code 含 "EHT" → True
+    - htn_history         # group_code 含 "HTN_HISTORY" → True
+  # 稀疏字段，NaN 视为 absent (False)
+  sparse_nan_absent:
+    - cad_history
+    - hf_history
+  # 数据集中不存在的字段（inactive）
+  unavailable:
+    - arrhythmia_flag
+    - test_terminated_early
+    - termination_reason
+    - st_depression_mm
+    - rer_peak
+    - nyha_class
+
+# ===========================================================================
+# P0：运动前先验风险代理标签（binary）
+# 正式定义：患者在 CPET 中出现安全相关事件的代理标志
+# 注意：本版本为部分实现，基于可用字段
+# ===========================================================================
+p0:
+  description: "运动安全事件代理（binary）— 基于可用字段的部分实现"
+
+  # 满足任一条件即为 P0 阳性
+  positive_if_any:
+    - field: eih_status
+      value: true
+      source: derived
+      description: "运动性高血压（从 group_code 推导）"
+    - field: vo2_peak_pct_pred
+      less_than: 50
+      source: available
+      description: "VO2peak < 50% pred（严重运动耐量下降）"
+    - field: bp_peak_sys
+      greater_than: 220
+      source: available
+      description: "峰值收缩压 > 220 mmHg（极端高血压反应）"
+
+  # 不可用规则（inactive，不参与计算）
+  inactive_criteria:
+    - field: arrhythmia_flag
+      value: true
+      reason: "字段不存在于当前数据集"
+    - field: test_terminated_early
+      reason: "字段不存在于当前数据集"
+    - field: st_depression_mm
+      greater_than_eq: 1.0
+      reason: "字段不存在于当前数据集"
+
+  # 泄漏防护：bp_peak_sys 列入 P0 leakage guard（borderline，用于特征时需审查）
+  leakage_guard:
+    exclude_from_features:
+      - bp_peak_sys         # 同时出现在 P0 定义和可能特征集中，需硬排除
+
+# ===========================================================================
+# P1：运动后后验安全区分层（3-class ordinal）
+# green=0, yellow=1, red=2
+# 冲突解决：take_worst（取最差区）
+# ===========================================================================
+p1:
+  description: "运动安全区（3类有序）— green/yellow/red"
+
+  zone_rules:
+    green:
+      label: 0
+      criteria:
+        vo2_peak_pct_pred: {gte: 70}
+        ve_vco2_slope: {lte: 30}
+        eih_status: false
+      description: "低风险区：运动耐量充足 + 通气效率正常 + 无运动高血压"
+
+    yellow:
+      label: 1
+      criteria_any:
+        - vo2_peak_pct_pred: {gte: 50, lt: 70}
+        - ve_vco2_slope: {gt: 30, lte: 36}
+      description: "中风险区：运动耐量中等或通气效率轻度异常"
+
+    red:
+      label: 2
+      criteria_any:
+        - vo2_peak_pct_pred: {lt: 50}
+        - ve_vco2_slope: {gt: 36}
+        - eih_status: true
+      description: "高风险区：严重运动耐量下降或通气效率显著异常或运动高血压"
+
+  conflict_resolution: take_worst  # 多条件冲突时取最差区（最大 label 值）
+
+  # HR 努力度代理（rer_peak 不可用时的替代）
+  effort_required:
+    rer_min: null           # RER 不可用（字段缺失）
+    hr_fallback:
+      use: true
+      threshold_pct_pred: 0.85   # hr_peak >= 85% × (220 - age)
+      action_if_below: flag      # 仅标记，不排除（effort 数据稀疏）
+
+  # 不可用规则（inactive）
+  inactive_criteria:
+    - field: rer_peak
+      reason: "字段不存在于当前数据集"
+    - field: nyha_class
+      reason: "字段不存在于当前数据集"

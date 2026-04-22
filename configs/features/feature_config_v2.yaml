@@ -1,0 +1,105 @@
+# =============================================================================
+# feature_config_v2.yaml — Phase C 特征工程配置（扩展版）
+# =============================================================================
+# 相对 v1 的主要变更：
+#   P0：新增 bmi（派生）+ htn_years（高血压病程）
+#   P1：新增 hr_recovery + oues + mets_peak（三个独立新信号）
+#
+# 全部新增特征均通过 leakage_guard 验证（不参与 zone 定义）
+# =============================================================================
+version: "2.0"
+
+# ---------------------------------------------------------------------------
+# P0 特征列表 — 运动前字段（6 → 8 个特征）
+# ---------------------------------------------------------------------------
+p0:
+  continuous:
+    - age               # 年龄（岁）
+    - height_cm         # 身高（cm）
+    - weight_kg         # 体重（kg）
+    - bmi               # 体质指数（kg/m²）— v2 新增（派生：weight/(height/100)²）
+    - bp_rest_sys       # 静息收缩压（mmHg）
+    - bp_rest_dia       # 静息舒张压（mmHg）
+    - hr_rest           # 静息心率（次/分）
+    - lvef_pct          # 左心室射血分数（%）
+    - htn_years         # 高血压病程（年）— v2 新增（52.6% 完整，中位填充）
+
+  binary:
+    - htn_history       # 既往高血压史（0/1）
+    - cad_history       # 冠心病史（0/1，稀疏，NaN=absent=0）
+    - hf_history        # 心衰史（0/1，稀疏，NaN=absent=0）
+
+  categorical:
+    - sex               # 性别（M/F → 编码为 0/1）
+
+  protocol:
+    - exercise_protocol_cycle  # 踏车协议标志（0/1）
+
+  bp_fields:
+    - bp_rest_sys
+    - bp_rest_dia
+
+  # v2 派生特征说明
+  derived_features:
+    bmi:
+      formula: "weight_kg / (height_cm / 100) ** 2"
+      source_cols: [weight_kg, height_cm]
+      completeness: "~99.6%"
+      note: "在 FeatureEngineer.build_p0() 前预派生（或由 CLI 预处理）"
+
+# ---------------------------------------------------------------------------
+# P1 特征列表 — CPET 运动后结果（4 → 7 个特征）
+# ---------------------------------------------------------------------------
+p1:
+  continuous:
+    - vo2_peak          # 峰值 VO₂（mL/kg/min）
+    - hr_peak           # 峰值心率（次/分）
+    - o2_pulse_peak     # 峰值 O₂脉搏（mL/次）
+    - vt1_vo2           # VT1 处 VO₂（mL/kg/min）
+    # --- v2 新增（三个独立信号）---
+    - hr_recovery       # HR 恢复（1分钟）— 自主神经功能代理，r<0.06 vs 现有P1特征
+    - oues              # 氧摄取效率斜率 — 独立心肺效率信号，r<0.16
+    - mets_peak         # 峰值代谢当量（METs）— r=0.18 vs vo2_peak（非冗余）
+    # --- 暂不加入（高相关或泄漏风险）---
+    # ve_peak: r=0.77 vs vo2_peak（高相关，慎用）
+    # vo2_peak_abs: 与 vo2_peak 高相关
+    # ve_vco2_slope: leakage_guard._P1_LEAKAGE_FIELDS（直接用于区间边界）
+    # eih_status: leakage_guard._P1_LEAKAGE_FIELDS（100% → Red）
+
+  binary:
+    - bp_response_abnormal  # 血压反应异常标志（0/1）
+
+  categorical: []
+
+  cycle_filter_col: exercise_protocol_cycle
+
+  # v2 新增特征说明
+  new_features:
+    hr_recovery:
+      completeness: "97.8%"
+      correlation_with_existing: "r<0.06（极低相关）"
+      clinical: "心脏自主神经功能；恢复不良为独立预后因子"
+    oues:
+      completeness: "99.3%"
+      correlation_with_existing: "r<0.16（独立信号）"
+      clinical: "氧摄取效率斜率；心衰/心脏储备独立指标"
+    mets_peak:
+      completeness: "99.7%"
+      correlation_with_existing: "r=0.18 vs vo2_peak（非线性变换，非冗余）"
+      clinical: "峰值运动耐量（METs），跨研究可比性好"
+
+# ---------------------------------------------------------------------------
+# 插补策略
+# ---------------------------------------------------------------------------
+imputation:
+  continuous: median
+  binary: zero
+  categorical: mode
+
+# ---------------------------------------------------------------------------
+# 缩放策略
+# ---------------------------------------------------------------------------
+scaling:
+  apply_to_model_types:
+    - lasso_logistic
+    - ordinal_logistic

@@ -1,0 +1,83 @@
+# =============================================================================
+# feature_config_v1.yaml — M5 特征工程配置
+# =============================================================================
+# P0 特征：运动前先验风险（仅使用运动前字段）
+# P1 特征：运动后后验分层（CPET peak + threshold + safety 结果）
+# =============================================================================
+version: "1.0"
+
+# ---------------------------------------------------------------------------
+# P0 特征列表 — 运动前字段（严禁包含任何运动测试结果）
+# ---------------------------------------------------------------------------
+p0:
+  continuous:
+    - age               # 年龄（岁）
+    - height_cm         # 身高（cm）
+    - weight_kg         # 体重（kg）
+    - bmi               # 体质指数（kg/m²）
+    - bp_rest_sys       # 静息收缩压（mmHg）— 静息值，非峰值
+    - bp_rest_dia       # 静息舒张压（mmHg）
+    - hr_rest           # 静息心率（次/分）
+    - lvef_pct          # 左心室射血分数（%）
+
+  binary:
+    - htn_history       # 既往高血压史（0/1）
+    - cad_history       # 冠心病史（0/1，稀疏，NaN=absent=0）
+    - hf_history        # 心衰史（0/1，稀疏，NaN=absent=0）
+
+  categorical:
+    - sex               # 性别（M/F → 编码为 0/1）
+
+  protocol:
+    - exercise_protocol_cycle  # 踏车协议标志（0/1）
+
+  # bp_fields 标记：no_bp 变体时排除这些列
+  bp_fields:
+    - bp_rest_sys
+    - bp_rest_dia
+
+# ---------------------------------------------------------------------------
+# P1 特征列表 — CPET 运动后结果
+# 注意：vo2_peak_pct_pred 被 leakage_guard 列为 P1 泄漏字段（用于区域边界），排除
+# ---------------------------------------------------------------------------
+p1:
+  continuous:
+    - vo2_peak          # 峰值 VO₂（mL/kg/min）
+    - hr_peak           # 峰值心率（次/分）
+    - load_peak_w       # 峰值功率（W）
+    - o2_pulse_peak     # 峰值 O₂脉搏（mL/次）
+    # ve_vco2_slope 已移入 leakage_guard._P1_LEAKAGE_FIELDS
+    # 原因：直接用于 P1 Yellow(≥30)/Red(≥36) 边界阈值，100% 信息泄漏
+    - vt1_vo2           # VT1 处 VO₂（mL/kg/min）
+    - vt1_hr            # VT1 处心率（次/分）
+    - vt1_load_w        # VT1 处功率（W）
+    - vt1_pct_vo2peak   # VT1/VO₂peak 比值（%）
+    - eih_nadir_spo2    # 最低 SpO₂（%）
+
+  binary:
+    # eih_status 已移入 leakage_guard._P1_LEAKAGE_FIELDS
+    # 原因：eih_status=True 100% 映射到 P1 Red，包含会造成致命泄漏
+    - bp_response_abnormal  # 血压反应异常标志（0/1）
+
+  categorical: []
+
+  # 踏车协议过滤列
+  cycle_filter_col: exercise_protocol_cycle
+
+# ---------------------------------------------------------------------------
+# 插补策略（train-only fit）
+# ---------------------------------------------------------------------------
+imputation:
+  continuous: median
+  binary: zero       # NaN → 0（binary 字段 NaN 视为 absent）
+  categorical: mode
+
+# ---------------------------------------------------------------------------
+# 缩放策略
+# 仅 LASSO（lasso_logistic）和 Ordinal Logistic（ordinal_logistic）需要 StandardScaler
+# 树模型跳过缩放
+# ---------------------------------------------------------------------------
+scaling:
+  apply_to_model_types:
+    - lasso_logistic
+    - ordinal_logistic

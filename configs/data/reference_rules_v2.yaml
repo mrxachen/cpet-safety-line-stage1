@@ -1,0 +1,38 @@
+version: "2.0"
+# reference_rules_v2.yaml — Reference-normal 子集筛选规则
+# 基于真实数据字段可用性（会话 #3）设计
+# wide: 仅用可用字段筛选
+# strict: wide + HR 努力度代理
+
+reference_subset:
+  # ------------------------------------------------------------------
+  # Wide 版本：仅使用可用字段筛选
+  # ------------------------------------------------------------------
+  wide:
+    description: "宽松参考正常子集（仅基于可用字段）"
+    criteria:
+      # 病史排除（推导字段：group_code）
+      htn_history: false          # 无高血压病史
+      eih_status: false           # 无运动性高血压
+      # 合并症排除（稀疏字段，NaN 视为 absent=False，即 NaN 符合条件）
+      cad_history: false          # 无冠心病（NaN = absent）
+      hf_history: false           # 无心衰（NaN = absent）
+      # CPET 性能门槛
+      vo2_peak_pct_pred: {gte: 70}   # VO2peak >= 70% pred
+      ve_vco2_slope: {lte: 30}       # VE/VCO2 slope <= 30
+      # 年龄范围（与主队列一致的老年区间）
+    age_range: [60, 80]
+
+  # ------------------------------------------------------------------
+  # Strict 版本：wide + HR 努力度代理
+  # ------------------------------------------------------------------
+  strict:
+    description: "严格参考正常子集（wide + HR 努力度代理）"
+    extends: wide
+    additional_criteria:
+      # HR 努力度代理：hr_peak >= 85% × (220 - age)
+      hr_effort_proxy: true
+      hr_effort_threshold_pct: 0.85
+
+  # 最小样本量检查
+  min_sample_size: 50           # 少于此值发出 warning
