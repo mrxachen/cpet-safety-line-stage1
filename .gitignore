@@ -99,3 +99,19 @@ docs/_build/
 # Logs
 *.log
 logs/
+
+# CatBoost training artifacts
+catboost_info/
+
+# LaTeX auxiliary files
+*.aux
+*.blg
+*.out
+*.toc
+*.bbl
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+*.nav
+*.snm
+*.vrb

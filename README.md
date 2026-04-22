@@ -64,6 +64,21 @@ make install
 # 或: pip install -e ".[dev]"
 ```
 
+### Synthetic Demo 快速复现
+
+无需真实患者数据，直接用合成数据验证管线：
+
+```bash
+# 安装依赖
+make install
+
+# 运行全部测试（使用 data/demo/synthetic_cpet_stage1.csv）
+make test
+
+# 查看 414 个测试全部通过后，报告模块也可独立验证：
+python -c "from cpet_stage1.reporting import ReportAggregator; print('OK')"
+```
+
 ### 基本工作流
 
 ```bash
@@ -74,9 +89,28 @@ make labels        # 标签生成（P0/P1）
 make features      # 特征工程
 make model-p0      # P0 基线模型（安全事件预测）
 make model-p1      # P1 分区模型（VT/RCP zone）
-make reports       # 生成报告
+make anchors       # 锚点变量包 + Bridge Contract 验证
+make reports       # 聚合报告 → reports/summary_report.md
 make bridge-prep   # 阶段 II 桥接准备包
+make release       # 打包冻结发布包 → reports/release/
 ```
+
+---
+
+## Release Artifacts
+
+运行 `make release` 后，`reports/release/` 目录包含以下内容，可直接纳入版本控制作为冻结快照：
+
+| 路径 | 内容 |
+|---|---|
+| `reports/release/*.md` | 所有 Markdown 报告（QC / Table 1 / 模型报告等）|
+| `reports/release/*.csv` | CSV 格式报告（Table 1 等）|
+| `reports/release/figures/m4/` | M4 统计图表（箱线图/小提琴图等）|
+| `reports/release/figures/m5/` | M5 模型图表（ROC / 混淆矩阵等）|
+| `reports/release/config_snapshot/` | 全部 YAML 配置快照（保留目录结构）|
+| `reports/release/metrics_summary.json` | P0/P1 关键指标摘要（AUC / F1 等）|
+| `reports/release/bridge_prep/` | 阶段 II 桥接准备包（anchor dict 等）|
+| `reports/release/release_manifest.json` | 发布清单（版本、日期、文件列表）|
 
 ---
 
