@@ -680,3 +680,68 @@ Step 8:   更新 DEVLOG.md 会话结束条目
 | Method 2 | D² vs test_result r > 0.10，P75/P95 切点合理 |
 | Method 3 | 高信度子集 ≥ 55%，区内 test_result 阳性率 Green < Yellow < Red |
 | 全部 | pytest 全通过（预期 520+），论文叙事更新 |
+
+---
+
+## 八、Stage 1B 方法学主线（v2.3.0 →）
+
+> **启动日期**：2026-04-22
+> **核心转变**：从"预测 Green/Yellow/Red 的模型"→"基于 summary-level CPET 的实验室安全表型原型"
+> **旧主线状态**：冻结为 legacy（`reports/legacy/`，`data/labels/legacy/`）
+
+### Stage 1B 研究问题定位
+
+> "在 summary-level CPET 条件下，构建一个用于实验室解释的运动安全表型原型，其输出由表型负担、不稳定覆盖规则和不确定性三部分组成，并以 `test_result` 作为外部锚定进行构念验证。"
+
+### Stage 1B 五个产品对象
+
+1. **Reference package** — 条件参考区间与 reference-normal subset
+2. **Phenotype burden score (`P_lab`)** — 与正常参考的偏离程度
+3. **Instability flags (`I_flag`)** — 测试过程中的安全相关警报条件
+4. **Final zone (`Z_final`)** — phenotype zone + instability override 合成
+5. **Confidence / indeterminate (`C_final`)** — 哪些样本可高信度解释，哪些不能
+
+### Stage 1B 变量分层（详见 `configs/data/variable_roles_stage1b.yaml`）
+
+| 类别 | 进入哪里 | 禁止进入哪里 |
+|---|---|---|
+| 表型主体（Phenotype） | burden 计算 → phenotype zone | 监督标签定义 |
+| 不稳定信号（Instability） | override 规则 | burden 均值 |
+| 验证变量（Validation） | 构念效度分析、confidence engine | zone 定义 |
+| 禁用变量（Excluded） | 无 | 一切特征集 |
+
+### Stage 1B 执行顺序
+
+| 步骤 | 内容 | 输出文件 | 状态 |
+|---|---|---|---|
+| Step 1 | 冻结旧主线 + 变量角色定义 | `reports/legacy/`, `variable_roles_stage1b.yaml` | ✅ v2.3.0 |
+| Step 2 | 条件分位参考建模 | `reference_quantiles.py`, `reference_spec_stage1b.yaml` | 🔲 |
+| Step 3 | Phenotype Burden Engine | `phenotype_engine.py` | 🔲 |
+| Step 4 | Instability Override Engine | `instability_rules.py` | 🔲 |
+| Step 5 | Confidence Engine | `confidence_engine.py` | 🔲 |
+| Step 6 | Outcome-Anchor 验证 + Anomaly Audit | `train_outcome_anchor.py`, `anomaly_audit.py` | 🔲 |
+| Step 7 | Stage1B 报告聚合 + 全管线集成 | `stage1b_report.py`, pipeline CLI | 🔲 |
+| Step 8 | 论文重写（表型原型叙事） | `main_cn.tex`, `main_en.tex` | 🔲 |
+
+### Stage 1B 新增核心模块
+
+```
+src/cpet_stage1/stats/reference_quantiles.py     — 条件分位参考建模
+src/cpet_stage1/anchors/phenotype_engine.py      — 表型负担引擎
+src/cpet_stage1/anchors/instability_rules.py     — 不稳定覆盖规则
+src/cpet_stage1/anchors/confidence_engine.py     — 置信度引擎
+src/cpet_stage1/modeling/train_outcome_anchor.py — outcome-anchor 验证模型
+src/cpet_stage1/stats/anomaly_audit.py           — 异常表型审计
+src/cpet_stage1/reporting/stage1b_report.py      — 聚合报告
+configs/data/variable_roles_stage1b.yaml         — 变量角色定义
+configs/data/reference_spec_stage1b.yaml         — 参考子集规格
+configs/data/zone_rules_stage1b.yaml             — Zone规则（已从模板复制）
+```
+
+### Stage 1B 验收标准
+
+| 验收层级 | 条件 |
+|---|---|
+| **Accept** | reference 稳定 + phenotype zone 可解释 + final zone 对 test_result 有单调梯度 + high confidence 存在且更稳 |
+| **Warn** | reference 过窄 / confidence 过多 indeterminate / no-BP 差异过大 |
+| **Fail** | reference 中 red 大量出现 / final zone 与 test_result 无方向性 / confidence 全靠一个分量 |

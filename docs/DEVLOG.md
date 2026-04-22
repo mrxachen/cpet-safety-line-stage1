@@ -25,6 +25,14 @@
 | **Phase F Step 4 — 测试修复+论文重构** | ✅ 完成（test_result泄漏修复，488/0，论文叙事→数据驱动方法学）| 2026-04-21 |
 | **Phase G — 方法学优化（结局锚定+Mahalanobis+一致性框架）** | ✅ 完成（62新测试，240/0总通过）| 2026-04-21 |
 | **Phase G Step 7-8 — CLI集成+真实数据运行+论文更新** | ✅ 完成（3 CLI命令，3报告，论文Tables 11-13）| 2026-04-21 |
+| **Stage 1B Step 1 — 冻结旧主线 + 变量角色定义** | ✅ 完成（legacy归档 + variable_roles_stage1b.yaml + PLANNING.md更新）| 2026-04-22 |
+| **Stage 1B Step 2 — 条件分位参考模型** | 🔲 待做 | — |
+| **Stage 1B Step 3 — Phenotype Burden Engine** | 🔲 待做 | — |
+| **Stage 1B Step 4 — Instability Override Engine** | 🔲 待做 | — |
+| **Stage 1B Step 5 — Confidence Engine** | 🔲 待做 | — |
+| **Stage 1B Step 6 — Outcome-Anchor + Anomaly Audit** | 🔲 待做 | — |
+| **Stage 1B Step 7 — 报告聚合 + 全管线** | 🔲 待做 | — |
+| **Stage 1B Step 8 — 论文重写（表型原型叙事）** | 🔲 待做 | — |
 
 ---
 
@@ -48,10 +56,45 @@
 | `v2.0.0` | 2026-04-21 | Phase G：方法学重大升级（结局锚定+Mahalanobis异常评分+一致性框架）+ 文档重构（三阶段定位）+ 62新测试，240/0 总通过 |
 | `v2.1.0` | 2026-04-21 | Phase G Step 7-8：CLI 集成（3 新命令）+ Makefile Phase G targets + 真实数据运行（3 报告生成）+ 论文更新（Methods 2.8-2.10，Results 3.7-3.9，Tables 11-13，Discussion/Conclusions，+2条参考文献）|
 | `v2.2.0` | 2026-04-22 | 论文深度重写：main_cn/en.tex 从"项目报告"重构为 IMRAD 期刊论文；引言4段逻辑链；方法6节；结果5节；讨论整合段落；补充材料 supplementary.tex 新建；清除所有"阶段II/III"/"Stage 2"项目语言；正文表格8张 |
+| `v2.3.0` | 2026-04-22 | Stage 1B Step 1：冻结旧主线（legacy reports/parquets）+ variable_roles_stage1b.yaml + stage1b_variable_roles.md + legacy_baseline_manifest.json + PLANNING.md Stage 1B 主线章节 |
 
 ---
 
 ## 会话记录
+
+---
+
+### [2026-04-22] 会话 #20 — Stage 1B Step 1：冻结旧主线 + 变量角色定义
+
+**完成内容**：
+
+1. **Legacy 归档**
+   - `reports/legacy/` — 10 份旧报告（zone_engine_v2, zone_report, zone_sensitivity, concordance, outcome_model, anomaly_score, p1_model×2, clinical_utility, p1_ablation）
+   - `data/labels/legacy/` — 5 份旧 parquet（zone_table, label_table, outcome_zone, anomaly_zone, reference_scores）
+   - `reports/legacy_baseline_manifest.json` — 版本元数据 + 关键指标存档
+
+2. **变量角色定义**
+   - `configs/data/variable_roles_stage1b.yaml` — 四分类定义（phenotype/instability/validation/excluded + covariates + confidence_fields）
+   - `docs/data_dictionary/stage1b_variable_roles.md` — 可读数据字典（burden转换规则 + override逻辑 + Stage1B产出列定义 + legacy对比表）
+
+3. **文档更新**
+   - `docs/PLANNING.md` — 新增"八、Stage 1B 方法学主线"章节（研究问题定位 + 五产品对象 + 变量分层表 + 执行顺序表 + 验收标准）
+   - `docs/DEVLOG.md` — 本条目 + 里程碑进度表 + 版本历史 v2.3.0
+
+**关键决策**：
+- `test_result` 彻底降级为"验证变量"，不再触发任何 zone 定义
+- `eih_status` / `bp_peak_sys` 归入"不稳定覆盖"，不参与 burden 均值
+- legacy 代码保留功能完整，仅降级为"补充材料对照组"
+
+**遗留问题**：
+- `zone_rules_stage1b.yaml` 已由 code_templates 提供，待 Step 2 正式复制到 `configs/data/`
+- reference_spec_stage1b.yaml 待 Step 2 创建
+
+**下一步（Step 2）**：
+- 实现 `src/cpet_stage1/stats/reference_quantiles.py`（从 code_templates 适配）
+- 创建 `configs/data/reference_spec_stage1b.yaml`
+- 写测试 `tests/stats/test_reference_quantiles.py`
+- 接 CLI 命令 `stats reference-quantiles`
 
 ---
 

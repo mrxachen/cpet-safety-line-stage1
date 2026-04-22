@@ -1,0 +1,184 @@
+# variable_roles_stage1b.yaml
+# Stage 1B 变量角色定义
+# 将所有字段分为四类：表型主体 / 不稳定信号 / 验证变量 / 禁用变量
+# 禁止在同一个模型中混用这四类，防止构念污染
+
+version: "stage1b"
+updated: "2026-04-22"
+
+# ─────────────────────────────────────────────────────
+# A. 表型主体变量（Phenotype variables）
+#    进入 phenotype burden 计算（reserve / ventilatory 域）
+#    仅依赖参考分位，不参考 test_result
+# ─────────────────────────────────────────────────────
+phenotype:
+  reserve:
+    - field: vo2_peak
+      direction: higher_better
+      domain: reserve
+      required: true
+      note: "绝对 VO2peak (mL/kg/min)；首选主变量"
+
+    - field: vo2_peak_pct_pred
+      direction: higher_better
+      domain: reserve
+      required: false
+      note: "VO2peak占预测值百分比；仅用于phenotype，不再用于监督标签"
+
+    - field: vt1_vo2
+      direction: higher_better
+      domain: reserve
+      required: false
+      note: "无氧阈时 VO2 (mL/kg/min)"
+
+    - field: at_vo2
+      direction: higher_better
+      domain: reserve
+      required: false
+      note: "AT时VO2的备用字段（与vt1_vo2二选一）"
+
+    - field: o2_pulse_peak
+      direction: higher_better
+      domain: reserve
+      required: false
+      note: "峰值氧脉搏 (mL/beat)"
+
+    - field: mets_peak
+      direction: higher_better
+      domain: reserve
+      required: false
+      note: "峰值代谢当量"
+
+    - field: hrr_1min
+      direction: higher_better
+      domain: reserve
+      required: false
+      note: "1分钟心率恢复；仅在可稳定推导时使用"
+
+  ventilatory:
+    - field: ve_vco2_slope
+      direction: higher_worse
+      domain: ventilatory
+      required: true
+      note: "通气效率斜率；越高越差"
+
+    - field: oues
+      direction: higher_better
+      domain: ventilatory
+      required: false
+      note: "氧摄取效率平台"
+
+# ─────────────────────────────────────────────────────
+# B. 不稳定覆盖变量（Instability override variables）
+#    进入 instability_rules，触发 override 逻辑
+#    不参与 burden 均值计算
+# ─────────────────────────────────────────────────────
+instability:
+  severe:
+    - field: eih_status
+      op: eq
+      value: true
+      note: "运动诱发低氧；一旦为True立即触发severe"
+
+    - field: bp_peak_sys
+      op: gt
+      value: 220
+      note: "峰值收缩压>220 mmHg触发severe"
+
+    - field: bp_peak_dia
+      op: gt
+      value: 110
+      note: "峰值舒张压>110 mmHg触发severe（若有数据）"
+
+    - field: o2_pulse_trajectory
+      op: in
+      value: ["下降", "晚期下降", "运动终止前下降", "持续平台", "晚期平台"]
+      note: "O2脉搏轨迹异常"
+
+  mild:
+    - field: bp_peak_sys
+      op: between_open_closed
+      low: 200
+      high: 220
+      note: "边界高血压反应；触发mild但不升severe"
+
+    - field: effort_adequacy
+      op: eq
+      value: "uncertain"
+      note: "努力度不充分"
+
+# ─────────────────────────────────────────────────────
+# C. 验证变量（Validation variables）
+#    不直接定义 final zone
+#    仅用于外部锚定验证 / confidence engine / 论文构念效度分析
+# ─────────────────────────────────────────────────────
+validation:
+  - field: test_result
+    role: external_anchor
+    note: "运动试验临床结果；仅用于验证，不定义zone"
+
+  - field: group_code
+    role: cohort_stratification
+    note: "CTRL/HTN_HISTORY/EHT_ONLY等分组；用于分层分析"
+
+  - field: diagnosis_htn
+    role: cohort_context
+    note: "高血压病史；stratification辅助"
+
+  - field: diagnosis_cad
+    role: cohort_context
+    note: "冠心病病史；stratification辅助"
+
+  - field: diagnosis_hf
+    role: cohort_context
+    note: "心衰病史；stratification辅助"
+
+# ─────────────────────────────────────────────────────
+# D. 明确禁用变量（Excluded variables）
+#    不得进入任何机器学习特征集或标签定义
+#    因为它们本身就是 zone 的直接因素或结论副本
+# ─────────────────────────────────────────────────────
+excluded:
+  - field: zone_v2
+    reason: "旧标签输出，是 label_rules_v2 的直接副本"
+
+  - field: zone_v3
+    reason: "旧标签输出，是 label_rules_v3 的直接副本"
+
+  - field: p1_zone
+    reason: "P1 监督标签；循环依赖"
+
+  - field: p0_zone
+    reason: "P0 监督标签；循环依赖"
+
+  - field: eih_status_raw
+    reason: "与eih_status高度共线；其定义已包含安全结论"
+
+  - field: concordance_zone
+    reason: "Phase G 一致性标签，基于多定义投票的派生标签"
+
+# ─────────────────────────────────────────────────────
+# E. 协变量（Covariates for reference models）
+#    用于建立条件分位参考模型的调整变量
+# ─────────────────────────────────────────────────────
+covariates:
+  reference_model:
+    numeric:
+      - age
+      - bmi
+    categorical:
+      - sex
+      - protocol_mode
+  note: "用于 reference_quantiles.py 的条件分位建模"
+
+# ─────────────────────────────────────────────────────
+# F. 置信度相关字段
+# ─────────────────────────────────────────────────────
+confidence_fields:
+  reserve: ["vo2_peak", "vo2_peak_pct_pred", "vt1_vo2", "o2_pulse_peak", "mets_peak"]
+  ventilatory: ["ve_vco2_slope", "oues"]
+  instability: ["eih_status", "bp_peak_sys", "bp_peak_dia"]
+  effort_proxy:
+    field: hr_peak_pct_pred
+    adequate_threshold: 85.0
+    note: "以%HRmax作为努力度代理；未来补RER"
