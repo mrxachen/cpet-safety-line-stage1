@@ -1811,6 +1811,72 @@ def stats_reference_quantiles(
     console.print(f"\n{report[:800]}")
 
 
+@stats_app.command("instability")
+def stats_instability(
+    staging: str = typer.Option(
+        "data/staging/cpet_staging_v1.parquet",
+        help="staging parquet 路径",
+    ),
+    phenotype_parquet: str = typer.Option(
+        "data/features/phenotype_burden_stage1b.parquet",
+        help="phenotype burden parquet（由 stats phenotype 生成）",
+    ),
+    zone_rules: str = typer.Option(
+        "configs/data/zone_rules_stage1b.yaml",
+        help="zone_rules_stage1b.yaml 路径",
+    ),
+    output_parquet: str = typer.Option(
+        "data/features/instability_stage1b.parquet",
+        help="输出 parquet 路径",
+    ),
+    report_output: str = typer.Option(
+        "reports/instability_report.md",
+        help="报告输出路径",
+    ),
+) -> None:
+    """Stage 1B — 不稳定覆盖规则引擎（severe/mild → final_zone_before_confidence）"""
+    import pandas as pd
+
+    from cpet_stage1.anchors.instability_rules import (
+        generate_instability_report,
+        run_instability_engine,
+    )
+
+    logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
+    console.print("[bold blue]Stage 1B: Instability Override Engine[/bold blue]")
+
+    staging_path = Path(staging)
+    phenotype_path = Path(phenotype_parquet)
+
+    if not staging_path.exists():
+        console.print(f"[red]staging 不存在: {staging_path}[/red]")
+        raise typer.Exit(1)
+    if not phenotype_path.exists():
+        console.print(f"[red]phenotype parquet 不存在: {phenotype_path}[/red]")
+        raise typer.Exit(1)
+
+    df = pd.read_parquet(staging_path)
+    phen_df = pd.read_parquet(phenotype_path)
+
+    if "phenotype_zone" not in phen_df.columns:
+        console.print("[red]phenotype_zone 列不存在[/red]")
+        raise typer.Exit(1)
+
+    phenotype_zone = phen_df["phenotype_zone"].reindex(df.index)
+    result = run_instability_engine(df, phenotype_zone, cfg_path=zone_rules)
+    console.print(result.summary())
+
+    out_df = phen_df.copy()
+    for col in result.df.columns:
+        out_df[col] = result.df[col]
+    Path(output_parquet).parent.mkdir(parents=True, exist_ok=True)
+    out_df.to_parquet(output_parquet)
+    console.print(f"[green]✓ output: {output_parquet}[/green]")
+
+    report = generate_instability_report(result, df_original=df, output_path=report_output)
+    console.print(f"[green]✓ report: {report_output}[/green]")
+
+
 @stats_app.command("phenotype")
 def stats_phenotype(
     staging: str = typer.Option(
