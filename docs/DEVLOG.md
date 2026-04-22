@@ -68,6 +68,42 @@
 
 ---
 
+### [2026-04-22] 会话 #24 — 收尾：Stage 1B parquet 生成 + PDF 编译 + Git Push
+
+**完成内容**：
+
+1. **`make stage1b` 重跑（生成两个新 parquet）**
+   - 触发原因：会话 #23 的 CLI 修改已将两个导出写入代码，本次为首次实际运行
+   - `data/cohort/reference_subset_stage1b.parquet`（2.7K）— reference_flag_strict/wide 两列，N=3232
+   - `data/labels/final_zone_stage1b.parquet`（7.2K）— final_zone 及 6 个关键列，N=3232
+   - 管线结果与会话 #22 完全一致（验收判定 Warn，数值无变化）
+
+2. **LaTeX PDF 重新编译（三份文件）**
+   - `paper/main_cn.pdf`：18 页，613K（xelatex × 3 + bibtex）
+   - `paper/main_en.pdf`：18 页，458K（pdflatex × 3 + bibtex）
+   - `paper/supplementary.pdf`：8 页，258K（xelatex × 2）
+   - 所有文件编译无 Error；main_cn 有 6 条 `natbib Warning: undefined citation`（键已在 bib 中，系 bibtex 缓存问题，第三次 xelatex 后自动消解，最终 PDF 正常输出）
+
+3. **Git Push（main → origin）**
+   - 推送 12 个 commit（`9d5f621..4db195f`）到 `https://github.com/mrxachen/cpet-safety-line-stage1`
+   - 用户确认以例外方式直接 push main（12 个 commit 已在 main 上无法回退到 dev）
+   - push 后本地与远程完全同步（`Local == Remote ✓`）
+
+**验收清单**（会话 #23 遗留 ⚠️ 项）：
+- ✅ `data/cohort/reference_subset_stage1b.parquet` 已生成
+- ✅ `data/labels/final_zone_stage1b.parquet` 已生成
+- ✅ `paper/main_cn.pdf` 更新（18页，Apr 22 15:16）
+- ✅ `paper/main_en.pdf` 更新（18页，Apr 22 15:16）
+- ✅ `paper/supplementary.pdf` 更新（8页，Apr 22 15:16）
+- ✅ Git push 成功（12 commits → origin/main）
+
+**遗留问题**：
+- Table 5/6 中「趋势检验 OR、CI」数值为占位（需 R/Python 计算后手动填充）
+- S3.1 替代权重敏感性分析结果待后续运行填充
+- 作者/单位/伦理批准号仍为手动占位（需研究团队提供）
+
+---
+
 ### [2026-04-22] 会话 #23 — docs/guide 审计修复（v2.6.0）
 
 **完成内容**：
