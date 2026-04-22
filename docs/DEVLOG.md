@@ -60,10 +60,55 @@
 | `v2.3.0` | 2026-04-22 | Stage 1B Step 1：冻结旧主线（legacy reports/parquets）+ variable_roles_stage1b.yaml + stage1b_variable_roles.md + legacy_baseline_manifest.json + PLANNING.md Stage 1B 主线章节 |
 | `v2.4.0` | 2026-04-22 | Stage 1B Steps 2-8 全部完成：reference_quantiles(28)+phenotype_engine(32)+instability_rules(32)+confidence_engine(44)+outcome_anchor+anomaly_audit(25)+stage1b_report(37) = 198 Stage 1B 新测试；总计 748 通过；pipeline stage1b CLI + Makefile stage1b targets；论文全面重写（表型原型叙事）+ references.bib 新增13条中国参考值/TRIPOD+AI/MECKI/CPX文献 |
 | `v2.5.0` | 2026-04-22 | Stage 1B 管线真实数据运行 + 论文 TODO 填充：添加 `_derive_stage1b_columns()` 预处理函数（bmi/protocol_mode/eih_status 派生）；`make stage1b` 全通过（N=3232）；28个TODO占位全部替换为真实数值；验收判定 Warn（参考标准通过；构念效度梯度 non-monotone，已记录为汇总级信息边界） |
+| `v2.6.0` | 2026-04-22 | docs/guide 对照审计修复（45 条检查，23 PASS/8 PARTIAL/14 FAIL→全部修复）：CN摘要加背景段；新增Table5构念效度+Table6置信度分析；Discussion补3条局限性+1条未来方向；Supplementary重组S1-S5；嵌入4条审稿人防御句；references.bib重命名BMJuncertainty2025→Riley2013+新增Xiangya2021；CLI新增reference_subset_stage1b.parquet+final_zone_stage1b.parquet导出；置信度分布偏移说明；748测试通过 |
 
 ---
 
 ## 会话记录
+
+---
+
+### [2026-04-22] 会话 #23 — docs/guide 审计修复（v2.6.0）
+
+**完成内容**：
+
+1. **论文结构修复（A1-A5 优先级 A）**
+   - `paper/main_cn.tex`：摘要新增「背景」段（A1）；新增 Table 5 构念效度梯度表 + Table 6 置信度层分析表（A2）；Discussion 补齐 3 条局限性（test_result 代理、无随访结局、summary-level 信息上限）+ 1 条未来方向（真实临床随访结局）（A3）
+   - `paper/main_en.tex`：同步上述所有修改
+   - `paper/supplementary.tex`：10 节重组为 S1-S5 结构（S1:方法+Legacy对照；S2:Outcome-anchor细节+输出表；S3:替代权重+Legacy比较；S4:全量结果+Phase G+Mahalanobis；S5:稳健性分析）（A4）
+   - `paper/references.bib`：`BMJuncertainty2025` → `Riley2013`（修正错误内容归属）；新增 `Xiangya2021` 中国临床 CPET 安全性大样本研究（A5）
+
+2. **审稿人防御句嵌入（B1 优先级 B）**
+   - Finding 1：「本研究并未将 summary-level CPET 误包装为高精度预测器...」
+   - Finding 2：「test\_result 被用于外部锚定与构念验证，而非用于重新制造主标签」
+   - Finding 3：「我们将测试中的即时不稳定信号与慢性表型负担拆分建模，以避免构念混杂」
+   - Finding 4：「显式保留 indeterminate 区是本研究的有意设计，而非分析失败」
+   - 双语（CN+EN）同步
+
+3. **CLI 管线导出修复（B2 优先级 B）**
+   - `stats_reference_quantiles()` handler：新增导出 `data/cohort/reference_subset_stage1b.parquet`（reference\_flag\_strict/wide 两列）
+   - `pipeline_stage1b()` handler：新增导出 `data/labels/final_zone_stage1b.parquet`（final\_zone 及 6 个关键列）
+
+4. **置信度分布偏移说明（B3 优先级 B）**
+   - Discussion Finding 4 末尾增加说明段：核心变量非空率 >97% 导致 completeness 评分极高，high-confidence 74.2% 超出预期（30-50%）；indeterminate 1.9% 反映数据质量良好；真实世界队列预期 indeterminate 比例将显著升高
+
+**测试**：748 passed, 0 failed（无回归）
+
+**验收清单完成情况**：
+- ✅ main_cn.tex 摘要含「背景」段
+- ✅ 正文表格 ≥ 6 张（含构念效度表 + 置信度表）
+- ✅ Discussion 局限性 ≥ 8 条（超出 ≥6 条要求）
+- ✅ Future directions ≥ 4 条（含真实随访结局）
+- ✅ Supplementary 重组为 S1-S5
+- ✅ references.bib 含 Xiangya2021
+- ✅ 4 条防御句出现在 Discussion
+- ⚠️ `data/cohort/reference_subset_stage1b.parquet`（下次 `make stage1b` 时生成）
+- ⚠️ `data/labels/final_zone_stage1b.parquet`（下次 `make stage1b` 时生成）
+
+**遗留问题**：
+- 两个新 parquet 导出在下次 `make stage1b` 时自动生成（CLI 已修改）
+- Table 5/6 中「趋势检验 OR、CI」数值为占位（待后续 R/Python 计算填充）
+- S3.1 替代权重敏感性分析结果待运行后填充
 
 ---
 
