@@ -1,0 +1,42 @@
+{
+  "version": "v2.2.0",
+  "frozen_at": "2026-04-22",
+  "description": "Stage I legacy baseline — frozen before Stage 1B methodological pivot",
+  "main_line": "label_rules_v2/v3 + zone_engine_v2 + Phase G (outcome/anomaly/concordance)",
+  "reason_for_freeze": "P1 structural unlearnable due to label-leakage circular dependency; pivoting to phenotype-burden prototype (Stage 1B)",
+  "legacy_reports": [
+    "reports/legacy/zone_engine_v2_report.md",
+    "reports/legacy/zone_report.md",
+    "reports/legacy/zone_sensitivity_report.md",
+    "reports/legacy/concordance_report.md",
+    "reports/legacy/outcome_model_report.md",
+    "reports/legacy/anomaly_score_report.md",
+    "reports/legacy/p1_model_report.md",
+    "reports/legacy/p1_model_report_v2.md",
+    "reports/legacy/clinical_utility_report.md",
+    "reports/legacy/p1_ablation_report.md"
+  ],
+  "legacy_labels": [
+    "data/labels/legacy/legacy_zone_table.parquet",
+    "data/labels/legacy/legacy_label_table.parquet",
+    "data/labels/legacy/legacy_outcome_zone.parquet",
+    "data/labels/legacy/legacy_anomaly_zone.parquet",
+    "data/labels/legacy/legacy_reference_scores.parquet"
+  ],
+  "legacy_configs": [
+    "configs/data/label_rules_v2.yaml",
+    "configs/data/label_rules_v3.yaml"
+  ],
+  "key_metrics": {
+    "P0_lasso_AUC": 0.582,
+    "P0_xgboost_AUC": 0.561,
+    "P1_lightgbm_F1": 0.473,
+    "P1_catboost_F1": 0.465,
+    "outcome_test_AUC": 0.548,
+    "outcome_cv_AUC": "0.578±0.031",
+    "concordance_high_confidence_pct": 26.2,
+    "ML_AUC_below_baseline": true,
+    "baseline_2var_AUC": 0.611
+  },
+  "notes": "All legacy code remains functional — use for supplementary material and comparison. New main line: Stage1B phenotype burden prototype (variable_roles_stage1b.yaml)."
+}
