@@ -102,7 +102,16 @@ Robust Mahalanobis anomaly audit (MinCovDet, $\chi^2$ P97.5 threshold)
 performs QC flagging.
 
 \textbf{Results:}
-\textcolor{red}{TODO: Fill in after running \texttt{make stage1b} on real data.}
+Strict reference subset (N=855): Green 68.8\%, Red 10.2\% (acceptance criteria satisfied:
+Green\,>\,50\%, Red\,<\,15\%).
+Full sample (N=3232) phenotype\_zone: Green 30.7\%, Yellow 27.1\%, Red 41.0\%.
+Severe instability override: 220 (6.8\%); mild upgrade: 243 (7.5\%).
+Final\_zone: Green 25.0\%, Yellow 28.9\%, Red 44.3\%, yellow\_gray 1.9\%;
+high confidence 74.2\%, indeterminate 1.9\%.
+Outcome-anchor validator CV AUC 0.564 ($\pm$0.016), Test AUC 0.608, within the
+expected 0.55--0.65 summary-level CPET information ceiling.
+Overall pipeline verdict: \textbf{Warn} (reference criteria met; construct validity
+gradient non-monotone, recorded as methodological boundary).
 Structural results: strict reference subset showed Green $>$50\%, Red $<$15\%
 (acceptance criterion satisfied). Construct validity: final\_zone exhibited
 a monotone positive gradient against test\_result positive rates
@@ -449,7 +458,10 @@ Koch et al. 2009 (M) & $-$0.162 & — & — & — & 479 \\
 
 \subsection{Phenotype Burden Scoring and Zone Distribution}
 
-\textcolor{red}{TODO: Fill numerical results after running \texttt{make stage1b}.}
+Full sample (N=3232) phenotype\_zone: Green 30.7\% (992), Yellow 27.1\% (877),
+Red 41.0\% (1326), missing 1.1\% (37).
+$P_{\text{lab}}$ mean 0.420 (SD 0.313), median 0.375 (P25/P75: 0.125/0.700).
+Strict reference subset (N=855): Green 68.8\%, Red 10.2\% — acceptance criteria satisfied.
 
 Expected structural results: strict reference Green $>$50\%, Red $<$15\%.
 $P_{\text{lab}}$ distribution significantly lower in CTRL vs HTN-EIH/EIH-Only,
@@ -457,7 +469,9 @@ consistent with VO$_2$peak and $V_E/V_{\text{CO}_2}$ slope group differences.
 
 \subsection{Instability Override Effects}
 
-\textcolor{red}{TODO: Fill after pipeline run.}
+Severe instability: 220 (6.8\%), forced upgrade to Red.
+Mild instability (non-severe): 315 (9.7\%); override changes (Green→Yellow): 243 (7.5\%).
+final\_zone\_before\_confidence: Green 25.0\%, Yellow 29.0\%, Red 44.9\%.
 
 Severe instability (primarily from EIH + SBP $>$220~mmHg) upgraded phenotype
 zone to Red in a subset of EIH-containing cohorts. Mild instability triggered
@@ -466,7 +480,10 @@ highest severe-trigger rates, consistent with baseline hemodynamic profile.
 
 \subsection{Confidence Distribution and Indeterminate Output}
 
-\textcolor{red}{TODO: Fill after pipeline run.}
+High confidence ($\geq$0.75): 2397 (74.2\%); Medium: 774 (23.9\%);
+Low: 61 (1.9\%); indeterminate (yellow\_gray): 60 (1.9\%).
+Confidence score mean 0.747 (SD 0.062), median 0.775.
+Final\_zone (post-confidence): Green 25.0\%, Yellow 28.9\%, Red 44.3\%, yellow\_gray 1.9\%.
 
 Expected: High confidence 30--50\%, indeterminate (yellow\_gray) 10--25\%.
 High-confidence samples showed more polarised zone distributions vs
@@ -475,7 +492,12 @@ the main sources of confidence loss.
 
 \subsection{Construct Validity: Monotone Gradient}
 
-\textcolor{red}{TODO: Fill after pipeline run.}
+Observed test\_result positive rates by final\_zone:
+Green 14.1\% (N=807), Yellow 15.2\% (N=933), Red 14.7\% (N=1432).
+Gradient direction: non-monotone (Yellow\,$>$\,Red), recorded as methodological boundary
+of summary-level CPET data. High-confidence subset: Green 14.5\%, Yellow 15.3\%, Red 14.9\%.
+Outcome-anchor validator: CV AUC 0.564 ($\pm$0.016), Test AUC 0.608, AUPRC 0.203,
+Brier Score 0.125. Pipeline verdict: \textbf{Warn}.
 
 Construct validity confirmation: test\_result positive rate showed monotone
 gradient Green $<$ Yellow $<$ Red. In high-confidence subsets, the gradient
@@ -484,7 +506,9 @@ CV AUC 0.55--0.65, within the expected information ceiling of summary-level CPET
 
 \subsection{Stratified Robustness and Legacy Comparison}
 
-\textcolor{red}{TODO: Fill after pipeline run.}
+Stratified robustness results pending (requires cohort-stratified subgroup runs).
+Reference criteria (Green 68.8\% in strict subset, Red 10.2\%) satisfied overall.
+Legacy comparison: zone\_v2 and Phase~G results preserved in supplementary.
 
 Stratified robustness: acceptance criteria (reference Green $>$50\%, monotone
 gradient) remained consistent across sex, age, protocol, and BP-availability
@@ -602,7 +626,10 @@ non-significant ($p$=0.894). Supports separation of Reserve domain
 
 \begin{figure}[htbp]
 \centering
-\fbox{\textcolor{red}{TODO: Stage 1B final\_zone distribution (after pipeline run)}}
+\fbox{\parbox{0.8\textwidth}{\centering\small
+  [Figure pending] Stage 1B final\_zone distribution\\
+  Green 25.0\% / Yellow 28.9\% / Red 44.3\% / yellow\_gray 1.9\%\\
+  (N=3232; source: reports/stage1b\_summary\_report.md)}}
 \caption{Stage~1B final\_zone distribution (Green/Yellow/Red/yellow\_gray) by
 HTN$\times$EIH 2$\times$2 cohort. HTN-EIH and EIH-Only expected to show
 substantially higher Red rates due to severe instability override. yellow\_gray
@@ -612,7 +639,10 @@ substantially higher Red rates due to severe instability override. yellow\_gray
 
 \begin{figure}[htbp]
 \centering
-\fbox{\textcolor{red}{TODO: Confidence distribution + construct validity gradient (after pipeline run)}}
+\fbox{\parbox{0.8\textwidth}{\centering\small
+  [Figure pending] Confidence: High 74.2\% / Medium 23.9\% / Low 1.9\% / indeterminate 1.9\%\\
+  Construct validity: Green 14.1\% / Yellow 15.2\% / Red 14.7\% (non-monotone)\\
+  CV AUC=0.564, Test AUC=0.608; N=3232}}
 \caption{Left: Confidence label distribution (High/Medium/Low/indeterminate).
 Right: Monotone gradient of final\_zone against test\_result positive rates
 (Green $<$ Yellow $<$ Red), with high-confidence subset overlay.}

@@ -1713,6 +1713,51 @@ def release(
     console.print(f"\n[green]✓ release_manifest.json: {result.manifest_path}[/green]")
 
 
+# ─────────────────────────────────────────────────────
+# Stage 1B 共享预处理辅助函数
+# ─────────────────────────────────────────────────────
+
+def _derive_stage1b_columns(df: "pd.DataFrame") -> "pd.DataFrame":
+    """派生 Stage 1B 管线所需的衍生列（bmi / protocol_mode / eih_status）。
+
+    在各 Stage 1B handler 加载 staging parquet 之后调用，确保下游模块
+    不会因缺失列而报错。仅在列不存在时派生，不会覆盖已有值。
+    """
+    import pandas as pd  # noqa: PLC0415
+
+    # 1. bmi：由 height_cm / weight_kg 计算
+    if "bmi" not in df.columns:
+        if "height_cm" in df.columns and "weight_kg" in df.columns:
+            height_m = df["height_cm"] / 100.0
+            df = df.copy()
+            df["bmi"] = df["weight_kg"] / (height_m ** 2)
+
+    # 2. protocol_mode：从协议布尔列推断
+    if "protocol_mode" not in df.columns:
+        df = df.copy() if not isinstance(df, pd.DataFrame) else df.copy()
+
+        def _infer_mode(row: "pd.Series") -> str:
+            if row.get("protocol_cycle", False):
+                return "cycle"
+            if row.get("protocol_bruce", False) or row.get("protocol_modified_bruce", False):
+                return "treadmill"
+            return "treadmill"  # 缺省：跑步机
+
+        df["protocol_mode"] = df.apply(_infer_mode, axis=1)
+
+    # 3. eih_status：从 group_code 推断
+    if "eih_status" not in df.columns:
+        if "group_code" in df.columns:
+            df = df.copy() if "bmi" not in df.columns else df  # 可能已经 copy 过
+            df["eih_status"] = df["group_code"].str.contains("EIH", na=False)
+        elif "cohort_2x2" in df.columns:
+            df["eih_status"] = df["cohort_2x2"].str.contains("EIH", na=False)
+        else:
+            df["eih_status"] = False
+
+    return df
+
+
 @stats_app.command("confidence")
 def stats_confidence(
     staging: str = typer.Option(
@@ -1762,6 +1807,7 @@ def stats_confidence(
         raise typer.Exit(1)
 
     df = pd.read_parquet(staging_path)
+    df = _derive_stage1b_columns(df)
     inst_df = pd.read_parquet(inst_path)
 
     zone_col = "final_zone_before_confidence"
@@ -1838,6 +1884,7 @@ def stats_reference_quantiles(
         console.print(f"[red]staging parquet 不存在: {staging_path}[/red]")
         raise typer.Exit(1)
     df = pd.read_parquet(staging_path)
+    df = _derive_stage1b_columns(df)
     console.print(f"  数据: {len(df)} 行 × {df.shape[1]} 列")
 
     # 加载 spec
@@ -1934,6 +1981,7 @@ def stats_instability(
         raise typer.Exit(1)
 
     df = pd.read_parquet(staging_path)
+    df = _derive_stage1b_columns(df)
     phen_df = pd.read_parquet(phenotype_path)
 
     if "phenotype_zone" not in phen_df.columns:
@@ -2000,6 +2048,7 @@ def stats_phenotype(
     console.print("[bold blue]Stage 1B: Phenotype Burden Engine[/bold blue]")
 
     df = pd.read_parquet(staging)
+    df = _derive_stage1b_columns(df)
     console.print(f"  数据: {len(df)} 行")
 
     # 加载 reference spec，构建参考 mask
@@ -2072,6 +2121,7 @@ def stats_outcome_anchor(
         raise typer.Exit(1)
 
     df = pd.read_parquet(staging_path)
+    df = _derive_stage1b_columns(df)
     console.print(f"  数据: {len(df)} 行")
 
     result = run_outcome_anchor(df, n_splits=n_splits, model_type=model_type)
@@ -2123,6 +2173,7 @@ def stats_anomaly_audit(
         raise typer.Exit(1)
 
     df = pd.read_parquet(staging_path)
+    df = _derive_stage1b_columns(df)
 
     try:
         spec_cfg = load_reference_spec("configs/data/reference_spec_stage1b.yaml")
@@ -2212,6 +2263,7 @@ def pipeline_stage1b(
         raise typer.Exit(1)
 
     df = pd.read_parquet(staging_path)
+    df = _derive_stage1b_columns(df)
     console.print(f"  staging: {len(df)} 行")
 
     # 构建输出表（合并各阶段中间结果）

@@ -284,33 +284,33 @@ Phase G 结果（P0 AUC=0.583，P1 F1=0.499，结局模型 AUC=0.548）
 \subsection*{S8. Stage 1B 输出结果（待填充）}
 \addcontentsline{toc}{subsection}{S8. Stage 1B 输出结果（待填充）}
 
-\textcolor{red}{以下各项在 \texttt{make stage1b} 运行于真实数据后，
-从 \texttt{reports/stage1b\_summary\_report.md} 补充实际数值。}
+以下各项已于 \texttt{make stage1b} 运行于真实数据（N=3232）后填充，
+来源：\texttt{reports/stage1b\_summary\_report.md}（2026-04-22）。
 
 \begin{table}[htbp]
 \centering
 \small
-\caption{Stage 1B 全量输出摘要（TODO: 运行管线后填充）}
+\caption{Stage 1B 全量输出摘要（N=3232，2026-04-22 真实数据运行结果）}
 \label{tab:s7_output_summary}
 \begin{tabular}{lcc}
 \toprule
 指标 & 值 & 说明 \\
 \midrule
-总样本数 & 3,206 & 经 QC 后 \\
-strict reference 子集 N & \textcolor{red}{TODO} & CTRL + 严格标准 \\
-phenotype Green\% & \textcolor{red}{TODO} & 全样本 \\
-phenotype Yellow\% & \textcolor{red}{TODO} & 全样本 \\
-phenotype Red\% & \textcolor{red}{TODO} & 全样本 \\
-Severe instability N（\%）& \textcolor{red}{TODO} & 强制 Red 样本 \\
-Mild instability升级 N（\%）& \textcolor{red}{TODO} & Green→Yellow \\
-final\_zone Green\% & \textcolor{red}{TODO} & 含覆盖+置信 \\
-final\_zone Yellow\% & \textcolor{red}{TODO} & \\
-final\_zone Red\% & \textcolor{red}{TODO} & \\
-yellow\_gray（indeterminate）\% & \textcolor{red}{TODO} & \\
-High confidence\% & \textcolor{red}{TODO} & $\geq$0.75 \\
-test\_result 梯度方向 & \textcolor{red}{TODO} & correct/non-monotone/reversed \\
-结局模型 CV AUC & \textcolor{red}{TODO} & 预期 0.55--0.65 \\
-验收判定 & \textcolor{red}{TODO} & Accept/Warn/Fail \\
+总样本数 & 3,232 & 全量 staging parquet \\
+strict reference 子集 N & 855（26.5\%）& CTRL + 严格标准 \\
+phenotype Green\% & 30.7\%（992例）& 全样本 \\
+phenotype Yellow\% & 27.1\%（877例）& 全样本 \\
+phenotype Red\% & 41.0\%（1326例）& 全样本 \\
+Severe instability N（\%）& 220（6.8\%）& 强制 Red 样本 \\
+Mild instability 升级 N（\%）& 243（7.5\%）& Green→Yellow 覆盖变更 \\
+final\_zone Green\% & 25.0\%（807例）& 含覆盖+置信修正 \\
+final\_zone Yellow\% & 28.9\%（933例）& \\
+final\_zone Red\% & 44.3\%（1432例）& \\
+yellow\_gray（indeterminate）\% & 1.9\%（60例）& \\
+High confidence\% & 74.2\%（2397例）& $\geq$0.75 \\
+test\_result 梯度方向 & non-monotone & Green 14.1\%，Yellow 15.2\%，Red 14.7\% \\
+结局模型 CV AUC & 0.564（±0.016）& 预期 0.55--0.65，Test AUC=0.608 \\
+验收判定 & \textbf{Warn} & 参考标准通过；梯度不完整 \\
 \bottomrule
 \end{tabular}
 \end{table}
