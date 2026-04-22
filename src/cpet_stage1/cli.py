@@ -2038,5 +2038,110 @@ def stats_phenotype(
     console.print(f"[green]✓ report: {report_output}[/green]")
 
 
+@stats_app.command("outcome-anchor")
+def stats_outcome_anchor(
+    staging: str = typer.Option(
+        "data/staging/cpet_staging_v1.parquet",
+        help="staging parquet 路径",
+    ),
+    output_parquet: str = typer.Option(
+        "data/features/outcome_anchor_stage1b.parquet",
+        help="输出预测 parquet 路径",
+    ),
+    report_output: str = typer.Option(
+        "reports/outcome_anchor_report.md",
+        help="报告输出路径",
+    ),
+    n_splits: int = typer.Option(5, help="CV folds"),
+    model_type: str = typer.Option("elastic_net", help="elastic_net 或 lightgbm"),
+) -> None:
+    """Stage 1B — Outcome-Anchor 验证模型（test_result 预测，仅用于构念效度验证）"""
+    import pandas as pd
+
+    from cpet_stage1.modeling.train_outcome_anchor import (
+        generate_outcome_anchor_report,
+        run_outcome_anchor,
+    )
+
+    logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
+    console.print("[bold blue]Stage 1B: Outcome-Anchor Validator[/bold blue]")
+
+    staging_path = Path(staging)
+    if not staging_path.exists():
+        console.print(f"[red]staging 不存在: {staging_path}[/red]")
+        raise typer.Exit(1)
+
+    df = pd.read_parquet(staging_path)
+    console.print(f"  数据: {len(df)} 行")
+
+    result = run_outcome_anchor(df, n_splits=n_splits, model_type=model_type)
+    console.print(f"  CV AUC: {result.cv_auc_mean:.3f} ± {result.cv_auc_std:.3f}")
+    console.print(f"  Test AUC: {result.test_auc:.3f}")
+
+    if result.predictions_df is not None:
+        Path(output_parquet).parent.mkdir(parents=True, exist_ok=True)
+        result.predictions_df.to_parquet(output_parquet)
+        console.print(f"[green]✓ predictions: {output_parquet}[/green]")
+
+    report = generate_outcome_anchor_report(result, output_path=report_output)
+    console.print(f"[green]✓ report: {report_output}[/green]")
+
+
+@stats_app.command("anomaly-audit")
+def stats_anomaly_audit(
+    staging: str = typer.Option(
+        "data/staging/cpet_staging_v1.parquet",
+        help="staging parquet 路径",
+    ),
+    output_parquet: str = typer.Option(
+        "data/features/anomaly_audit_stage1b.parquet",
+        help="输出 parquet 路径",
+    ),
+    report_output: str = typer.Option(
+        "reports/anomaly_audit_report.md",
+        help="报告输出路径",
+    ),
+) -> None:
+    """Stage 1B — Anomaly Audit（Robust Mahalanobis QC，不用于 zone 定义）"""
+    import pandas as pd
+
+    from cpet_stage1.stats.anomaly_audit import (
+        generate_anomaly_audit_report,
+        run_anomaly_audit,
+    )
+    from cpet_stage1.stats.reference_quantiles import (
+        build_reference_subset_stage1b,
+        load_reference_spec,
+    )
+
+    logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
+    console.print("[bold blue]Stage 1B: Anomaly Audit[/bold blue]")
+
+    staging_path = Path(staging)
+    if not staging_path.exists():
+        console.print(f"[red]staging 不存在: {staging_path}[/red]")
+        raise typer.Exit(1)
+
+    df = pd.read_parquet(staging_path)
+
+    try:
+        spec_cfg = load_reference_spec("configs/data/reference_spec_stage1b.yaml")
+        df_with_flags = build_reference_subset_stage1b(df, spec_cfg)
+        ref_mask = df_with_flags["reference_flag_strict"]
+    except Exception:
+        ref_mask = None
+
+    result = run_anomaly_audit(df, reference_mask=ref_mask)
+    console.print(result.summary())
+
+    out_df = result.scores.reindex(df.index)
+    Path(output_parquet).parent.mkdir(parents=True, exist_ok=True)
+    out_df.to_parquet(output_parquet)
+    console.print(f"[green]✓ output: {output_parquet}[/green]")
+
+    report = generate_anomaly_audit_report(result, output_path=report_output)
+    console.print(f"[green]✓ report: {report_output}[/green]")
+
+
 if __name__ == "__main__":
     app()
