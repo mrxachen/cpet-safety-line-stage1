@@ -1811,5 +1811,88 @@ def stats_reference_quantiles(
     console.print(f"\n{report[:800]}")
 
 
+@stats_app.command("phenotype")
+def stats_phenotype(
+    staging: str = typer.Option(
+        "data/staging/cpet_staging_v1.parquet",
+        help="staging parquet 路径",
+    ),
+    quantiles_parquet: str = typer.Option(
+        "data/features/reference_quantiles_stage1b.parquet",
+        help="reference quantiles 预测 parquet（由 stats reference-quantiles 生成）",
+    ),
+    spec: str = typer.Option(
+        "configs/data/reference_spec_stage1b.yaml",
+        help="reference_spec_stage1b.yaml 路径",
+    ),
+    zone_rules: str = typer.Option(
+        "configs/data/zone_rules_stage1b.yaml",
+        help="zone_rules_stage1b.yaml 路径",
+    ),
+    use_strict: bool = typer.Option(True, help="True=strict 参考子集；False=wide"),
+    output_parquet: str = typer.Option(
+        "data/features/phenotype_burden_stage1b.parquet",
+        help="输出表型负担 parquet 路径",
+    ),
+    report_output: str = typer.Option(
+        "reports/phenotype_burden_report.md",
+        help="报告输出路径",
+    ),
+) -> None:
+    """Stage 1B — 表型负担引擎（reserve/ventilatory 双域 + phenotype zone）"""
+    import pandas as pd
+
+    from cpet_stage1.anchors.phenotype_engine import (
+        generate_phenotype_report,
+        load_variable_specs_from_yaml,
+        run_phenotype_engine,
+    )
+    from cpet_stage1.stats.reference_quantiles import (
+        build_reference_subset_stage1b,
+        load_reference_spec,
+    )
+
+    logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
+    console.print("[bold blue]Stage 1B: Phenotype Burden Engine[/bold blue]")
+
+    df = pd.read_parquet(staging)
+    console.print(f"  数据: {len(df)} 行")
+
+    # 加载 reference spec，构建参考 mask
+    spec_cfg = load_reference_spec(spec)
+    df = build_reference_subset_stage1b(df, spec_cfg)
+    flag_col = "reference_flag_strict" if use_strict else "reference_flag_wide"
+    ref_mask = df[flag_col]
+    console.print(f"  参考子集（{flag_col}）: {ref_mask.sum()} 行")
+
+    # 加载 quantiles
+    q_path = Path(quantiles_parquet)
+    if not q_path.exists():
+        console.print(f"[red]quantiles parquet 不存在: {q_path}[/red]")
+        raise typer.Exit(1)
+    quantiles = pd.read_parquet(q_path)
+    quantiles = quantiles.reindex(df.index)
+
+    # 加载变量规格
+    variable_specs = load_variable_specs_from_yaml(zone_rules)
+    console.print(f"  变量规格: {len(variable_specs)} 个")
+
+    # 运行表型引擎
+    result = run_phenotype_engine(df, quantiles, variable_specs, ref_mask)
+    console.print(result.summary())
+
+    # 保存输出
+    out_df = df.copy()
+    for col in result.df.columns:
+        out_df[col] = result.df[col]
+    Path(output_parquet).parent.mkdir(parents=True, exist_ok=True)
+    out_df.to_parquet(output_parquet)
+    console.print(f"[green]✓ output: {output_parquet}[/green]")
+
+    # 生成报告
+    report = generate_phenotype_report(result, df_original=df, output_path=report_output)
+    console.print(f"[green]✓ report: {report_output}[/green]")
+
+
 if __name__ == "__main__":
     app()
