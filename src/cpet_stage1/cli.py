@@ -1713,5 +1713,103 @@ def release(
     console.print(f"\n[green]✓ release_manifest.json: {result.manifest_path}[/green]")
 
 
+@stats_app.command("reference-quantiles")
+def stats_reference_quantiles(
+    staging: str = typer.Option(
+        "data/staging/cpet_staging_v1.parquet",
+        help="staging parquet 路径",
+    ),
+    spec: str = typer.Option(
+        "configs/data/reference_spec_stage1b.yaml",
+        help="reference_spec_stage1b.yaml 路径",
+    ),
+    use_strict: bool = typer.Option(
+        True,
+        help="True=使用 strict 参考子集；False=使用 wide",
+    ),
+    bundle_output: str = typer.Option(
+        "outputs/reference_models/quantile_bundle_stage1b.joblib",
+        help="分位模型 bundle 输出路径",
+    ),
+    predictions_output: str = typer.Option(
+        "data/features/reference_quantiles_stage1b.parquet",
+        help="全量预测分位 parquet 输出路径",
+    ),
+    report_output: str = typer.Option(
+        "reports/reference_quantiles_report.md",
+        help="参考分位报告输出路径",
+    ),
+) -> None:
+    """Stage 1B — 条件分位参考模型（QuantileRegressor + age样条）"""
+    import pandas as pd
+
+    from cpet_stage1.stats.reference_quantiles import (
+        QuantileBundleSet,
+        build_reference_subset_stage1b,
+        fit_bundle_set,
+        generate_reference_quantiles_report,
+        load_reference_spec,
+    )
+
+    logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
+    console.print("[bold blue]Stage 1B: Reference Quantile Models[/bold blue]")
+
+    # 加载数据
+    staging_path = Path(staging)
+    if not staging_path.exists():
+        console.print(f"[red]staging parquet 不存在: {staging_path}[/red]")
+        raise typer.Exit(1)
+    df = pd.read_parquet(staging_path)
+    console.print(f"  数据: {len(df)} 行 × {df.shape[1]} 列")
+
+    # 加载 spec
+    spec_cfg = load_reference_spec(spec)
+
+    # 构建参考子集
+    df = build_reference_subset_stage1b(df, spec_cfg)
+    flag_col = "reference_flag_strict" if use_strict else "reference_flag_wide"
+    ref_mask = df[flag_col]
+    df_ref = df[ref_mask]
+    console.print(f"  参考子集（{flag_col}）: {len(df_ref)} 行")
+
+    # 获取目标变量
+    target_vars = [
+        v["field"] for v in spec_cfg.get("target_variables", [])
+        if v["field"] in df.columns
+    ]
+    console.print(f"  目标变量: {target_vars}")
+
+    # 拟合分位模型
+    qcfg = spec_cfg.get("quantile_model", {})
+    bset = fit_bundle_set(
+        df_ref,
+        target_vars,
+        numeric_columns=qcfg.get("covariates", {}).get("numeric", ["age", "bmi"]),
+        categorical_columns=qcfg.get("covariates", {}).get("categorical", ["sex", "protocol_mode"]),
+        quantiles=qcfg.get("quantiles", [0.10, 0.25, 0.50, 0.75, 0.90]),
+        alpha=qcfg.get("alpha", 0.001),
+        age_spline_knots=qcfg.get("age_spline_knots", 5),
+        min_reference_n=qcfg.get("min_reference_n", 100),
+    )
+    console.print(f"  已拟合变量: {list(bset.bundles.keys())}")
+
+    # 保存 bundle
+    bset.save(bundle_output)
+    console.print(f"[green]✓ bundle: {bundle_output}[/green]")
+
+    # 全量预测
+    preds = bset.predict(df)
+    Path(predictions_output).parent.mkdir(parents=True, exist_ok=True)
+    preds.to_parquet(predictions_output)
+    console.print(f"[green]✓ predictions: {predictions_output}[/green]")
+
+    # 生成报告
+    report = generate_reference_quantiles_report(
+        bset, df, reference_mask=ref_mask, output_path=report_output
+    )
+    console.print(f"[green]✓ report: {report_output}[/green]")
+    console.print(f"\n{report[:800]}")
+
+
 if __name__ == "__main__":
     app()

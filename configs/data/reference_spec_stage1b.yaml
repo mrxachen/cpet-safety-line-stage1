@@ -1,0 +1,125 @@
+# reference_spec_stage1b.yaml
+# Stage 1B 参考子集规格和条件分位模型配置
+# 配合 src/cpet_stage1/stats/reference_quantiles.py 使用
+
+version: "stage1b"
+updated: "2026-04-22"
+
+# ─────────────────────────────────────────────────────
+# 参考子集筛选规则（双版本）
+# ─────────────────────────────────────────────────────
+reference_subset:
+  min_sample_size: 100
+
+  wide:
+    # 允许的组别（仅健康对照）
+    allowed_groups:
+      - CTRL
+    # 排除异常 test_result
+    exclude_test_result:
+      - "阳性"
+      - "positive"
+      - 1
+    # VO2peak 下界（%pred）
+    vo2_peak_pct_pred_min: 70.0
+    # VE/VCO2 slope 上界
+    ve_vco2_slope_max: 30.0
+    # 排除 EIH
+    exclude_eih: true
+    # 峰值收缩压上界
+    bp_peak_sys_max: 210.0
+    # 年龄范围 [min, max]
+    age_range: [40, 85]
+    note: "宽版本：健康对照 + 基本生理合理性筛选，保留较多样本量"
+
+  strict:
+    # 在 wide 基础上额外要求努力度充分
+    hr_effort_proxy: true
+    # 以 hr_peak_pct_pred 或 (hr_peak / (220-age)) 代理
+    hr_peak_pct_pred_min: 85.0
+    note: "严版本：wide + HR代理充分（≥85%HRmax），用于主要参考分位估计"
+
+# ─────────────────────────────────────────────────────
+# 条件分位模型配置
+# ─────────────────────────────────────────────────────
+quantile_model:
+  # 模型协变量
+  covariates:
+    numeric:
+      - age
+      - bmi
+    categorical:
+      - sex
+      - protocol_mode
+
+  # 分位列表
+  quantiles: [0.10, 0.25, 0.50, 0.75, 0.90]
+
+  # 模型参数
+  age_spline_knots: 5
+  alpha: 0.001        # L1 惩罚（QuantileRegressor）
+  min_reference_n: 100
+
+  # 单调性修正
+  enforce_monotonic: true
+
+# ─────────────────────────────────────────────────────
+# 目标变量（需要拟合分位的变量）
+# ─────────────────────────────────────────────────────
+target_variables:
+  # Reserve 域
+  - field: vo2_peak
+    direction: higher_better
+    domain: reserve
+    priority: primary
+
+  - field: vo2_peak_pct_pred
+    direction: higher_better
+    domain: reserve
+    priority: secondary
+
+  - field: vt1_vo2
+    direction: higher_better
+    domain: reserve
+    priority: secondary
+
+  - field: at_vo2
+    direction: higher_better
+    domain: reserve
+    priority: secondary
+    note: "与vt1_vo2互替"
+
+  - field: o2_pulse_peak
+    direction: higher_better
+    domain: reserve
+    priority: secondary
+
+  - field: mets_peak
+    direction: higher_better
+    domain: reserve
+    priority: secondary
+
+  - field: hrr_1min
+    direction: higher_better
+    domain: reserve
+    priority: optional
+
+  # Ventilatory 域
+  - field: ve_vco2_slope
+    direction: higher_worse
+    domain: ventilatory
+    priority: primary
+
+  - field: oues
+    direction: higher_better
+    domain: ventilatory
+    priority: secondary
+
+# ─────────────────────────────────────────────────────
+# 输出路径
+# ─────────────────────────────────────────────────────
+output:
+  bundle_path: "outputs/reference_models/quantile_bundle_stage1b.joblib"
+  predictions_path: "data/features/reference_quantiles_stage1b.parquet"
+  report_path: "reports/reference_quantiles_report.md"
+  subset_path: "data/cohort/reference_subset_stage1b.parquet"
