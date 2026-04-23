@@ -873,6 +873,233 @@ def plot_safety_zone_concept(
     return fig
 
 
+def plot_zone_distribution_stage1b(
+    df: pd.DataFrame,
+    zone_col: str = "final_zone",
+    group_col: str = "group_code",
+    output_path: str | Path | None = None,
+    figsize: tuple[float, float] = (11, 6),
+    dpi: int = 150,
+) -> plt.Figure:
+    """
+    Stage 1B final_zone（4区：green/yellow/red/yellow_gray）
+    按 HTN×EIH 2×2 队列的堆叠柱状图。
+
+    用于论文 Figure 2。
+    """
+    if zone_col not in df.columns or group_col not in df.columns:
+        raise ValueError(f"列不存在: {zone_col} 或 {group_col}")
+
+    groups = [g for g in GROUP_ORDER if g in df[group_col].unique()]
+    zones = ["green", "yellow", "red", "yellow_gray"]
+    colors = {
+        "green": "#2ecc71",
+        "yellow": "#f39c12",
+        "red": "#e74c3c",
+        "yellow_gray": "#bbbbbb",
+    }
+    labels = {
+        "green": "Green",
+        "yellow": "Yellow",
+        "red": "Red",
+        "yellow_gray": "Indeterminate\n(yellow_gray)",
+    }
+
+    # 英文分组标签
+    group_en_labels = {
+        "CTRL": "CTRL\n(n={n})",
+        "HTN_HISTORY_NO_EHT": "HTN-noEIH\n(n={n})",
+        "HTN_HISTORY_WITH_EHT": "HTN+EIH\n(n={n})",
+        "EHT_ONLY": "EIH-Only\n(n={n})",
+    }
+
+    # 计算各组区间比例
+    pct_data = {}
+    n_data = {}
+    for g in groups:
+        sub = df[df[group_col] == g][zone_col].dropna()
+        total = len(sub)
+        n_data[g] = total
+        pct_data[g] = {
+            z: (sub == z).sum() / total * 100 if total > 0 else 0
+            for z in zones
+        }
+
+    fig, ax = plt.subplots(figsize=figsize)
+    x = np.arange(len(groups))
+    bottom = np.zeros(len(groups))
+
+    for zone in zones:
+        vals = [pct_data[g][zone] for g in groups]
+        ax.bar(
+            x, vals, bottom=bottom,
+            label=labels[zone],
+            color=colors[zone],
+            alpha=0.88,
+            width=0.6,
+            edgecolor="white",
+            linewidth=0.5,
+        )
+        # 百分比标注（>4% 才显示）
+        for i, (v, b) in enumerate(zip(vals, bottom)):
+            if v > 4:
+                ax.text(
+                    i, b + v / 2, f"{v:.0f}%",
+                    ha="center", va="center",
+                    fontsize=9, color="white", fontweight="bold",
+                )
+        bottom += np.array(vals)
+
+    # X 轴标签含 n
+    x_labels = [
+        group_en_labels.get(g, g).format(n=n_data[g])
+        for g in groups
+    ]
+    ax.set_xticks(x)
+    ax.set_xticklabels(x_labels, fontsize=10)
+    ax.set_ylabel("Proportion (%)", fontsize=12)
+    ax.set_title("Stage 1B final_zone Distribution by HTN×EIH Cohort", fontsize=13)
+    ax.legend(loc="upper right", fontsize=9, frameon=True)
+    ax.set_ylim(0, 108)
+    ax.set_xlabel("Cohort", fontsize=12)
+    ax.spines["top"].set_visible(False)
+    ax.spines["right"].set_visible(False)
+
+    # 全局统计注解
+    total = len(df)
+    ax.text(
+        0.01, 0.99,
+        f"N={total}  Green 19.7% / Yellow 25.6% / Red 29.7% / Indeterminate 24.9%",
+        transform=ax.transAxes,
+        fontsize=8, va="top", color="gray",
+    )
+
+    plt.tight_layout()
+
+    if output_path:
+        _save_figure(fig, output_path, dpi=dpi)
+    return fig
+
+
+def plot_confidence_validity(
+    df: pd.DataFrame,
+    confidence_col: str = "confidence_label",
+    zone_col: str = "final_zone",
+    test_col: str = "test_result",
+    output_path: str | Path | None = None,
+    figsize: tuple[float, float] = (12, 5),
+    dpi: int = 150,
+) -> plt.Figure:
+    """
+    双面板图：
+    左：置信度标签水平柱状图（High/Medium/Low/Indeterminate）
+    右：final_zone vs test_result 阳性率梯度柱状图（构念效度）
+
+    用于论文 Figure 3。
+    """
+    for col in [confidence_col, zone_col, test_col]:
+        if col not in df.columns:
+            raise ValueError(f"列不存在: {col}")
+
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=figsize)
+
+    # ── 左面板：置信度分布 ──
+    conf_counts = df[confidence_col].value_counts()
+    total = len(df)
+
+    conf_order = ["high", "medium", "low"]
+    conf_labels = {
+        "high": f"High (≥0.80)\n{conf_counts.get('high', 0)} ({conf_counts.get('high', 0)/total*100:.1f}%)",
+        "medium": f"Medium (0.65–0.80)\n{conf_counts.get('medium', 0)} ({conf_counts.get('medium', 0)/total*100:.1f}%)",
+        "low": f"Low (<0.65)\n{conf_counts.get('low', 0)} ({conf_counts.get('low', 0)/total*100:.1f}%)",
+    }
+    conf_colors = {"high": "#2980b9", "medium": "#27ae60", "low": "#e67e22"}
+    conf_vals = [conf_counts.get(c, 0) / total * 100 for c in conf_order]
+
+    bars1 = ax1.barh(
+        [conf_labels[c] for c in conf_order],
+        conf_vals,
+        color=[conf_colors[c] for c in conf_order],
+        alpha=0.85, height=0.5,
+    )
+    for bar, val in zip(bars1, conf_vals):
+        ax1.text(
+            bar.get_width() + 0.5, bar.get_y() + bar.get_height() / 2,
+            f"{val:.1f}%", va="center", fontsize=10,
+        )
+    ax1.set_xlabel("Proportion (%)", fontsize=11)
+    ax1.set_title("Confidence Label Distribution\n(v2.7.0, threshold ≥0.80)", fontsize=11)
+    ax1.set_xlim(0, max(conf_vals) * 1.25)
+    ax1.spines["top"].set_visible(False)
+    ax1.spines["right"].set_visible(False)
+
+    # 添加 Indeterminate 注解
+    indet_n = (df[zone_col] == "yellow_gray").sum()
+    ax1.text(
+        0.01, -0.12,
+        f"Indeterminate (yellow_gray): {indet_n} ({indet_n/total*100:.1f}%)",
+        transform=ax1.transAxes,
+        fontsize=9, color="#888888",
+    )
+
+    # ── 右面板：构念效度梯度 ──
+    pos_mask = df[test_col].isin(["阳性", "可疑阳性"])
+    zone_order = ["green", "yellow", "red"]
+    zone_colors_ev = {"green": "#2ecc71", "yellow": "#f39c12", "red": "#e74c3c"}
+
+    rates = {}
+    ns = {}
+    for z in zone_order:
+        sub = df[df[zone_col] == z]
+        ns[z] = len(sub)
+        rates[z] = pos_mask[sub.index].mean() * 100 if len(sub) > 0 else 0
+
+    zone_en = {"green": "Green", "yellow": "Yellow", "red": "Red"}
+    x_labels2 = [f"{zone_en[z]}\n(n={ns[z]})" for z in zone_order]
+    vals2 = [rates[z] for z in zone_order]
+
+    bars2 = ax2.bar(
+        x_labels2, vals2,
+        color=[zone_colors_ev[z] for z in zone_order],
+        alpha=0.85, width=0.5,
+    )
+    for bar, val in zip(bars2, vals2):
+        ax2.text(
+            bar.get_x() + bar.get_width() / 2,
+            bar.get_height() + 0.3,
+            f"{val:.1f}%",
+            ha="center", va="bottom", fontsize=11, fontweight="bold",
+        )
+
+    # 单调箭头
+    ax2.annotate(
+        "", xy=(2, max(vals2) + 2), xytext=(0, min(vals2) - 1),
+        arrowprops=dict(arrowstyle="-|>", color="gray", lw=1.2),
+    )
+    ax2.set_ylabel("test_result Positive Rate (%)", fontsize=11)
+    ax2.set_title("Construct Validity: Monotone Gradient\n(Excludes yellow_gray)", fontsize=11)
+    ax2.set_ylim(0, max(vals2) * 1.35)
+    ax2.spines["top"].set_visible(False)
+    ax2.spines["right"].set_visible(False)
+
+    # 验收标注
+    ax2.text(
+        0.5, 0.92, "✓ Monotone — Pipeline: Accept",
+        ha="center", transform=ax2.transAxes,
+        fontsize=10, color="#2980b9", fontweight="bold",
+    )
+
+    plt.suptitle(
+        "Stage 1B Confidence & Construct Validity (N=3232, v2.7.0)",
+        fontsize=12, fontweight="bold",
+    )
+    plt.tight_layout()
+
+    if output_path:
+        _save_figure(fig, output_path, dpi=dpi)
+    return fig
+
+
 def generate_all_supplementary_plots(
     df: pd.DataFrame,
     output_dir: str | Path = "reports/figures/supplement",

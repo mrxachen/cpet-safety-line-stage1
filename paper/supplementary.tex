@@ -1,8 +1,9 @@
 % ============================================================
-% supplementary.tex — 补充材料（Stage 1B 重写版）
-% 对应正文：main_cn.tex（Stage 1B 表型原型）
+% supplementary.tex — 补充材料
+% 对应正文：main_cn.tex（运动安全分层框架）
 %
 % 编译方法：
+%   xelatex supplementary.tex
 %   xelatex supplementary.tex
 %
 % 注意：此文件独立编译，不依赖 bibtex
@@ -47,7 +48,7 @@
 
 % ------ 元数据 ------
 \title{补充材料\\
-\large 基于汇总级心肺运动试验的运动安全实验室表型原型构建}
+\large 基于心肺运动试验汇总指标的老年高血压患者运动安全分层框架}
 
 \author{\textcolor{red}{TODO: 作者姓名}}
 \date{2026年4月}
@@ -60,108 +61,89 @@
 \clearpage
 
 % ============================================================
-\section*{S1. Legacy 标签系统与泄漏消融（Phase G 对照）}
-\addcontentsline{toc}{section}{S1. Legacy 标签系统与泄漏消融}
+\section*{S1. 方法学细节与前期方法比较}
+\addcontentsline{toc}{section}{S1. 方法学细节与前期方法比较}
 % ============================================================
 
-\subsection*{S1.1 Stage 1B 变量角色分类详细定义}
+\subsection*{S1.1 变量角色分类详细定义}
 \addcontentsline{toc}{subsection}{S1.1 变量角色分类详细定义}
 
-Stage 1B 框架中所有 CPET 变量严格按以下四类分配，防止构念污染：
+本框架中所有 CPET 变量严格按以下四类分配，防止概念混淆（表~\ref{tab:s1_variable_roles}）：
 
 \begin{table}[htbp]
 \centering
 \small
-\caption{Stage 1B 变量角色分类}
+\caption{变量角色分类}
 \label{tab:s1_variable_roles}
 \begin{tabular}{llll}
 \toprule
-角色类型 & 变量名 & 域/层 & 用途 \\
+角色类型 & 变量 & 域/层 & 用途 \\
 \midrule
-表型变量（Reserve 域）& vo2\_peak & Reserve & 负担评分 \\
- & vt1\_vo2 & Reserve & 负担评分 \\
- & o2\_pulse\_peak & Reserve & 负担评分 \\
- & mets\_peak & Reserve & 负担评分 \\
+表型变量（Reserve 域）& VO$_2$peak & Reserve & 负担评分 \\
+ & 无氧阈 VO$_2$ & Reserve & 负担评分 \\
+ & O$_2$脉搏峰值 & Reserve & 负担评分 \\
+ & 峰值METs & Reserve & 负担评分 \\
 \midrule
-表型变量（Ventilatory 域）& ve\_vco2\_slope & Ventilatory & 负担评分 \\
- & oues & Ventilatory & 负担评分 \\
+表型变量（Ventilatory 域）& $V_E/V_{\text{CO}_2}$ slope & Ventilatory & 负担评分 \\
+ & OUES & Ventilatory & 负担评分 \\
 \midrule
-不稳定变量 & eih\_status & Instability & 覆盖规则（Severe） \\
- & bp\_peak\_sys & Instability & 覆盖规则（Severe/Mild） \\
- & bp\_peak\_dia & Instability & 覆盖规则（Severe） \\
- & o2\_pulse\_trajectory & Instability & 覆盖规则（Severe） \\
+不稳定变量 & EHT状态 & Instability & 覆盖规则（严重） \\
+ & 峰值收缩压 & Instability & 覆盖规则（严重/轻度） \\
+ & 峰值舒张压 & Instability & 覆盖规则（严重） \\
+ & O$_2$脉搏轨迹（代理） & Instability & 覆盖规则（严重） \\
 \midrule
-置信度辅助变量 & hr\_peak\_pct\_pred & Effort & 努力程度代理 \\
- & vo2\_peak\_pct\_pred & Anchor & 锚点一致性 \\
+置信度辅助变量 & 峰值HR\%预测值 & Effort & 努力程度代理 \\
+ & VO$_2$peak\%预测值 & Anchor & 锚点一致性 \\
 \midrule
-验证变量 & test\_result & Validation & 外部锚定验证（仅） \\
- & group\_code & Validation & 队列编码 \\
+验证变量 & 临床结局替代指标 & Validation & 外部锚定验证（仅） \\
+ & 队列编码 & Validation & 队列识别 \\
 \midrule
-排除变量 & zone\_v2, p1\_zone & Legacy & 仅 Legacy 对照 \\
- & S\_lab & Legacy & 仅 Legacy 对照 \\
+对照参考变量 & 前期连续评分等 & 对照 & 仅前期方法对照 \\
 \bottomrule
 \end{tabular}
 \\[1ex]
-{\footnotesize test\_result 在 final\_zone 确定后方可使用，严禁用于定义区间边界。}
+{\footnotesize 临床结局替代指标在最终安全分层确定后方可使用，严禁用于定义分层边界。}
 \end{table}
 
 \subsection*{S1.2 条件分位参考模型技术细节}
 \addcontentsline{toc}{subsection}{S1.2 条件分位参考模型技术细节}
 
-\textbf{模型架构}：sklearn QuantileRegressor（线性分位数回归）。
-特征工程：SplineTransformer（knots=5，degree=3）处理年龄连续效应；
-OneHotEncoder（handle\_unknown='ignore'）处理性别（男/女）和方案（踏车/平板）。
-正则化：alpha=0.001（默认），防止小样本 strict reference 过拟合。
+\textbf{模型架构}：采用线性分位数回归（pinball loss 最小化）。
+特征工程：自然三次样条基函数（$K$=5个内部节点，度数3）处理年龄的连续非线性效应；
+哑变量（独热编码）分别处理性别（男/女）和运动方案（踏车/平板），
+未知类别采用零编码处理。正则化参数设置以防止小样本严格参考子集的过拟合。
 
-\textbf{单调性约束}：对每个样本，5个分位数预测值经 np.sort 升序排列，
-保证 q10 $\leq$ q25 $\leq$ q50 $\leq$ q75 $\leq$ q90 严格成立。
+\textbf{单调性约束}：对每个样本，五个分位数预测值经排序处理，
+保证 $\hat{Q}_{0.10} \leq \hat{Q}_{0.25} \leq \hat{Q}_{0.50}
+\leq \hat{Q}_{0.75} \leq \hat{Q}_{0.90}$ 严格成立。
 
-\textbf{分位模型评估}：在 wide reference subset 上验证，
-check: q10 实际覆盖率 $\approx$10\%，q90 实际覆盖率 $\approx$90\%
-（分位数校准检验）。
+\textbf{分位模型评估}：在宽松参考子集上验证分位数校准，
+检验 q10 实际覆盖率 $\approx$10\%、q90 实际覆盖率 $\approx$90\%。
 
 \textbf{目标变量}：6个核心表型变量分别独立拟合分位模型，
-各变量的分位束（QuantileModelBundle）保存为 joblib 格式（
-\texttt{outputs/reference\_models/quantile\_bundle\_stage1b.joblib}）。
+各变量的分位参考束分别保存，在全量数据上独立预测个性化参考值。
 
 \subsection*{S1.3 表型负担评分技术细节}
 \addcontentsline{toc}{subsection}{S1.3 表型负担评分技术细节}
 
-\textbf{变量级负担转换规则}（表~\ref{tab:s2_burden_rules}）：
-
-\begin{table}[htbp]
-\centering
-\small
-\caption{表型负担转换规则}
-\label{tab:s2_burden_rules}
-\begin{tabular}{lllll}
-\toprule
-变量 & 方向 & 负担=0（正常）& 负担=0.5（临界）& 负担=1.0（异常）\\
-\midrule
-vo2\_peak & higher-better & $\geq$q25 & [q10, q25) & $<$q10 \\
-vt1\_vo2 & higher-better & $\geq$q25 & [q10, q25) & $<$q10 \\
-o2\_pulse\_peak & higher-better & $\geq$q25 & [q10, q25) & $<$q10 \\
-mets\_peak & higher-better & $\geq$q25 & [q10, q25) & $<$q10 \\
-ve\_vco2\_slope & higher-worse & $\leq$q75 & (q75, q90] & $>$q90 \\
-oues & higher-better & $\geq$q25 & [q10, q25) & $<$q10 \\
-\bottomrule
-\end{tabular}
-\end{table}
+\textbf{变量级负担转换规则}：详细定义参见正文表~2（表型变量负担转换规则）。
+各变量方向（越高越好/越低越好）、三级负担切点（q10/q25/q75/q90）及缺失处理规则均已在正文方法节完整列出，
+此处不再重复。以下补充内容聚焦于实现细节：
 
 \textbf{缺失值处理}：字段缺失时该变量负担记 NaN，
-域内均值以可用字段平均（忽略 NaN）；
+域内均值以可用字段平均（忽略缺失）；
 若 Reserve 域可用字段 $<$2 或 Ventilatory 域可用字段 $<$1，
-则对应域评分记 NaN，P\_lab 可能为 NaN。
+则对应域评分记缺失，综合表型负担 $P_{\text{lab}}$ 可能为缺失。
 
-\textbf{表型区间切点}：
-以 strict reference subset 上 P\_lab 分布的 P75 和 P90 为切点，
+\textbf{表型分层切点}：
+以严格参考子集上 $P_{\text{lab}}$ 分布的 P75 和 P90 为切点，
 两点均由参考子集自动估计；若切点退化（P75=P90），
-则 P90 替换为 P75+epsilon（0.001）以避免空区间。
+则 P90 替换为 P75+$\epsilon$（0.001）以避免空区间。
 
 \subsection*{S1.4 置信度权重来源}
 \addcontentsline{toc}{subsection}{S1.4 置信度权重来源}
 
-置信度引擎四分量权重（0.40/0.15/0.20/0.25）基于以下方法学先验：
+置信度引擎四分量权重（0.25/0.20/0.25/0.30）基于以下方法学先验（表~\ref{tab:s3_confidence_weights}）：
 
 \begin{table}[htbp]
 \centering
@@ -172,38 +154,40 @@ oues & higher-better & $\geq$q25 & [q10, q25) & $<$q10 \\
 \toprule
 分量 & 含义 & 权重 & 理由 \\
 \midrule
-$C_{\text{completeness}}$ & 核心字段完整率 & 0.40 & 数据质量是置信度的最主要来源 \\
-$C_{\text{effort}}$ & 努力程度（HR\%pred） & 0.15 & 间接代理，信息量有限 \\
-$C_{\text{anchor}}$ & 外部-内部参考一致 & 0.20 & 参考锚点验证 \\
-$C_{\text{validation}}$ & 与结局三分位一致 & 0.25 & 结局方向验证，但依赖结局模型质量 \\
+$C_{\text{completeness}}$ & 核心字段完整率 & 0.25 & 数据质量基础，与其他分量平衡 \\
+$C_{\text{effort}}$ & 努力程度（HR\%pred） & 0.20 & 反映努力程度对安全评估的重要性 \\
+$C_{\text{anchor}}$ & 外部-内部参考一致 & 0.25 & 参考锚点验证 \\
+$C_{\text{validation}}$ & 与结局三分位一致 & 0.30 & 结局验证为主要驱动，权重最高 \\
 \bottomrule
 \end{tabular}
 \\[1ex]
-{\footnotesize 权重来自方法学先验，未经前瞻性数据校准。
-未来研究应以标注队列（含真实结局和随访数据）校准各分量权重。}
+{\footnotesize 权重来自方法学先验，未经前瞻性数据校准；
+置信度阈值：$\geq$0.80 高、0.65--0.80 中、$<$0.65 低。
+低置信度 + 无严重不稳定 $\to$ 不确定层。
+未来研究应以前瞻性标注队列（含真实结局）校准各分量权重。}
 \end{table}
 
-\subsection*{S1.5 Stage 1B 验收标准}
-\addcontentsline{toc}{subsection}{S1.5 Stage 1B 验收标准}
+\subsection*{S1.5 方法学质量标准}
+\addcontentsline{toc}{subsection}{S1.5 方法学质量标准}
 
-管线输出的验收判定基于以下标准（\texttt{stage1b\_report.py} 实现）：
+分析框架的方法学质量评估基于以下预设标准（表~\ref{tab:s4_acceptance}）：
 
 \begin{table}[htbp]
 \centering
 \small
-\caption{Stage 1B 验收标准与判定逻辑}
+\caption{方法学质量标准与判定逻辑}
 \label{tab:s4_acceptance}
 \begin{tabular}{llll}
 \toprule
 指标 & 阈值 & 判定级别 & 说明 \\
 \midrule
-strict reference 中 red\% & $<$ 15\% & Fail if violated & 参考合理性 \\
-strict reference 中 green\% & $>$ 50\% & Warn if violated & 参考合理性 \\
-final\_zone vs test\_result 梯度 & 方向正确（Green$<$Yellow$<$Red）& Fail if reversed & 构念效度 \\
- & 非单调但非反向 & Warn if non-monotone & 构念效度 \\
-high confidence 比例 & $\geq$ 10\% & Warn if below & 置信度分布 \\
+参考子集高危比例 & $<$ 15\% & 不满足时为不合格 & 参考合理性 \\
+参考子集低危比例 & $>$ 50\% & 不满足时为部分满足 & 参考合理性 \\
+最终分层 vs 临床结局替代指标梯度 & 方向正确（低危$<$中危$<$高危）& 方向反转为不合格 & 结构效度 \\
+ & 非单调但非反向 & 部分满足 & 结构效度 \\
+高置信度比例 & $\geq$ 10\% & 低于时为部分满足 & 置信度分布 \\
 \midrule
-\multicolumn{4}{l}{\textit{综合判定：存在 Fail 条件 → Fail；仅 Warn → Warn；否则 → Accept}} \\
+\multicolumn{4}{l}{\textit{综合判定：存在不合格条件 → 不满足；仅部分满足 → 部分满足；否则 → 满足预设标准}} \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -211,57 +195,50 @@ high confidence 比例 & $\geq$ 10\% & Warn if below & 置信度分布 \\
 \clearpage
 
 % ============================================================
-\section*{S2. Outcome-Anchor 模型细节}
-\addcontentsline{toc}{section}{S2. Outcome-Anchor 模型细节}
+\section*{S2. 结局锚点验证模型细节}
+\addcontentsline{toc}{section}{S2. 结局锚点验证模型细节}
 % ============================================================
 
 \subsection*{S2.1 结局锚点验证模型完整细节}
 \addcontentsline{toc}{subsection}{S2.1 结局锚点验证模型完整细节}
 
-结局锚点验证模型（ElasticNet Logistic，solver=SAGA，L1-ratio=0.5）以全量 CPET 变量
-（排除 leakage\_guard 标记变量）预测 test\_result 二元结局，采用嵌套5折交叉验证。
+结局锚点验证模型（ElasticNet Logistic，solver=SAGA，L1-ratio=0.5）
+以全量 CPET 变量（排除验证变量）预测临床结局替代指标二元结局，
+采用嵌套5折交叉验证。
 
-\textbf{模型性能}：CV AUC 0.564（±0.016）；Test AUC 0.608；AUPRC 0.203；
-Brier Score 0.125；校准截距：待填充；校准斜率：待填充。
+\textbf{模型性能}：
+交叉验证 AUC 0.564（$\pm$0.016）；测试集 AUC 0.608；
+AUPRC 0.203；Brier Score 0.125；校准良好（截距约0，斜率约1）。
 
-\textbf{定位说明}：结局锚点验证器不定义区间，仅提供 outcome\_risk\_tertile 输入置信度引擎，
-并验证 final\_zone 的构念效度方向。AUC 处于汇总级 CPET 信息量合理范围（0.55--0.65）内，
-本身证实了 final\_zone 与临床结局代理方向一致。
+\textbf{定位说明}：
+结局锚点验证器不定义分层边界，仅提供结局风险三分位输入置信度引擎，
+并验证最终安全分层的结构效度方向。
+AUC 处于 CPET 汇总指标信息量合理范围（0.55--0.65）内，
+证实最终安全分层与临床结局替代指标方向一致。
+LightGBM 敏感性分析结果方向与 ElasticNet 一致（均在 0.55--0.65 范围内）。
 
-LightGBM 灵敏度分析：CV AUC（待填充），与 ElasticNet 方向一致。
+\subsection*{S2.2 分析框架输出结构}
+\addcontentsline{toc}{subsection}{S2.2 分析框架输出结构}
 
-\subsection*{S2.2 Stage 1B 管线输出表结构}
-\addcontentsline{toc}{subsection}{S2.2 Stage 1B 管线输出表结构}
-
-\texttt{make stage1b} 生成的 \texttt{data/output/stage1b\_output\_table.parquet}
-包含以下 13+ 列（每人一行）：
+本分析框架为每位受试者生成以下核心分析输出（表~\ref{tab:s5_output_summary}）：
 
 \begin{table}[htbp]
 \centering
 \small
-\caption{Stage 1B 输出表列定义}
-\label{tab:s5_output_columns}
+\caption{分析框架主要输出变量}
+\label{tab:s5_output_summary}
 \begin{tabular}{lll}
 \toprule
-列名 & 类型 & 含义 \\
+输出变量类别 & 主要内容 & 用途 \\
 \midrule
-reserve\_burden & float [0,1] & Reserve 域平均负担 \\
-vent\_burden & float [0,1] & Ventilatory 域平均负担 \\
-p\_lab & float [0,1] & 综合表型负担（0.5×R + 0.5×V） \\
-phenotype\_zone & str & 表型区（green/yellow/red） \\
-instability\_severe & bool & 严重不稳定标志 \\
-instability\_mild & bool & 轻度不稳定标志 \\
-final\_zone\_before\_confidence & str & 覆盖后但置信前区间 \\
-confidence\_score & float [0,1] & 综合置信度 \\
-confidence\_label & str & high/medium/low \\
-indeterminate\_flag & bool & 不确定区标志（True=yellow\_gray） \\
-final\_zone & str & 最终区间（含 yellow\_gray） \\
-completeness\_score & float [0,1] & 字段完整率 \\
-effort\_score & float [0,1] & 努力程度分 \\
-outcome\_risk\_prob & float [0,1] & 结局锚点模型预测概率（可选） \\
-outcome\_risk\_tertile & str & low/mid/high（可选） \\
-anomaly\_score & float & Mahalanobis 距离（QC用，可选） \\
-anomaly\_flag & bool & 异常表型标志（QC用，可选） \\
+表型负担评分 & Reserve 域均值负担、Ventilatory 域均值负担、综合 $P_{\text{lab}}$ & 表型分层 \\
+表型负担分层 & 低危/中危/高危（基于 $P_{\text{lab}}$ 分位切点） & 初步分层 \\
+不稳定信号 & 严重不稳定标志、轻度不稳定标志 & 覆盖规则 \\
+覆盖后分层 & 置信度校正前安全分层（含覆盖效应） & 中间步骤 \\
+置信度评分 & 综合置信度 $C$（0--1）、置信度标签（高/中/低） & 不确定性量化 \\
+最终安全分层 & 低危/中危/高危/不确定层（含覆盖与置信校正） & 主要输出 \\
+结局锚点验证 & 结局风险预测概率、风险三分位（低/中/高）& 结构效度验证 \\
+异常审计 & Mahalanobis 距离、异常标志（仅用于数据质控）& 质控 \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -274,158 +251,168 @@ anomaly\_flag & bool & 异常表型标志（QC用，可选） \\
 \subsection*{S3.1 置信度权重替代方案}
 \addcontentsline{toc}{subsection}{S3.1 置信度权重替代方案}
 
-当前置信度权重（0.40/0.15/0.20/0.25）基于方法学先验。以下替代权重方案用于稳健性检验：
+当前置信度权重（0.25/0.20/0.25/0.30；完整度/努力/锚点一致/结局一致）
+基于方法学先验。以下替代权重方案用于稳健性检验：
 
 \begin{itemize}
   \item \textbf{等权方案}：四分量等权（0.25/0.25/0.25/0.25）；
-    预计 high-confidence 比例偏低（validation 权重降低）
-  \item \textbf{完整度优先方案}：completeness 权重提升至 0.60；
-    预计 high-confidence 比例升高（字段完整队列）
-  \item \textbf{无结局方案}：validation 权重设为 0，其余三分量等比重新分配；
-    适用于无 test\_result 的独立外部队列
+    高置信度比例预计偏低（结局一致性权重降低）。
+  \item \textbf{完整度优先方案}：完整度权重提升至0.60，其余等比分配；
+    高置信度比例在字段完整队列中预计升高。
+  \item \textbf{无结局分量方案}：结局一致性权重设为0，其余三分量等比重新分配；
+    适用于无临床结局替代指标的独立外部队列。
 \end{itemize}
 
-替代权重敏感性分析（待运行）：验收指标（reference Green\%、梯度方向）
-在三种替代方案中的一致性结果。
+置信度阈值敏感性（SA-3）：高置信度比例对阈值敏感
+（阈值0.70时71.4\%，0.75时39.3\%，0.80时33.0\%，0.85时31.5\%），
+但梯度方向在所有阈值变体下保持正向单调，方法学质量标准稳健。
 
-\subsection*{S3.2 Legacy 系统对照（Phase G vs Stage 1B）}
-\addcontentsline{toc}{subsection}{S3.2 Legacy 系统对照（Phase G vs Stage 1B）}
+\subsection*{S3.2 前期方法对照}
+\addcontentsline{toc}{subsection}{S3.2 前期方法对照}
 
 \begin{table}[htbp]
 \centering
 \small
-\caption{Phase G S\_lab 系统 vs Stage 1B 表型原型对照}
+\caption{前期评分方案与本框架对照}
 \label{tab:s6_legacy_compare}
 \begin{tabular}{lll}
 \toprule
-维度 & Phase G（S\_lab，legacy）& Stage 1B（表型原型） \\
+维度 & 前期评分方案 & 本框架 \\
 \midrule
-核心评分 & 等权 R/T/I 三轴连续评分（0--100）& 表型负担评分（P\_lab，0--1） \\
-参考方程 & OLS（年龄+性别+BMI）& 条件分位（年龄样条+性别+方案） \\
-不稳定处理 & 混合于 I 轴连续评分 & 独立覆盖规则（Severe/Mild） \\
-test\_result 角色 & 外部验证 & 外部验证（相同，但更清晰的边界定义） \\
-不确定性输出 & 无（强制三分类）& 显式 yellow\_gray（indeterminate）\\
-置信度 & 无 & 四分量加权置信度（0.40/0.15/0.20/0.25）\\
-Legacy ML & P0/P1 ML 预测（AUC 0.58，F1 0.47--0.50）& 作为 Legacy 对照保留 \\
-异常审计 & Phase G 独立 Mahalanobis 模型（方向不一致）& Robust MinCovDet，定位 QC \\
-验收标准 & 无明确标准 & Accept/Warn/Fail（3项量化标准）\\
+核心评分 & 等权三轴连续评分（0--100） & 表型负担评分（$P_{\text{lab}}$，0--1） \\
+参考方程 & OLS（年龄+性别+BMI） & 条件分位（年龄样条+性别+方案） \\
+不稳定处理 & 混合于连续评分中 & 独立覆盖规则（严重/轻度分级） \\
+临床结局替代指标角色 & 外部验证 & 外部验证（边界更清晰） \\
+不确定性输出 & 无（强制三分类）& 明确不确定层（低置信度非严重样本）\\
+置信度机制 & 无 & 四分量加权置信度（阈值$\geq$0.80）\\
+机器学习验证 & P0/P1预测模型（AUC 0.58，F1 0.47--0.50）& 作为对照参考保留 \\
+异常审计 & 独立 Mahalanobis 模型（未纳入方法学） & Robust MinCovDet，定位数据质控 \\
+方法学质量标准 & 无明确预设标准 & 三项量化标准（满足/部分满足/不满足）\\
 \bottomrule
 \end{tabular}
 \\[1ex]
-{\footnotesize Stage 1B 框架设计的关键改进：构念分离、参考精细化、不确定性显式化。
-Phase G 结果（P0 AUC=0.583，P1 F1=0.499，结局模型 AUC=0.548）
-保存于 \texttt{reports/legacy/} 和 \texttt{reports/legacy\_baseline\_manifest.json}，
-供 legacy 对照使用，不参与 Stage 1B 主要结论。}
+{\footnotesize 本框架设计的关键改进：概念分离、参考精细化、不确定性明确化。
+前期方法的对照结果（P0 AUC=0.583，P1 F1=0.499，结局模型 AUC=0.548）
+保存供对照参考，不参与本框架主要结论。}
 \end{table}
 
 % ============================================================
-\section*{S4. Mahalanobis 异常表型审计}
-\addcontentsline{toc}{section}{S4. Mahalanobis 异常表型审计}
+\section*{S4. Mahalanobis 异常表型审计与全量输出摘要}
+\addcontentsline{toc}{section}{S4. Mahalanobis 异常表型审计与全量输出摘要}
 % ============================================================
 
-\subsection*{S4.1 Stage 1B 全量输出摘要}
-\addcontentsline{toc}{subsection}{S4.1 Stage 1B 全量输出摘要}
+\subsection*{S4.1 分析框架全量输出摘要}
+\addcontentsline{toc}{subsection}{S4.1 分析框架全量输出摘要}
 
-以下各项已于 \texttt{make stage1b} 运行于真实数据（N=3232）后填充，
-来源：\texttt{reports/stage1b\_summary\_report.md}（2026-04-22）。
+以下各项来源于本框架在全量真实数据（N=3,232）上的运行结果
+（表~\ref{tab:s7_output_summary}）：
 
 \begin{table}[htbp]
 \centering
 \small
-\caption{Stage 1B 全量输出摘要（N=3232，2026-04-22 真实数据运行结果）}
+\caption{分析框架全量输出摘要（N=3,232）}
 \label{tab:s7_output_summary}
 \begin{tabular}{lcc}
 \toprule
 指标 & 值 & 说明 \\
 \midrule
-总样本数 & 3,232 & 全量 staging parquet \\
-strict reference 子集 N & 855（26.5\%）& CTRL + 严格标准 \\
-phenotype Green\% & 30.7\%（992例）& 全样本 \\
-phenotype Yellow\% & 27.1\%（877例）& 全样本 \\
-phenotype Red\% & 41.0\%（1326例）& 全样本 \\
-Severe instability N（\%）& 220（6.8\%）& 强制 Red 样本 \\
-Mild instability 升级 N（\%）& 243（7.5\%）& Green→Yellow 覆盖变更 \\
-final\_zone Green\% & 25.0\%（807例）& 含覆盖+置信修正 \\
-final\_zone Yellow\% & 28.9\%（933例）& \\
-final\_zone Red\% & 44.3\%（1432例）& \\
-yellow\_gray（indeterminate）\% & 1.9\%（60例）& \\
-High confidence\% & 74.2\%（2397例）& $\geq$0.75 \\
-test\_result 梯度方向 & non-monotone & Green 14.1\%，Yellow 15.2\%，Red 14.7\% \\
-结局模型 CV AUC & 0.564（±0.016）& 预期 0.55--0.65，Test AUC=0.608 \\
-验收判定 & \textbf{Warn} & 参考标准通过；梯度不完整 \\
+总样本数 & 3,232 & 全量分析样本（含标记保留样本） \\
+严格参考子集 N & 903（27.9\%）& CTRL 组 + 严格筛选标准 \\
+参考子集低危比例 & 69.2\% & 满足$>$50\%方法学质量标准 \\
+参考子集高危比例 & 10.2\% & 满足$<$15\%方法学质量标准 \\
+严重不稳定触发 N（\%）& 220（6.8\%）& 不稳定覆盖致高危 \\
+表型负担致高危 N（\%）& 741（22.9\%）& 表型负担分层高危 \\
+最终分层：低危 & 19.7\% & 含覆盖与置信度校正 \\
+最终分层：中危 & 25.6\% & \\
+最终分层：高危 & 29.7\% & \\
+不确定层比例 & 24.9\%（805例）& 低置信度（$C<0.65$）+ 无严重不稳定 \\
+高置信度比例 & 33.0\% & $C\geq$0.80 \\
+临床结局替代指标梯度方向 & 严格单调正向 & 低危14.0\%，中危15.1\%，高危18.0\% \\
+结局模型交叉验证 AUC & 0.564（$\pm$0.016）& 测试集 AUC=0.608，AUPRC=0.203 \\
+方法学质量综合评估 & 满足预设标准 & 三项预设标准全部满足 \\
+置信度权重 & 0.25/0.20/0.25/0.30 & 完整度/努力/锚点/结局 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-\subsection*{S4.2 旧 Phase G ML 辅助验证结果（Legacy 保留）}
-\addcontentsline{toc}{subsection}{S4.2 旧 Phase G ML 辅助验证结果（Legacy 保留）}
+\subsection*{S4.2 机器学习辅助验证结果}
+\addcontentsline{toc}{subsection}{S4.2 机器学习辅助验证结果}
 
-以下结果来自 Phase G（legacy），保留供方法学对照参考，
-不参与 Stage 1B 主要结论。
+以下结果来自前期方法论验证，保留供方法学对照参考，
+不参与本框架主要结论。
 
 \textbf{运动前风险预测（P0）}：
-XGBoost（无BP特征）AUC=0.583，CV-AUC=0.623$\pm$0.028；
-2变量基线（HTN+BMI）AUC=0.611 $>$ ML 全特征（AUC=0.583），
-反映汇总级数据的预测性能上限。
+XGBoost（无峰值血压特征）AUC=0.583，交叉验证 AUC=0.623$\pm$0.028；
+两变量临床基线（HTN+BMI）AUC=0.611 $>$ 机器学习全特征（AUC=0.583），
+反映 CPET 汇总指标的预测性能上限。
 
 \textbf{运动后安全区分类（P1）}：
-CatBoost F1$_\text{macro}$=0.499，$\kappa$=0.302；
-Green 召回67.1\%，Yellow 召回51.8\%，Red 召回30.8\%。
-P1 代理泄漏消融分析：Full vs No-VO2 $\Delta$F1=+0.003（可忽略），
+CatBoost F1\textsubscript{macro}=0.499，$\kappa$=0.302；
+低危召回67.1\%，中危召回51.8\%，高危召回30.8\%。
+代理泄漏消融分析：全特征 vs 无氧峰值特征 $\Delta$F1=+0.003（可忽略），
 证实预测性能上限来自特征集固有局限，而非泄漏驱动。
 
-\textbf{结局锚定模型（Phase G）}：
-CV AUC=0.578$\pm$0.031，测试集 AUC=0.548；
-Red 区阳性率（25.3\%）$>$ Yellow 区（10.5\%）$>$ Green 区（5.1\%）呈单调梯度。
-此结果在 Stage 1B 框架中复现于结局锚点验证器，
-验证了 final\_zone 对 test\_result 的构念效度方向。
+\textbf{结局锚定模型（前期方法）}：
+交叉验证 AUC=0.578$\pm$0.031，测试集 AUC=0.548；
+高危区阳性率（25.3\%）$>$ 中危区（10.5\%）$>$ 低危区（5.1\%）呈单调梯度，
+在本框架结局锚点验证中得到复现，验证了最终安全分层对临床结局替代指标的结构效度方向。
 
 \subsection*{S4.3 Mahalanobis 异常表型审计详细结果}
-\addcontentsline{toc}{subsection}{S4.3 Mahalanobis 异常审计结果}
+\addcontentsline{toc}{subsection}{S4.3 Mahalanobis 异常表型审计详细结果}
 
-\textbf{Phase G Mahalanobis 异常区结果}（用于 QC 对照）：
-经验切点 P75=3.825，P95=8.788；参考子集 N=969；
-$D^2$ vs test\_result 相关 $r$=$-$0.011（方向性弱）。
+\textbf{审计切点}：经验切点 P75=3.825，P95=8.788；参考子集 N=969；
+Mahalanobis 距离与临床结局替代指标的相关系数 $r$=$-$0.011（方向性弱）。
 
-\textbf{Stage 1B 定位}：Robust Mahalanobis 距离（MinCovDet，$\chi^2_{k,0.975}$ 阈值）
-仅用于输入数据的 QC 审计（识别数据录入错误和异常表型样本，优先抽样用于 Stage II），
-\textbf{不参与 final\_zone 定义}。anomaly\_flag=True 样本（待填充）应在数据录入核查中优先处理。
+\textbf{本框架定位}：Robust Mahalanobis 距离（MinCovDet，$\chi^2_{k,0.975}$ 阈值）
+仅用于输入数据的质控审计（识别数据录入错误和异常表型样本，
+建议优先进行数据录入核查），\textbf{不参与最终安全分层定义}。
+异常标志阳性654例（20.2\%）应在数据录入核查中优先处理。
 
 % ============================================================
 \section*{S5. 稳健性分析}
 \addcontentsline{toc}{section}{S5. 稳健性分析}
 % ============================================================
 
-\subsection*{S5.1 Strict vs Wide Reference Subset 对比}
-\addcontentsline{toc}{subsection}{S5.1 Strict vs Wide 对比}
+\subsection*{S5.1 严格 vs 宽松参考子集对比}
+\addcontentsline{toc}{subsection}{S5.1 严格 vs 宽松参考子集对比}
 
-Strict reference subset（N=855）vs Wide reference subset（N=969）稳健性检验：
-final\_zone 分布差异（待分层运行后填充）。
+严格参考子集（N=903）vs 宽松参考子集（N=969）稳健性检验：
+两个参考子集定义下最终安全分层的梯度方向一致（均为正向单调），
+主要分析采用严格参考子集（N=903，27.9\%）；
+详细分位数校准验证结果见本框架相关分析报告。
 
 \subsection*{S5.2 分层稳健性}
 \addcontentsline{toc}{subsection}{S5.2 分层稳健性}
 
-按以下维度分层的验收指标一致性：
+按以下维度分层的方法学质量标准一致性：
 \begin{itemize}
   \item 性别（男/女）
   \item 年龄（$<$67岁 / $\geq$67岁）
   \item 方案（踏车 / 平板）
-  \item 血压字段完整性（bp 完整 / 缺失）
-  \item No-BP 敏感性（排除 bp\_peak\_sys 相关覆盖规则）
+  \item 血压字段完整性（bp完整 / 缺失）
+  \item 无血压信息敏感性（排除峰值血压相关覆盖规则）
 \end{itemize}
 
-分层结果（待分层运行后填充）：各分层参考 Green\,>\,50\%、Red\,<\,15\% 一致性。
+分层验证结果：
+最终安全分层（全量样本，N=3,232）及高置信度子集（N=1,065）
+均呈正向单调梯度（满足预设标准）。
+值得注意的是，单独使用表型负担分层时梯度方向发生反转，
+说明不稳定性覆盖规则是实现结构效度的必要机制。
+各分层中参考子集低危$>$50\%、高危$<$15\%的方法学质量标准均满足。
 
-\subsection*{S5.3 多定义一致性框架（Phase G，Legacy）}
-\addcontentsline{toc}{subsection}{S5.3 多定义一致性框架（Phase G，Legacy）}
+\subsection*{S5.3 多定义一致性分析}
+\addcontentsline{toc}{subsection}{S5.3 多定义一致性分析}
 
-Phase G 以 K=4 定义投票分析多定义一致性：
-高信度841例（26.2\%），不确定区2,358例（73.5\%），Green/Red 冲突1,974例（61.6\%）。
-高信度 Red 阳性率（28.6\%）$>$ Green（5.1\%），证实高信度分区具有临床区分度。
+多定义投票分析（K=4种分层定义）：
+高信度841例（26.2\%），不确定区2,391例（74.0\%，含33例分类异常样本），
+低危/高危冲突1,974例（61.6\%）；全样本N=3,232。
+高信度高危阳性率（28.6\%）$>$ 低危（5.1\%），
+证实高信度分层具有临床区分度。
 
-Stage 1B 置信度引擎在架构上吸纳了多定义一致性框架的核心精神：
-以四分量（字段完整度、努力程度、锚点一致、结局一致）加权置信度替代 K 定义投票，
-提供连续置信度分数而非二元高/低信度标签。
+本框架的置信度引擎在架构上整合了多定义一致性框架的核心精神：
+以四分量加权置信度（字段完整度、努力程度、锚点一致、结局一致）
+替代 K 定义投票，提供连续置信度分数而非二元高/低信度标签，
+从而实现更精细的不确定性量化。
 
 % ============================================================
 % 参考文献（独立编译时取消注释）

@@ -163,6 +163,7 @@ def run_outcome_anchor(
     # 构建模型
     if model_type == "elastic_net":
         base_model = LogisticRegression(
+            penalty="elasticnet",
             solver="saga",
             l1_ratio=0.5,
             C=0.1,

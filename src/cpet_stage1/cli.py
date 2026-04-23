@@ -1768,6 +1768,10 @@ def stats_confidence(
         "data/features/instability_stage1b.parquet",
         help="instability parquet（由 stats instability 生成）",
     ),
+    outcome_parquet: str = typer.Option(
+        "data/features/outcome_anchor_stage1b.parquet",
+        help="outcome-anchor parquet（由 stats outcome-anchor 生成，可选）",
+    ),
     zone_rules: str = typer.Option(
         "configs/data/zone_rules_stage1b.yaml",
         help="zone_rules_stage1b.yaml 路径",
@@ -1819,10 +1823,25 @@ def stats_confidence(
     zone_before = inst_df[zone_col].reindex(df.index)
     severe = inst_df[severe_col].reindex(df.index).fillna(False)
 
+    # 可选：加载 outcome_risk_tertile 用于 validation_agreement
+    outcome_risk_tertile = None
+    outcome_path = Path(outcome_parquet)
+    if outcome_path.exists():
+        try:
+            outcome_df = pd.read_parquet(outcome_path)
+            if "outcome_risk_tertile" in outcome_df.columns:
+                outcome_risk_tertile = outcome_df["outcome_risk_tertile"].reindex(df.index)
+                console.print(f"  [cyan]加载 outcome_risk_tertile: {outcome_path}[/cyan]")
+        except Exception as exc:
+            console.print(f"  [yellow]Warning: 无法加载 outcome parquet: {exc}[/yellow]")
+    else:
+        console.print(f"  [yellow]outcome parquet 不存在（{outcome_path}），validation_agreement 使用中性值 0.5[/yellow]")
+
     result = run_confidence_engine(
         df, zone_before, severe,
         cfg_path=zone_rules,
         variable_roles_path=variable_roles,
+        outcome_risk_tertile=outcome_risk_tertile,
     )
     console.print(result.summary())
 
@@ -2201,6 +2220,105 @@ def stats_anomaly_audit(
     console.print(f"[green]✓ report: {report_output}[/green]")
 
 
+@stats_app.command("stratified-validation")
+def stats_stratified_validation(
+    output_table: str = typer.Option(
+        "data/output/stage1b_output_table.parquet",
+        help="Stage 1B 输出表 parquet 路径",
+    ),
+    staging: str = typer.Option(
+        "data/staging/cpet_staging_v1.parquet",
+        help="staging parquet（用于获取 test_result）",
+    ),
+    report_output: str = typer.Option(
+        "reports/stratified_validation_report.md",
+        help="分层验证报告路径",
+    ),
+) -> None:
+    """Stage 1B — 分层验证矩阵（5 组构念效度分析）"""
+    import pandas as pd
+
+    from cpet_stage1.stats.stratified_validation import (
+        generate_stratified_validation_report,
+        run_stratified_validation,
+    )
+
+    logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
+
+    out_path = Path(output_table)
+    staging_path = Path(staging)
+
+    if not out_path.exists():
+        console.print(f"[red]Stage 1B 输出表不存在: {out_path}[/red]")
+        console.print("[yellow]请先运行 make stage1b[/yellow]")
+        raise typer.Exit(1)
+
+    df = pd.read_parquet(out_path)
+
+    # 若输出表中无 test_result，从 staging 补充
+    if "test_result" not in df.columns and staging_path.exists():
+        df_staging = pd.read_parquet(staging_path)
+        df = _derive_stage1b_columns(df_staging).reindex(df.index)
+        # 重新合并输出表列
+        out_full = pd.read_parquet(out_path)
+        for col in out_full.columns:
+            df[col] = out_full[col].reindex(df.index)
+
+    console.print(f"  分析数据：{len(df)} 行")
+
+    result = run_stratified_validation(df)
+    report = generate_stratified_validation_report(result, output_path=report_output)
+    console.print(f"[green]✓ 分层验证报告: {report_output}[/green]")
+    console.print(f"  Group3 final_zone 方向：{result.group3_final_zone.get('direction', '?')}")
+    console.print(f"  Group4 高置信度方向：{result.group4_high_conf.get('direction', '?')}")
+
+
+@stats_app.command("sensitivity-analysis")
+def stats_sensitivity_analysis(
+    output_table: str = typer.Option(
+        "data/output/stage1b_output_table.parquet",
+        help="Stage 1B 输出表 parquet 路径",
+    ),
+    staging: str = typer.Option(
+        "data/staging/cpet_staging_v1.parquet",
+        help="staging parquet",
+    ),
+    report_output: str = typer.Option(
+        "reports/sensitivity_analysis_report.md",
+        help="敏感性分析报告路径",
+    ),
+) -> None:
+    """Stage 1B — 5 组敏感性分析（reference/phenotype cut/confidence 变体对比）"""
+    import pandas as pd
+
+    from cpet_stage1.stats.sensitivity_analysis import (
+        generate_sensitivity_report,
+        run_sensitivity_suite,
+    )
+
+    logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
+
+    out_path = Path(output_table)
+    staging_path = Path(staging)
+
+    if not staging_path.exists():
+        console.print(f"[red]staging 不存在: {staging_path}[/red]")
+        raise typer.Exit(1)
+
+    df_staging = pd.read_parquet(staging_path)
+    df_staging = _derive_stage1b_columns(df_staging)
+
+    df_out = None
+    if out_path.exists():
+        df_out = pd.read_parquet(out_path)
+
+    console.print(f"  staging：{len(df_staging)} 行")
+
+    result = run_sensitivity_suite(df_staging, df_output=df_out)
+    report = generate_sensitivity_report(result, output_path=report_output)
+    console.print(f"[green]✓ 敏感性分析报告: {report_output}[/green]")
+
+
 # ─────────────────────────────────────────────────────
 # Stage 1B Pipeline（全管线）
 # ─────────────────────────────────────────────────────
@@ -2277,6 +2395,15 @@ def pipeline_stage1b(
     def _opt_path(p: str) -> str | None:
         return p if Path(p).exists() else None
 
+    # 获取 reference mask（先构建，以便传入 build_stage1b_output_table 用于 release_status）
+    ref_mask = None
+    try:
+        spec_cfg = load_reference_spec(reference_spec)
+        df_with_flags = build_reference_subset_stage1b(df, spec_cfg)
+        ref_mask = df_with_flags["reference_flag_strict"].reindex(df.index)
+    except Exception as exc:
+        console.print(f"[yellow]Warning: 无法构建 reference mask: {exc}[/yellow]")
+
     out_df = build_stage1b_output_table(
         df,
         phenotype_parquet=_opt_path(phenotype_parquet),
@@ -2284,16 +2411,8 @@ def pipeline_stage1b(
         confidence_parquet=_opt_path(confidence_parquet),
         outcome_parquet=_opt_path(outcome_parquet),
         anomaly_parquet=_opt_path(anomaly_parquet),
+        reference_mask=ref_mask,
     )
-
-    # 获取 reference mask
-    ref_mask = None
-    try:
-        spec_cfg = load_reference_spec(reference_spec)
-        df_with_flags = build_reference_subset_stage1b(df, spec_cfg)
-        ref_mask = df_with_flags["reference_flag_strict"].reindex(out_df.index)
-    except Exception as exc:
-        console.print(f"[yellow]Warning: 无法构建 reference mask: {exc}[/yellow]")
 
     # 保存输出表
     Path(output_table).parent.mkdir(parents=True, exist_ok=True)
@@ -2308,10 +2427,11 @@ def pipeline_stage1b(
     out_df[[c for c in zone_cols if c in out_df.columns]].to_parquet(zone_output)
     console.print(f"[green]✓ final_zone 标签表: {zone_output}[/green]")
 
-    # 生成报告
+    # 生成报告（ref_mask 已在 build_stage1b_output_table 中使用；此处同步传给报告）
+    out_ref_mask = ref_mask.reindex(out_df.index) if ref_mask is not None else None
     report = generate_stage1b_summary_report(
         out_df,
-        reference_mask=ref_mask,
+        reference_mask=out_ref_mask,
         output_path=report_output,
     )
     console.print(f"[green]✓ 报告: {report_output}[/green]")

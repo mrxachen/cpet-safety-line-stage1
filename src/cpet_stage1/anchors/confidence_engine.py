@@ -7,13 +7,18 @@ confidence_engine.py — Stage 1B 置信度与 indeterminate 逻辑。
   C. anchor_agreement    — 外部 vs 内部分位解释一致性（0/0.5/1）
   D. validation_agreement — final_zone vs outcome model 风险三分位（0/0.5/1）
 
-置信度公式：
-  confidence = 0.40*completeness + 0.15*effort + 0.20*anchor + 0.25*validation
+置信度公式（v2.7.0 更新权重）：
+  confidence = 0.25*completeness + 0.20*effort + 0.25*anchor + 0.30*validation
 
-置信度分层：
-  ≥0.75 → high
-  0.60..0.75 → medium
-  <0.60 → low → indeterminate（若无 severe）
+置信度分层（v2.7.0 更新阈值）：
+  ≥0.80 → high
+  0.65..0.80 → medium
+  <0.65 → low → indeterminate（若无 severe）
+
+Medium 封顶规则（v2.7.0 新增）：
+  仅当 anchor_agreement 且 validation_agreement 同时均为中性值（均缺失），
+  不允许升至 high，最高封顶为 medium。
+  若至少一个域有真实值，允许 high。
 
 适配说明：
     模板来源：docs/guide/cpet_stage1_method_package/code_templates/confidence_engine.py
@@ -166,7 +171,9 @@ def compute_validation_agreement(
     tertile_map = {"low": 0, "mid": 1, "high": 2}
 
     a = zone.map(zone_map)
-    b = outcome_risk_tertile.map(tertile_map)
+    # 处理 Categorical 类型：先转为字符串
+    tertile_str = outcome_risk_tertile.astype(str) if hasattr(outcome_risk_tertile, "cat") else outcome_risk_tertile
+    b = tertile_str.map(tertile_map)
 
     out = pd.Series(0.5, index=zone.index, dtype=float)
     valid = a.notna() & b.notna()
@@ -189,14 +196,14 @@ def compute_confidence(
 ) -> pd.Series:
     """
     综合置信度公式。
-    默认权重：completeness=0.40, effort=0.15, anchor=0.20, validation=0.25
+    默认权重（v2.7.0）：completeness=0.25, effort=0.20, anchor=0.25, validation=0.30
     """
     if weights is None:
         weights = {
-            "completeness": 0.40,
-            "effort": 0.15,
-            "anchor_agreement": 0.20,
-            "validation_agreement": 0.25,
+            "completeness": 0.25,
+            "effort": 0.20,
+            "anchor_agreement": 0.25,
+            "validation_agreement": 0.30,
         }
 
     return (
@@ -210,20 +217,31 @@ def compute_confidence(
 def label_confidence(
     score: pd.Series,
     *,
-    high_threshold: float = 0.75,
-    medium_threshold: float = 0.60,
+    high_threshold: float = 0.80,
+    medium_threshold: float = 0.65,
+    neutral_agreement_mask: pd.Series | None = None,
 ) -> pd.Series:
     """
-    置信度数值分层：
+    置信度数值分层（v2.7.0 更新阈值）：
       ≥ high_threshold  → "high"
       ≥ medium_threshold → "medium"
       < medium_threshold → "low"
+
+    Medium 封顶规则（v2.7.0 新增）：
+      若 neutral_agreement_mask 为 True（anchor AND validation 均为中性时），
+      则 "high" 封顶为 "medium"。
     """
     out = pd.Series(index=score.index, dtype="object")
     out[score >= high_threshold] = "high"
     out[(score >= medium_threshold) & (score < high_threshold)] = "medium"
     out[score < medium_threshold] = "low"
     out[score.isna()] = np.nan
+
+    # medium 封顶：anchor/validation 均为中性时不允许 high
+    if neutral_agreement_mask is not None:
+        cap_mask = neutral_agreement_mask.reindex(score.index, fill_value=False)
+        out[(out == "high") & cap_mask] = "medium"
+
     return out
 
 
@@ -232,7 +250,10 @@ def finalize_zone_with_uncertainty(
     confidence_score: pd.Series,
     instability_severe: pd.Series,
     *,
-    indeterminate_threshold: float = 0.60,
+    indeterminate_threshold: float = 0.65,
+    high_threshold: float = 0.80,
+    medium_threshold: float = 0.65,
+    neutral_agreement_mask: pd.Series | None = None,
 ) -> pd.DataFrame:
     """
     应用 indeterminate 逻辑：
@@ -249,7 +270,10 @@ def finalize_zone_with_uncertainty(
     out = pd.DataFrame(index=zone_before_confidence.index)
     out["confidence_score"] = confidence_score
     out["confidence_label"] = label_confidence(
-        confidence_score, high_threshold=0.75, medium_threshold=0.60
+        confidence_score,
+        high_threshold=high_threshold,
+        medium_threshold=medium_threshold,
+        neutral_agreement_mask=neutral_agreement_mask,
     )
 
     severe = instability_severe.fillna(False).astype(bool)
@@ -304,9 +328,10 @@ def run_confidence_engine(
     conf_cfg = load_confidence_config(cfg_path)
     weights = conf_cfg.get("weights", {})
     thresholds = conf_cfg.get("thresholds", {})
-    high_thr = thresholds.get("high", 0.75)
-    medium_thr = thresholds.get("medium", 0.60)
-    indet_thr = conf_cfg.get("indeterminate_if_below", 0.60)
+    high_thr = thresholds.get("high", 0.80)
+    medium_thr = thresholds.get("medium", 0.65)
+    indet_thr = conf_cfg.get("indeterminate_if_below", 0.65)
+    cap_to_medium_if_neutral = conf_cfg.get("cap_to_medium_if_neutral_agreement", True)
 
     # 加载字段分类（从 variable_roles_stage1b.yaml）
     reserve_fields: list[str] = []
@@ -342,24 +367,44 @@ def run_confidence_engine(
     )
 
     # C. Anchor agreement
+    anchor_is_neutral = False
     if external_zone is not None:
         anchor_agr = compute_anchor_agreement(external_zone, zone_before_confidence)
+        anchor_is_neutral = False
     else:
         # 无外部参考时给中性值
         anchor_agr = pd.Series(0.5, index=df.index, dtype=float)
+        anchor_is_neutral = True
 
     # D. Validation agreement
+    validation_is_neutral = False
     if outcome_risk_tertile is not None:
         valid_agr = compute_validation_agreement(zone_before_confidence, outcome_risk_tertile)
+        # 对于逐行中性判断：outcome_risk_tertile 值缺失时认为中性
+        validation_is_neutral = False
     else:
         valid_agr = pd.Series(0.5, index=df.index, dtype=float)
+        validation_is_neutral = True
+
+    # 构建 medium 封顶掩码（anchor 且 validation 均为中性时封顶 high→medium）
+    # 注意：使用 AND 逻辑 — 只要有一个域提供了真实值，就允许 high
+    if cap_to_medium_if_neutral and anchor_is_neutral and validation_is_neutral:
+        # 两者均缺失：数值上最高只能到 0.725（< 0.80），封顶为 medium（理论上冗余但明确语义）
+        neutral_mask = pd.Series(True, index=df.index)
+    elif cap_to_medium_if_neutral:
+        # 逐行判断：仅当 anchor_agr 且 valid_agr 都为 0.5（均中性）时封顶
+        anchor_neutral_row = anchor_agr == 0.5
+        valid_neutral_row = valid_agr == 0.5
+        neutral_mask = anchor_neutral_row & valid_neutral_row
+    else:
+        neutral_mask = None
 
     # 合并置信度
     conf_weights = {
-        "completeness": weights.get("completeness", 0.40),
-        "effort": weights.get("effort", 0.15),
-        "anchor_agreement": weights.get("anchor_agreement", 0.20),
-        "validation_agreement": weights.get("validation_agreement", 0.25),
+        "completeness": weights.get("completeness", 0.25),
+        "effort": weights.get("effort", 0.20),
+        "anchor_agreement": weights.get("anchor_agreement", 0.25),
+        "validation_agreement": weights.get("validation_agreement", 0.30),
     }
     confidence_score = compute_confidence(
         completeness, effort, anchor_agr, valid_agr, weights=conf_weights
@@ -371,12 +416,17 @@ def run_confidence_engine(
         confidence_score,
         instability_severe,
         indeterminate_threshold=indet_thr,
+        high_threshold=high_thr,
+        medium_threshold=medium_thr,
+        neutral_agreement_mask=neutral_mask,
     )
 
-    # 合并调试列
+    # 合并调试列（含 anchor_agreement 和 validation_agreement）
     result_df = finalized.copy()
     result_df["completeness_score"] = completeness
     result_df["effort_score"] = effort
+    result_df["anchor_agreement"] = anchor_agr
+    result_df["validation_agreement"] = valid_agr
 
     # 统计
     conf_label = finalized["confidence_label"]

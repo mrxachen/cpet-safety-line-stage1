@@ -34,6 +34,11 @@
 | **Stage 1B Step 7 — 报告聚合 + 全管线** | ✅ 完成（stage1b_report.py + 37 测试 + pipeline CLI + Makefile stage1b）| 2026-04-22 |
 | **Stage 1B Step 8 — 论文重写（表型原型叙事）** | ✅ 完成（main_cn/en.tex 全面重写 + supplementary.tex 重写 + references.bib +13条）| 2026-04-22 |
 | **Stage 1B 管线真实数据运行 + 论文 TODO 填充** | ✅ 完成（make stage1b 全通过；28个TODO占位填充；验收 Warn）| 2026-04-22 |
+| **v2.7.0 Hotfix — ChatGPT 第二轮建议全落地** | ✅ 完成（4 Blocker修复+置信度重校准+分层验证+敏感性分析+论文清稿；验收 **Accept**；784测试通过）| 2026-04-22 |
+| **v2.8.0 — 论文图表补齐（2图+表格填充+Supplementary修正）** | ✅ 完成（2张 Stage 1B 图生成+\fbox 替换+置信度表格实数填充+supplementary 残留待填充全清除+三份 PDF 重编译）| 2026-04-23 |
+| **v2.9.0 — 论文全面学术化重写（~130处术语清除+结构重组）** | ✅ 完成（三份文件达到可投稿学术期刊水平；零残留开发术语；三份 PDF 重编译）| 2026-04-23 |
+| **v3.0.0 — Round 2 评审专家视角优化（~95处精确修复）** | ✅ 完成（致命EIH→EHT全文替换；N=359修正；临床结局代理定义；Cochran-Armitage p=0.025；η²_p规范化；三份PDF重编译）| 2026-04-23 |
+| **v3.1.0 — Round 3 论文语言自然化修订（~60处）** | ✅ 完成（消除机器翻译痕迹：汇总级→汇总指标；构念污染→概念混淆；构念效度→结构效度；临床结局代理→临床结局替代指标；显式→明确；群体入口→目标人群筛选；EN同步；三份PDF重编译）| 2026-04-23 |
 
 ---
 
@@ -61,10 +66,252 @@
 | `v2.4.0` | 2026-04-22 | Stage 1B Steps 2-8 全部完成：reference_quantiles(28)+phenotype_engine(32)+instability_rules(32)+confidence_engine(44)+outcome_anchor+anomaly_audit(25)+stage1b_report(37) = 198 Stage 1B 新测试；总计 748 通过；pipeline stage1b CLI + Makefile stage1b targets；论文全面重写（表型原型叙事）+ references.bib 新增13条中国参考值/TRIPOD+AI/MECKI/CPX文献 |
 | `v2.5.0` | 2026-04-22 | Stage 1B 管线真实数据运行 + 论文 TODO 填充：添加 `_derive_stage1b_columns()` 预处理函数（bmi/protocol_mode/eih_status 派生）；`make stage1b` 全通过（N=3232）；28个TODO占位全部替换为真实数值；验收判定 Warn（参考标准通过；构念效度梯度 non-monotone，已记录为汇总级信息边界） |
 | `v2.6.0` | 2026-04-22 | docs/guide 对照审计修复（45 条检查，23 PASS/8 PARTIAL/14 FAIL→全部修复）：CN摘要加背景段；新增Table5构念效度+Table6置信度分析；Discussion补3条局限性+1条未来方向；Supplementary重组S1-S5；嵌入4条审稿人防御句；references.bib重命名BMJuncertainty2025→Riley2013+新增Xiangya2021；CLI新增reference_subset_stage1b.parquet+final_zone_stage1b.parquet导出；置信度分布偏移说明；748测试通过 |
+| `v2.7.0` | 2026-04-22 | ChatGPT 第二轮全部建议落地：4个Blocker修复（B1:N统一3232/B2:删虚假单调声明→实为正确单调/B3:移除test_result排除/B4:添加penalty=elasticnet）；置信度引擎重校准（权重0.25/0.20/0.25/0.30，阈值0.80/0.65，AND封顶逻辑，流水线重排：outcome→confidence）；新增red_source+release_status+anchor_agreement+validation_agreement输出列；新增stratified_validation.py+sensitivity_analysis.py+对应CLI命令+Makefile targets；论文全面清稿（N统一/摘要重写/占位删除）；28新测试（总784通过）；管线重跑结果：**Accept**（Green 14.0%<Yellow 15.1%<Red 18.0%，单调梯度正确），high 33.0%，indeterminate 24.9% |
+| `v2.8.0` | 2026-04-23 | 论文图表补齐：plots.py 新增 plot_zone_distribution_stage1b()+plot_confidence_validity() 两函数；生成 paper/figures/zone_distribution_stage1b.png + confidence_validity.png；main_cn/en.tex 替换 2 个 \fbox 占位为 \includegraphics；置信度层表格填充实际数值（High 31.2%/25.9%/42.9%/16.4%，Medium 22.9%/41.5%/35.5%/15.4%，Low 10.5%）；supplementary.tex 消除 5 处"待填充/待运行"残留（权重纠正0.25/0.20/0.25/0.30，anomaly_flag 654例，N=903→正确，SA-3摘要，分层验收结论）；三份 PDF 重编译（18/18/9页，无 Error）|
+| `v2.9.0` | 2026-04-23 | 论文全面学术化重写：三份文件（main_cn/en.tex，supplementary.tex）从"项目技术报告"转换为可投稿学术期刊水平。消除 ~130 处开发术语（Stage 1B/Phase G/v2.7.0/final_zone/yellow_gray/管线/Accept/QuantileRegressor/SplineTransformer/np.sort/joblib/parquet 等）；标题重写；摘要合并Background+Purpose并重写（250-300字）；引言3 bold缺口→自然段主题句；公式(1)替换Python类名为数学符号（含 pinball loss）；6处 itemize 列表→紧凑表格；结果节8子节→5子节（含叙事主线和构念效度高潮）；讨论节改主题性标题+删除斜体自我辩护句+新增CPX/MECKI数值对比；结论3段式去重；supplementary 节标题重命名+Table S5 大幅精简；三份 PDF 重编译（17/20/8页，无 Error）|
+| `v3.1.0` | 2026-04-23 | Round 3 语言自然化修订（~60处）：G1 汇总级CPET数据→CPET汇总指标（全文）；G2 构念污染→概念混淆；G3 构念效度→结构效度；G4 构念分离→概念分离；G5 临床结局代理→临床结局替代指标（全文）；G7 显式→明确；群体入口→人群筛选起点/目标人群筛选依据；引言末段改写（四并列→自然段落）；方法学边界定义工具→方法学工具；EN同步：construct contamination→construct conflation；population entry-point→target population screening entry-point；methodological boundary-definition tool→methodological tool；honest methodological statement→transparent methodological acknowledgement；η²→η²_p（Figure caption遗漏）；三份PDF重编译（18/21/7页，无Error）|
+| `v3.0.0` | 2026-04-23 | Round 2 评审专家视角精确修复（~95处）：**[致命C1]** 全文EIH→EHT术语替换（3文件共45处；"运动性低氧血症"→"运动性高血压"；"exercise-induced hypoxaemia"→"exercise-induced hypertension"）；**[C2]** EHT-Only N=333→359（标记保留法，三文件一致）；**[C3]** 新增"临床结局代理"操作性定义（2.2节，中英文）；**[C4]** 新增 Cochran-Armitage 趋势检验（χ²=5.04，p=0.025；结果节+统计方法节+摘要）；**[C5]** 参考子集描述"约200-400"→"约900例"；**[A2]** "接近"→"低于"（AUC 0.564 vs 0.611）；**[L1]** "诚实性"→"如实反映"；**[L3]** "无氧阈负氧"→"无氧阈 VO₂"；**[L4]** 删除分位参考表脚注中错误的BMI声明；**[L5]** 不稳定阈值新增 AHA\cite{Fletcher2013}+ESC\cite{Pelliccia2022} 指南引用；**[L6]** 讨论节补充 VO₂peak%pred 显著交互（p=0.025）解释；**[L7]** "confirms"→"is consistent with"（非显著交互NHST表述修正）；**[L10/11]** 删除 LightGBM/校准截距方法声明（未报告结果）；**[F1]** 表头P值改小写斜体p；**[F2]** 标题删N=3232（移入摘要）；**[F3]** 添加\ref{}图交叉引用；**[F4]** η²→η²_p全文规范化；**[R1]** Gorodeski2008cpx标题修正；**[R5]** 新增Fletcher2013+Pelliccia2022引用；[S系列] supplementary.tex：EHT同步+灵敏度→敏感性+N一致性修正+Table S2改引正文+S4.3 TOC匹配；三份PDF重编译（18/21/7页，无Error）|
 
 ---
 
 ## 会话记录
+
+---
+
+### [2026-04-23] 会话 #29 — v3.1.0 Round 3 论文语言自然化修订
+
+**完成内容**：
+
+全面消除三份论文文件（main_cn.tex / main_en.tex / supplementary.tex）中的机器翻译痕迹，使论文读起来像资深临床研究者所写。
+
+**全局替换（G类）**：
+- G1 "汇总级 CPET 数据" / "汇总级数据" / "汇总级心肺运动试验数据" → "CPET 汇总指标" / "心肺运动试验汇总指标"（标题+全文，约15处）
+- G2 "构念污染" → "概念混淆"（全文，约4处）
+- G3 "构念效度" → "结构效度"（全文，约8处，含小节标题）
+- G4 "构念分离" → "概念分离"（讨论节标题）
+- G5 "临床结局代理" → "临床结局替代指标"（全文 replace_all，约15处）
+- G6 "信息上限" → "信息量上限"（多处）；"结构性信息上限" → "固有的信息量上限"
+- G7 "显式" → "明确"（全文，约10处）；"显式不确定层" → "不确定层"（结论节）
+- G8 "努力程度代理" → "努力程度替代指标"；"峰值斜率代理" → "峰值斜率替代指标"
+
+**句级改写（S/P类）**：
+- 摘要背景段（S2-S4）：拆长句，消除生硬直译
+- 摘要结论段（S6）：改写为自然学术中文
+- 引言末段（P2）：四并列"以...替代..."结构改为自然段落叙述
+- "方法学边界定义工具" → "方法学工具"（S13）
+- "群体入口" → "目标人群筛选依据/人群筛选起点"（S13/S24）
+- "等权设计消除了对结局驱动参数估计的依赖" → "等权设计避免了对结局驱动的参数优化的依赖"（S15）
+- 讨论4.4节（S20/S21）改写
+- 不确定层表注（S16/S26）改写
+
+**EN 版同步修改**：
+- "construct contamination" → "construct conflation"（标准英文 conflation 更准确）
+- "population entry-point" → "target population screening entry-point"
+- "methodological boundary-definition tool" → "methodological tool"
+- "honest methodological statement" → "transparent methodological acknowledgement"
+- Figure caption: `$\eta^2$=0.084` → `$\eta^2_p$=0.084`（Round 2 遗漏补齐）
+- Statistics section: `effect size $\eta^2$` → `partial effect size $\eta^2_p$`
+
+**编译结果**：
+- main_cn.pdf：18页，816K（无 Error）
+- main_en.pdf：21页，709K（无 Error）
+- supplementary.pdf：7页，267K（无 Error）
+
+**验收清单**：
+- [x] 零"汇总级"残留
+- [x] 零"构念污染/效度/分离"残留
+- [x] 零"临床结局代理"残留
+- [x] 零"显式"残留
+- [x] 零"群体入口"残留
+- [x] 三份 PDF 编译成功无 Error
+
+---
+
+### [2026-04-23] 会话 #28 — v3.0.0 Round 2 评审专家视角优化
+
+**完成内容**：
+
+1. **致命错误修复（C1）**：全文 EIH→EHT 术语替换（3文件共45+处）
+   - "运动性低氧血症（EIH）" → "运动性高血压（EHT）"
+   - "exercise-induced hypoxaemia (EIH)" → "exercise-induced hypertension (EHT)"
+   - 队列代码同步：HTN-NoEIH→HTN-NoEHT，HTN-EIH→HTN-EHT，EIH-Only→EHT-Only
+   - 限制项（L3）同步修正：EHT 基于分组编码推导，而非实时运动血压连续监测
+
+2. **数据一致性修复（C2）**：EHT-Only N=333→359（标记保留法，与总N=3,232一致）
+
+3. **"临床结局代理"操作性定义（C3）**：新增至2.2节（中英文），包含判读要素
+
+4. **Cochran-Armitage 趋势检验（C4）**：χ²=5.04，p=0.025（Python scipy计算确认）
+   - 添加至统计方法节、结果节（正文+摘要EN）
+
+5. **参考子集描述修正（C5）**："约200-400"→"约900例"
+
+6. **语言/逻辑修复**：
+   - "接近" → "低于"（AUC 0.564 vs 0.611）
+   - "诚实性" → "如实反映...信息边界"
+   - "无氧阈负氧" → "无氧阈 VO₂"（三文件）
+   - "confirms" → "is consistent with"（非显著NHST逻辑）
+   - 删除LightGBM/校准截距（方法有声明但结果无报告）
+   - VO₂peak%pred 显著交互（p=0.025）在讨论节补充解释
+
+7. **格式修复**：η²→η²_p（偏效应量）；p值表头小写斜体；标题删N=3232；添加\ref图引用；分位参考表脚注删错误BMI声明
+
+8. **参考文献修复**：Gorodeski2008cpx标题修正；新增Fletcher2013（AHA）+Pelliccia2022（ESC）不稳定阈值引用
+
+9. **Supplementary同步**：EHT替换+灵敏度→敏感性+N一致性+Table S2改引正文+S4.3 TOC匹配
+
+**编译结果**：三份PDF成功（18/21/7页，零Error）
+
+---
+
+### [2026-04-23] 会话 #27 — v2.9.0 论文全面学术化重写
+
+**完成内容**：
+
+根据三份独立审阅报告的意见，对三份论文文件进行了从"项目技术报告"到"可投稿学术期刊论文"的全面转换。
+
+**1. main_cn.tex（~130处修改）**
+
+- **标题重写**：删除"Stage 1B"/"双锚点"等开发术语 → "运动安全分层框架：条件分位参考建模与不确定性量化"
+- **摘要重写**：合并Background+Purpose（消除严重重复），250字以内，零内部术语
+- **引言改造**：3个 `\textbf{缺口一/二/三}` → 3个自然段主题句，删除"Stage 1B实验室安全表型原型"/"Stage I原型"/"Stage II"等语言
+- **公式(1)重写**：`QuantileRegressor(SplineTransformer(age) ⊕ OneHot(...))` → $Q_\tau(Y|\mathbf{z})=\boldsymbol{\beta}_\tau^\top[\mathbf{s}(\text{age};K=5)\oplus\mathbf{d}]$，新增 pinball loss 公式(2)
+- **6处列表→表格/论述**：变量负担规则、不稳定覆盖规则、置信度分量均改为紧凑表格
+- **结果节重组**：8子节 → 5子节（3.4合并3.4-3.8为连贯节，含叙事主线+构念效度高潮）
+- **讨论重写**：编号发现 → 主题性标题（构念分离/分位参考/不稳定独立/不确定性）；删除4处斜体自我辩护句；新增CPX score（AUC 0.77-0.82）和MECKI（C-statistic 0.73）数值对比
+- **结论3段式去重**：一句话总结+临床意义+前瞻，不重复四点创新
+
+**2. main_en.tex（~100处修改）**
+
+- 与 main_cn.tex 同步：标题、摘要、节结构、公式、讨论、结论
+- 新增 Variable Role Assignment 表格、Instability Override 表格、Confidence Components 表格
+- 删除所有 `Stage~1B`/`Phase~G`/`yellow_gray`/`final_zone`/`test_result`/`pipeline verdict: Accept` 等
+
+**3. supplementary.tex（~44处修改）**
+
+- 节标题重命名：S1 → 方法学细节与前期方法比较；S1.5 → 方法学质量标准；S3.2 → 前期方法对照；S4.1 → 分析框架全量输出摘要；S4.2 → 机器学习辅助验证结果；S5.3 → 多定义一致性分析
+- Table S5（内部列名定义）大幅精简 → Table S5（分析框架主要输出变量，学术描述）
+- 删除所有代码路径/make命令/joblib/parquet/np.sort/QuantileRegressor引用
+- `yellow_gray` → 不确定层；`final_zone` → 最终安全分层；`Stage 1B` → 本框架；`Phase G` → 前期方法；`v2.7.0` → 删除
+
+**编译结果**：
+- main_cn.pdf：17页，803K，无 Error
+- main_en.pdf：20页，704K，无 Error
+- supplementary.pdf：8页，268K，无 Error
+
+**零残留扫描**：所有禁用术语（Stage 1B/Phase G/v2.7/final_zone/yellow_gray/管线/Accept/legacy/QuantileRegressor/SplineTransformer/np.sort/joblib/parquet/make stage/reports/）在三份文件中完全清除。
+
+**下一步**：论文已具备可投稿学术期刊水平；下一步可进行同行专家审读或准备投稿。
+
+---
+
+### [2026-04-23] 会话 #26 — v2.8.0 论文图表补齐
+
+**完成内容**：
+
+1. **plots.py 新增 2 个绘图函数**
+   - `plot_zone_distribution_stage1b()`：4-zone（green/yellow/red/yellow_gray）堆叠柱状图，按 HTN×EIH 2×2 队列，英文标签+n值标注
+   - `plot_confidence_validity()`：双面板图（左：置信度水平柱状图；右：构念效度梯度柱状图）
+
+2. **生成 2 张 PNG 图片**
+   - `paper/figures/zone_distribution_stage1b.png`（Figure 2，111K）
+   - `paper/figures/confidence_validity.png`（Figure 3，162K）
+
+3. **替换 \fbox 占位符**
+   - main_cn.tex：fig:zone_dist_1b 和 fig:confidence_validity 两处 \fbox → \includegraphics
+   - main_en.tex：fig:zone_dist_en 和 fig:confidence_en 两处 \fbox → \includegraphics
+
+4. **填充置信度层表格**（main_cn.tex + main_en.tex）
+   - High (≥0.80): 1065 (33.0%), 31.2%/25.9%/42.9%, 阳性率 16.4%
+   - Medium (0.65-0.80): 1331 (41.2%), 22.9%/41.5%/35.5%, 阳性率 15.4%
+   - Low (<0.65): 836 (25.9%), —/—/—, 阳性率 10.5%
+   - Indeterminate: 805 (24.9%)；同步修正 806→805 全文
+
+5. **supplementary.tex 修正 5 处残留**
+   - L278：权重 0.40/0.15/0.20/0.25 → 0.25/0.20/0.25/0.30 (v2.7.0)
+   - L289：待运行 → SA-3 结果摘要（阈值敏感性表格，梯度方向稳健）
+   - L393：anomaly_flag=True 待填充 → 654 例（20.2%）
+   - L403：N=855 → N=903；finalzone 待填充 → 两子集方向一致
+   - L418：分层结果待填充 → 引用 stratified_validation_report.md 结论
+
+6. **三份 PDF 重编译**
+   - main_cn.pdf：18页，845K
+   - main_en.pdf：18页，673K
+   - supplementary.pdf：9页，262K；无 Error
+
+**版本**：v2.8.0
+
+---
+
+### [2026-04-22] 会话 #25 — v2.7.0 Hotfix: ChatGPT 第二轮建议全部落地
+
+**完成内容**：
+
+1. **Phase 0 — 4个Blocker修复**
+   - **B4**：`train_outcome_anchor.py` L165 添加 `penalty="elasticnet"`（之前 solver=saga + l1_ratio=0.5 无 penalty → 实为纯 L2）
+   - **B3**：`reference_spec_stage1b.yaml` primary reference 移除 `exclude_test_result`（保持纯外部验证叙事）；新增 `sensitivity_with_test_result_exclusion` 节用于敏感性分析
+   - **B1+B2**：论文清稿（见 Phase 5）
+
+2. **Phase 1 — 置信度引擎重校准**
+   - 权重更新：completeness 0.40→0.25，effort 0.15→0.20，anchor 0.20→0.25，validation 0.25→0.30（总和维持 1.0）
+   - 阈值更新：high 0.75→0.80，medium 0.60→0.65，indeterminate 0.60→0.65
+   - 新增 medium 封顶逻辑（AND语义：anchor AND validation 均中性时封顶；若至少一域有真实值则允许 high）
+   - 新增输出字段：`anchor_agreement`、`validation_agreement`
+   - pipeline 重排：`stage1b-outcome` 移至 `stage1b-confidence` 前（使 validation_agreement 有真实值）
+   - CLI `stats confidence` 新增 `--outcome-parquet` 参数（可选加载 outcome_risk_tertile）
+
+3. **Phase 2 — Red 语义拆分**
+   - `stage1b_report.py`：新增 `_derive_red_source()` 函数，输出表增加 `red_source` 列（red_override/red_phenotype/NaN）
+   - 新增 `release_status` 数据集级列（Accept/Warn/Fail）
+   - 新增 `anchor_agreement`、`validation_agreement` 合并至输出表
+   - `build_stage1b_output_table` 新增 `reference_mask` 参数；CLI 调整传参顺序
+
+4. **Phase 3 — 分层验证矩阵模块**
+   - 新增 `src/cpet_stage1/stats/stratified_validation.py`（5组分析）
+   - CLI 新增 `stats stratified-validation` 命令
+   - Makefile 新增 `stage1b-stratified-validation` target
+
+5. **Phase 4 — 敏感性分析模块**
+   - 新增 `src/cpet_stage1/stats/sensitivity_analysis.py`（SA-1~SA-5）
+   - CLI 新增 `stats sensitivity-analysis` 命令
+   - Makefile 新增 `stage1b-sensitivity` target
+
+6. **管线重跑**
+   - `make stage1b` 全通过，结果重大改善：
+     - 验收判定：**Accept**（之前 Warn）
+     - 构念效度：**correct/monotone** Green 14.0% < Yellow 15.1% < Red 18.0%（之前 non-monotone）
+     - High confidence：33.0%（之前 74.2%，符合预期下降）
+     - Indeterminate：24.9%（之前 1.9%，符合预期上升）
+     - Strict reference N=903, Green 69.2%, Red 10.2%（满足 green>50%, red<15%）
+     - final_zone：Green 19.7%、Yellow 25.6%、Red 29.7%、yellow_gray 24.9%
+   - `make stage1b-stratified-validation`：生成 reports/stratified_validation_report.md
+   - `make stage1b-sensitivity`：生成 reports/sensitivity_analysis_report.md
+
+7. **Phase 5 — 论文全面清稿**
+   - main_cn.tex + main_en.tex + supplementary.tex：
+     - N=3,206 → 3,232 全部统一
+     - 删除虚假"单调梯度"表述 → 替换为实际确认的正确单调梯度数值
+     - 删除所有"预期结果/Expected/pending"占位 → 替换真实数值
+     - 验收判定 Warn → Accept，摘要/结论重写
+     - 置信度权重/阈值全面更新至 v2.7.0
+     - Known-groups validity 在结果节中体现
+
+8. **Phase 6 — 测试 + DEVLOG**
+   - 新增 `tests/test_stratified_validation.py`（15个测试）
+   - 新增 `tests/test_sensitivity.py`（13个测试）
+   - 更新 `tests/anchors/test_confidence_engine.py`：修复权重测试 + 新增 medium 封顶/新字段测试（8个）
+   - **784 测试全通过**（748→784，新增 36 个）
+   - DEVLOG 更新、版本 bump v2.7.0
+
+**关键决策**：
+- Confidence 封顶逻辑改用 AND（非 OR）：OR 导致 0% high（过于严格），AND 允许单域有数据时可达 high
+- 流水线顺序调整：outcome 先跑，置信度引擎获得真实 validation_agreement，high% 从 0% 升至 33%
+- penalty="elasticnet" 的 sklearn FutureWarning（1.8 版）无需处理，功能正确（l1_ratio 即可控制）
+
+**遗留问题**：
+- outcome-anchor 校准（calibration slope）在 elasticnet 修复后仍需重新计算精确值
+- 论文需要重新编译 PDF（xelatex + bibtex + xelatex × 2）
+- GitHub push 待执行
 
 ---
 

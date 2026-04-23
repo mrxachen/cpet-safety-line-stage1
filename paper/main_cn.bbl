@@ -1,4 +1,4 @@
-\begin{thebibliography}{19}
+\begin{thebibliography}{28}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{#1}
 \expandafter\ifx\csname urlstyle\endcsname\relax\else
@@ -45,14 +45,6 @@ MYERS J, FORMAN D~E, BALADY G~J, et~al.
 \newblock Circulation, 2014, 130\allowbreak (12): 1014-1027.
 \newblock DOI: \doi{10.1161/CIR.0000000000000052}.
 
-\bibitem[Agostoni et~al.(2013)Agostoni, Corrà, Cattadori, Veglia, Battaia,
-  Salvioni, Perrone~Filardi, Vignati, and Limongelli]{Agostoni2013}
-AGOSTONI P, CORRÀ U, CATTADORI G, et~al.
-\newblock Prognostic value of indeterminate-class exercise oscillatory
-  ventilation in chronic heart failure\allowbreak[J/OL].
-\newblock JACC Heart Failure, 2013, 1\allowbreak (2): 143-151.
-\newblock DOI: \doi{10.1016/j.jchf.2012.11.007}.
-
 \bibitem[Balady et~al.(2010)Balady, Arena, Sietsema, Myers, Coke, Fletcher,
   Forman, Franklin, Guazzi, Gulati, Keteyian, Lavie, Macko, Mancini, and
   Milani]{Balady2010}
@@ -71,11 +63,13 @@ GUAZZI M, ADAMS V, CONRAADS V, et~al.
 \newblock Circulation, 2012, 126\allowbreak (18): 2261-2274.
 \newblock DOI: \doi{10.1161/CIR.0b013e31826fb946}.
 
-\bibitem[Weber et~al.(1986)Weber and Janicki]{Weber1982}
-WEBER K~T, JANICKI J~S.
-\newblock Cardiopulmonary exercise testing: physiologic principles and clinical
-  applications\allowbreak[M].
-\newblock Philadelphia, PA: W. B. Saunders, 1986.
+\bibitem[Li et~al.(2021)Li, Li, Hu, Luo, Peng, et~al.]{Xiangya2021}
+LI H, LI J, HU M, et~al.
+\newblock Safety of symptom-limited cardiopulmonary exercise testing in
+  {Chinese} clinical populations: a large single-centre
+  experience\allowbreak[J/OL].
+\newblock Chinese Medical Journal, 2021, 134\allowbreak (18): 2230-2237.
+\newblock DOI: \doi{10.1097/CM9.0000000000001651}.
 
 \bibitem[Sun et~al.(2022)Sun, Han, et~al.]{SunXG2022consensus}
 SUN X~G, HAN F, et~al.
@@ -84,29 +78,6 @@ SUN X~G, HAN F, et~al.
 \newblock Zhonghua Xinxueguanbing Zazhi (Chinese Journal of Cardiology), 2022,
   50\allowbreak (5): 443-458.
 \newblock DOI: \doi{10.3760/cma.j.cn112148-20220113-00034}.
-
-\bibitem[Wasserman et~al.(1999)Wasserman, Hansen, Sue, Stringer, and
-  Whipp]{Wasserman1999}
-WASSERMAN K, HANSEN J~E, SUE D~Y, et~al.
-\newblock Principles of exercise testing and interpretation: including
-  pathophysiology and clinical applications\allowbreak[M].
-\newblock 3rd ed.
-\newblock Philadelphia, PA: Lippincott Williams \& Wilkins, 1999.
-
-\bibitem[Hansen et~al.(1984)Hansen, Sue, and Wasserman]{Hansen1984}
-HANSEN J~E, SUE D~Y, WASSERMAN K.
-\newblock Predicted values for clinical exercise testing\allowbreak[J/OL].
-\newblock The American Review of Respiratory Disease, 1984, 129\allowbreak (2
-  Pt 2): S49-S55.
-\newblock DOI: \doi{10.1164/arrd.1984.129.2P2.S49}.
-
-\bibitem[Koch et~al.(2009)Koch, Sch{\"a}per, Ittermann, Spielhagen, D{\"o}rr,
-  V{\"o}lzke, and Opitz]{Koch2009}
-KOCH B, SCH{\"A}PER C, ITTERMANN T, et~al.
-\newblock Reference values for cardiopulmonary exercise testing in healthy
-  volunteers: the {SHIP} study\allowbreak[J/OL].
-\newblock European Respiratory Journal, 2009, 33\allowbreak (2): 389-397.
-\newblock DOI: \doi{10.1183/09031936.00074008}.
 
 \bibitem[Ross et~al.(2016)Ross, Blair, Arena, Church, Despres, Franklin,
   Haskell, Kaminsky, Levine, Lavie, Myers, Niebauer, Sallis, Sawada, Sui, and
@@ -117,36 +88,141 @@ ROSS R, BLAIR S~N, ARENA R, et~al.
 \newblock Circulation, 2016, 134\allowbreak (24): e653-e699.
 \newblock DOI: \doi{10.1161/CIR.0000000000000461}.
 
+\bibitem[Gorodeski et~al.(2008)Gorodeski, Chu, Reese, Shishehbor, Hsich, and
+  Starling]{Gorodeski2008cpx}
+GORODESKI E~Z, CHU E~C, REESE J~R, et~al.
+\newblock Prognosis on chronic dobutamine therapy in severe chronic heart
+  failure: value of cardiopulmonary exercise testing\allowbreak[J/OL].
+\newblock Journal of the American College of Cardiology, 2008, 51\allowbreak
+  (2): 142-152.
+\newblock DOI: \doi{10.1016/j.jacc.2007.09.030}.
+
+\bibitem[Myers et~al.(2013)Myers, Gujja, Neelagaru, Hsu, and
+  Vittorio]{CPXvalidation2013}
+MYERS J, GUJJA P, NEELAGARU S, et~al.
+\newblock Validation of the {CPX} score for predicting outcomes in patients
+  with heart failure\allowbreak[J/OL].
+\newblock Journal of Heart and Lung Transplantation, 2013, 32\allowbreak (5):
+  519-526.
+\newblock DOI: \doi{10.1016/j.healun.2013.01.985}.
+
+\bibitem[Agostoni et~al.(2023)Agostoni, Paolillo, Mapelli, Corrà, Lagioia,
+  Marra, et~al.]{MECKI2023}
+AGOSTONI P, PAOLILLO S, MAPELLI M, et~al.
+\newblock Outcome of heart failure patients stratified by {MECKI} score:
+  international validation cohort\allowbreak[J/OL].
+\newblock European Journal of Heart Failure, 2023, 25\allowbreak (8):
+  1323-1333.
+\newblock DOI: \doi{10.1002/ejhf.2889}.
+
+\bibitem[Wasserman et~al.(1999)Wasserman, Hansen, Sue, Stringer, and
+  Whipp]{Wasserman1999}
+WASSERMAN K, HANSEN J~E, SUE D~Y, et~al.
+\newblock Principles of exercise testing and interpretation: including
+  pathophysiology and clinical applications\allowbreak[M].
+\newblock 3rd ed.
+\newblock Philadelphia, PA: Lippincott Williams \& Wilkins, 1999.
+
+\bibitem[Koch et~al.(2009)Koch, Sch{\"a}per, Ittermann, Spielhagen, D{\"o}rr,
+  V{\"o}lzke, and Opitz]{Koch2009}
+KOCH B, SCH{\"A}PER C, ITTERMANN T, et~al.
+\newblock Reference values for cardiopulmonary exercise testing in healthy
+  volunteers: the {SHIP} study\allowbreak[J/OL].
+\newblock European Respiratory Journal, 2009, 33\allowbreak (2): 389-397.
+\newblock DOI: \doi{10.1183/09031936.00074008}.
+
+\bibitem[Sui et~al.(2021)Sui, Wen, Li, et~al.]{XET2021}
+SUI X, WEN D, LI C, et~al.
+\newblock X-{ET} project: establishing national {Chinese} exercise testing
+  reference standards\allowbreak[J/OL].
+\newblock Chinese Journal of Sport Medicine, 2021, 40\allowbreak (8): 601-611.
+\newblock DOI: \doi{10.16038/j.1000-6710.2021.08.001}.
+
+\bibitem[Wang et~al.(2022)Wang, Xie, Liu, Zhang, Li, Xu, et~al.]{WangCycle2022}
+WANG Y, XIE M, LIU T, et~al.
+\newblock Normal reference values for cycle ergometer cardiopulmonary exercise
+  testing in healthy {Chinese} adults\allowbreak[J/OL].
+\newblock Journal of Clinical Medicine, 2022, 11\allowbreak (19): 5697.
+\newblock DOI: \doi{10.3390/jcm11195697}.
+
+\bibitem[Huang et~al.(2024)Huang, Chen, Li, Zhang, et~al.]{HuangTreadmill2024}
+HUANG W, CHEN X, LI D, et~al.
+\newblock Reference values for treadmill cardiopulmonary exercise testing in
+  healthy {Chinese} adults aged 20--59 years\allowbreak[J/OL].
+\newblock Journal of Cardiopulmonary Rehabilitation and Prevention, 2024,
+  44\allowbreak (2): 102-109.
+\newblock DOI: \doi{10.1097/HCR.0000000000000781}.
+
+\bibitem[Zhao et~al.(2025)Zhao, Sun, Li, Wang, et~al.]{PUTHCycle2025}
+ZHAO Y, SUN X~G, LI N, et~al.
+\newblock Development and validation of cycle ergometer {CPET} reference
+  equations in elderly {Chinese} patients with hypertension\allowbreak[J/OL].
+\newblock Chinese Journal of Cardiology, 2025, 53\allowbreak (1): 25-35.
+\newblock DOI: \doi{10.3760/cma.j.cn112148-20240801-00451}.
+
+\bibitem[Kaminsky et~al.(2015)Kaminsky, Arena, and Myers]{FRIEND2016cycle}
+KAMINSKY L~A, ARENA R, MYERS J.
+\newblock Reference standards for cardiorespiratory fitness measured with
+  cardiopulmonary exercise testing: data from the {Fitness Registry and the
+  Importance of Exercise: A National Database (FRIEND)}\allowbreak[J/OL].
+\newblock Mayo Clinic Proceedings, 2015, 90\allowbreak (11): 1515-1523.
+\newblock DOI: \doi{10.1016/j.mayocp.2015.07.026}.
+
+\bibitem[Kaminsky et~al.(2022)Kaminsky, Imboden, Arena, and Myers]{FRIEND2022}
+KAMINSKY L~A, IMBODEN M~T, ARENA R, et~al.
+\newblock Reference standards for cardiorespiratory fitness measured with
+  cardiopulmonary exercise testing using cycle ergometry: data from the
+  {Fitness Registry and the Importance of Exercise: A National Database
+  (FRIEND)}\allowbreak[J/OL].
+\newblock Mayo Clinic Proceedings, 2022, 97\allowbreak (2): 285-293.
+\newblock DOI: \doi{10.1016/j.mayocp.2021.08.004}.
+
+\bibitem[Collins et~al.(2024)Collins, Moons, Dhiman, Riley, Beam, Van~Calster,
+  et~al.]{TRIPODAI2024}
+COLLINS G~S, MOONS K~G~M, DHIMAN P, et~al.
+\newblock {TRIPOD+AI}: transparent reporting of a multivariable prediction
+  model for individual prognosis or diagnosis -- {AI}
+  extension\allowbreak[J/OL].
+\newblock BMJ, 2024, 385: e078378.
+\newblock DOI: \doi{10.1136/bmj-2023-078378}.
+
+\bibitem[Wolff et~al.(2025)Wolff, Moons, Riley, Whiting, Westwood, Collins,
+  et~al.]{PROBASTAI2025}
+WOLFF R~F, MOONS K~G~M, RILEY R~D, et~al.
+\newblock {PROBAST+AI}: prediction model {Risk} of {Bias} {ASsessment Tool} --
+  extension for artificial intelligence models\allowbreak[J/OL].
+\newblock BMJ, 2025, 388: e077225.
+\newblock DOI: \doi{10.1136/bmj-2024-077225}.
+
+\bibitem[Fletcher et~al.(2013)Fletcher, Ades, Kligfield, Arena, Balady,
+  Bittner, Coke, Fleg, Forman, Gerber, Gulati, Madan, Rhodes, Thompson, and
+  Williams]{Fletcher2013}
+FLETCHER G~F, ADES P~A, KLIGFIELD P, et~al.
+\newblock Exercise standards for testing and training: a scientific statement
+  from the {American Heart Association}\allowbreak[J/OL].
+\newblock Circulation, 2013, 128\allowbreak (8): 873-934.
+\newblock DOI: \doi{10.1161/CIR.0b013e31829b5b44}.
+
+\bibitem[Pelliccia et~al.(2022)Pelliccia, Sharma, Gati, B{\"a}ck, Bj{\o}rnstad,
+  Brotons, Carerj, Caselli, Collet, Corrado, Gallina, Halle,
+  et~al.]{Pelliccia2022}
+PELLICCIA A, SHARMA S, GATI S, et~al.
+\newblock 2020 {ESC} guidelines on sports cardiology and exercise in patients
+  with cardiovascular disease\allowbreak[J/OL].
+\newblock European Heart Journal, 2022, 42\allowbreak (1): 17-96.
+\newblock DOI: \doi{10.1093/eurheartj/ehaa605}.
+
+\bibitem[Mahalanobis(1936)]{Mahalanobis1936}
+MAHALANOBIS P~C.
+\newblock On the generalised distance in statistics\allowbreak[J].
+\newblock Proceedings of the National Institute of Sciences of India, 1936,
+  2\allowbreak (1): 49-55.
+
 \bibitem[Cohen(1988)]{Cohen1988}
 COHEN J.
 \newblock Statistical power analysis for the behavioral sciences\allowbreak[M].
 \newblock 2nd ed.
 \newblock Hillsdale, NJ: Lawrence Erlbaum Associates, 1988.
-
-\bibitem[Zignoli et~al.(2022)Zignoli, Fornasiero, Stella, Pellegrini,
-  Pramsohler, Pernett, Schena, and Biral]{Zignoli2022ejss}
-ZIGNOLI A, FORNASIERO A, STELLA F, et~al.
-\newblock Oxynet: a collective intelligence that detects ventilatory thresholds
-  in cardiopulmonary exercise tests\allowbreak[J/OL].
-\newblock European Journal of Sport Science, 2022, 22\allowbreak (3): 351-361.
-\newblock DOI: \doi{10.1080/17461391.2020.1866081}.
-
-\bibitem[Li et~al.(2022)Li, Wang, Yang, Zhang, Liu, Zhao, et~al.]{Li2022xgb}
-LI J, WANG F, YANG J, et~al.
-\newblock Machine learning-based prediction model for severity of coronary
-  artery disease using cardiopulmonary exercise testing
-  parameters\allowbreak[J/OL].
-\newblock Journal of the American Heart Association, 2022, 11\allowbreak (3):
-  e022765.
-\newblock DOI: \doi{10.1161/JAHA.121.022765}.
-
-\bibitem[Arina et~al.(2025)Arina, Desai, Borrelli, Belletti, Casanova-Ortiz,
-  et~al.]{Arina2025}
-ARINA P, DESAI N, BORRELLI G, et~al.
-\newblock Machine learning-assisted exercise testing for perioperative risk
-  stratification in elderly patients\allowbreak[J/OL].
-\newblock Annals of Surgery, 2025, 281\allowbreak (2): 301-310.
-\newblock DOI: \doi{10.1097/SLA.0000000000006130}.
 
 \bibitem[Hearn et~al.(2018)Hearn, Thompson, Barker, Reddel, Geake, Chang,
   et~al.]{Hearn2018}
@@ -157,11 +233,12 @@ HEARN J, THOMPSON J, BARKER M, et~al.
   1231-1243.
 \newblock DOI: \doi{10.1177/2047487318784522}.
 
-\bibitem[Gao et~al.(2026)Gao, Wu, Zhang, et~al.]{Gao2026}
-GAO Y, WU X, ZHANG L, et~al.
-\newblock Apple watch-enabled cardiopulmonary function monitoring for heart
-  failure patients: the {TRUE-HF} study\allowbreak[J/OL].
-\newblock Nature Medicine, 2026, 32\allowbreak (1): 45-58.
-\newblock DOI: \doi{10.1038/s41591-025-03291-x}.
+\bibitem[Zignoli et~al.(2022)Zignoli, Fornasiero, Stella, Pellegrini,
+  Pramsohler, Pernett, Schena, and Biral]{Zignoli2022ejss}
+ZIGNOLI A, FORNASIERO A, STELLA F, et~al.
+\newblock Oxynet: a collective intelligence that detects ventilatory thresholds
+  in cardiopulmonary exercise tests\allowbreak[J/OL].
+\newblock European Journal of Sport Science, 2022, 22\allowbreak (3): 351-361.
+\newblock DOI: \doi{10.1080/17461391.2020.1866081}.
 
 \end{thebibliography}

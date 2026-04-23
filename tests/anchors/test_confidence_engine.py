@@ -222,8 +222,8 @@ class TestComputeConfidence:
         zeros = pd.Series([0.0] * n)
         halves = pd.Series([0.5] * n)
         score = compute_confidence(zeros, halves, halves, halves)
-        # 0.40*0 + 0.15*0.5 + 0.20*0.5 + 0.25*0.5 = 0 + 0.075 + 0.10 + 0.125 = 0.30
-        assert abs(score.iloc[0] - 0.30) < 1e-6
+        # v2.7.0 新权重: 0.25*0 + 0.20*0.5 + 0.25*0.5 + 0.30*0.5 = 0 + 0.10 + 0.125 + 0.15 = 0.375
+        assert abs(score.iloc[0] - 0.375) < 1e-6
 
     def test_custom_weights(self):
         n = 1
@@ -419,3 +419,91 @@ class TestGenerateConfidenceReport:
         df["test_result"] = ["阳性" if i % 7 == 0 else "阴性" for i in range(len(df))]
         report = generate_confidence_report(result, df_original=df)
         assert "高置信度" in report
+
+
+# ─────────────────────────────────────────────────────
+# v2.7.0 新功能：medium 封顶逻辑 + 新输出字段
+# ─────────────────────────────────────────────────────
+
+class TestMediumCapLogic:
+    """测试 medium 封顶逻辑（AND 语义）。"""
+
+    def test_both_neutral_caps_to_medium(self):
+        """两域均中性时（anchor=0.5, validation=0.5），封顶为 medium。"""
+        # 高分 + 两域均中性 → 封顶 medium
+        score = pd.Series([0.85])
+        neutral_mask = pd.Series([True])
+        label = label_confidence(score, high_threshold=0.80, medium_threshold=0.65,
+                                 neutral_agreement_mask=neutral_mask)
+        assert label.iloc[0] == "medium"
+
+    def test_one_non_neutral_allows_high(self):
+        """只有一域中性（AND逻辑），不封顶。"""
+        score = pd.Series([0.85])
+        neutral_mask = pd.Series([False])  # 不封顶
+        label = label_confidence(score, high_threshold=0.80, medium_threshold=0.65,
+                                 neutral_agreement_mask=neutral_mask)
+        assert label.iloc[0] == "high"
+
+    def test_no_cap_mask_normal_labeling(self):
+        """无封顶掩码时，正常分层。"""
+        scores = pd.Series([0.85, 0.70, 0.50])
+        labels = label_confidence(scores, high_threshold=0.80, medium_threshold=0.65)
+        assert labels.iloc[0] == "high"
+        assert labels.iloc[1] == "medium"
+        assert labels.iloc[2] == "low"
+
+    def test_finalize_zone_with_neutral_mask(self):
+        """finalize_zone_with_uncertainty 传递封顶掩码。"""
+        zone = pd.Series(["green", "yellow"])
+        conf = pd.Series([0.85, 0.85])
+        severe = pd.Series([False, False])
+        neutral_mask = pd.Series([True, False])
+
+        out = finalize_zone_with_uncertainty(
+            zone, conf, severe,
+            high_threshold=0.80, medium_threshold=0.65,
+            neutral_agreement_mask=neutral_mask,
+        )
+        # 第1行（neutral mask True）应为 medium
+        assert out.loc[0, "confidence_label"] == "medium"
+        # 第2行（neutral mask False）应为 high
+        assert out.loc[1, "confidence_label"] == "high"
+
+
+class TestNewOutputFields:
+    """测试 run_confidence_engine 新增输出字段。"""
+
+    def test_anchor_agreement_in_output(self):
+        df = _make_df()
+        zone = pd.Series(["green"] * len(df))
+        severe = pd.Series([False] * len(df))
+        result = run_confidence_engine(df, zone, severe)
+        assert "anchor_agreement" in result.df.columns
+
+    def test_validation_agreement_in_output(self):
+        df = _make_df()
+        zone = pd.Series(["green"] * len(df))
+        severe = pd.Series([False] * len(df))
+        result = run_confidence_engine(df, zone, severe)
+        assert "validation_agreement" in result.df.columns
+
+    def test_validation_agreement_with_real_tertile(self):
+        df = _make_df(n=15)
+        zone = pd.Series(["green"] * 5 + ["yellow"] * 5 + ["red"] * 5)
+        severe = pd.Series([False] * 15)
+        tertile = pd.Series(["low"] * 5 + ["mid"] * 5 + ["high"] * 5)
+        result = run_confidence_engine(df, zone, severe, outcome_risk_tertile=tertile)
+        # validation_agreement 应不全为 0.5
+        va = result.df["validation_agreement"]
+        assert not (va == 0.5).all()
+
+    def test_categorical_tertile_handled(self):
+        """outcome_risk_tertile 为 Categorical 类型时不报错。"""
+        df = _make_df(n=9)
+        zone = pd.Series(["green"] * 3 + ["yellow"] * 3 + ["red"] * 3)
+        severe = pd.Series([False] * 9)
+        tertile = pd.Categorical(["low"] * 3 + ["mid"] * 3 + ["high"] * 3)
+        tertile_series = pd.Series(tertile)
+        result = run_confidence_engine(df, zone, severe, outcome_risk_tertile=tertile_series)
+        assert "validation_agreement" in result.df.columns

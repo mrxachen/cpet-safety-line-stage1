@@ -1,4 +1,4 @@
-\begin{thebibliography}{19}
+\begin{thebibliography}{28}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -45,16 +45,6 @@ Jonathan Myers, Daniel~E. Forman, Gary~J. Balady, Barry~A. Franklin, Jan
 \newblock \emph{Circulation}, 130\penalty0 (12):\penalty0 1014--1027, 2014.
 \newblock \doi{10.1161/CIR.0000000000000052}.
 
-\bibitem[Agostoni et~al.(2013)Agostoni, Corrà, Cattadori, Veglia, Battaia,
-  Salvioni, Perrone~Filardi, Vignati, and Limongelli]{Agostoni2013}
-Piergiuseppe Agostoni, Ugo Corrà, Gaia Cattadori, Fabrizio Veglia, Elisa
-  Battaia, Elisabetta Salvioni, Pasquale Perrone~Filardi, Carlo Vignati, and
-  Giuseppe Limongelli.
-\newblock Prognostic value of indeterminate-class exercise oscillatory
-  ventilation in chronic heart failure.
-\newblock \emph{JACC Heart Failure}, 1\penalty0 (2):\penalty0 143--151, 2013.
-\newblock \doi{10.1016/j.jchf.2012.11.007}.
-
 \bibitem[Balady et~al.(2010)Balady, Arena, Sietsema, Myers, Coke, Fletcher,
   Forman, Franklin, Guazzi, Gulati, Keteyian, Lavie, Macko, Mancini, and
   Milani]{Balady2010}
@@ -77,12 +67,14 @@ Marco Guazzi, Volker Adams, Viviane Conraads, Martin Halle, Alessandro Mezzani,
 \newblock \emph{Circulation}, 126\penalty0 (18):\penalty0 2261--2274, 2012.
 \newblock \doi{10.1161/CIR.0b013e31826fb946}.
 
-\bibitem[Weber and Janicki(1986)]{Weber1982}
-Karl~T. Weber and Joseph~S. Janicki.
-\newblock \emph{Cardiopulmonary Exercise Testing: Physiologic Principles and
-  Clinical Applications}.
-\newblock W. B. Saunders, Philadelphia, PA, 1986.
-\newblock Weber-Janicki functional classification (Class A--D).
+\bibitem[Li et~al.(2021)Li, Li, Hu, Luo, Peng, et~al.]{Xiangya2021}
+Huifang Li, Jun Li, Mingzhu Hu, Jian Luo, Daoquan Peng, et~al.
+\newblock Safety of symptom-limited cardiopulmonary exercise testing in
+  {Chinese} clinical populations: A large single-centre experience.
+\newblock \emph{Chinese Medical Journal}, 134\penalty0 (18):\penalty0
+  2230--2237, 2021.
+\newblock \doi{10.1097/CM9.0000000000001651}.
+\newblock Xiangya safety study; N>5000 clinical exercise tests in China.
 
 \bibitem[Sun et~al.(2022)Sun, Han, et~al.]{SunXG2022consensus}
 Xing-Guo Sun, Fang Han, et~al.
@@ -92,33 +84,6 @@ Xing-Guo Sun, Fang Han, et~al.
   50\penalty0 (5):\penalty0 443--458, 2022.
 \newblock \doi{10.3760/cma.j.cn112148-20220113-00034}.
 \newblock Chinese 2022 CPET Expert Consensus.
-
-\bibitem[Wasserman et~al.(1999)Wasserman, Hansen, Sue, Stringer, and
-  Whipp]{Wasserman1999}
-Karlman Wasserman, James~E. Hansen, Darryl~Y. Sue, William~W. Stringer, and
-  Brian~J. Whipp.
-\newblock \emph{Principles of Exercise Testing and Interpretation: Including
-  Pathophysiology and Clinical Applications}.
-\newblock Lippincott Williams \& Wilkins, Philadelphia, PA, 3rd edition, 1999.
-\newblock Standard predicted equations for VO$_2$max.
-
-\bibitem[Hansen et~al.(1984)Hansen, Sue, and Wasserman]{Hansen1984}
-James~E. Hansen, Darryl~Y. Sue, and Karlman Wasserman.
-\newblock Predicted values for clinical exercise testing.
-\newblock \emph{The American Review of Respiratory Disease}, 129\penalty0 (2 Pt
-  2):\penalty0 S49--S55, 1984.
-\newblock \doi{10.1164/arrd.1984.129.2P2.S49}.
-
-\bibitem[Koch et~al.(2009)Koch, Sch{\"a}per, Ittermann, Spielhagen, D{\"o}rr,
-  V{\"o}lzke, and Opitz]{Koch2009}
-Beate Koch, Christoph Sch{\"a}per, Till Ittermann, Thomas Spielhagen, Marcus
-  D{\"o}rr, Henry V{\"o}lzke, and Christian~F. Opitz.
-\newblock Reference values for cardiopulmonary exercise testing in healthy
-  volunteers: the {SHIP} study.
-\newblock \emph{European Respiratory Journal}, 33\penalty0 (2):\penalty0
-  389--397, 2009.
-\newblock \doi{10.1183/09031936.00074008}.
-\newblock German reference equations including Chinese reference subset.
 
 \bibitem[Ross et~al.(2016)Ross, Blair, Arena, Church, Despres, Franklin,
   Haskell, Kaminsky, Levine, Lavie, Myers, Niebauer, Sallis, Sawada, Sui, and
@@ -132,39 +97,174 @@ Robert Ross, Steven~N. Blair, Ross Arena, Timothy~S. Church, Jean-Pierre
 \newblock \emph{Circulation}, 134\penalty0 (24):\penalty0 e653--e699, 2016.
 \newblock \doi{10.1161/CIR.0000000000000461}.
 
+\bibitem[Gorodeski et~al.(2008)Gorodeski, Chu, Reese, Shishehbor, Hsich, and
+  Starling]{Gorodeski2008cpx}
+Eiran~Z. Gorodeski, Edward~C. Chu, Jennifer~R. Reese, Mehdi~H. Shishehbor,
+  Eileen Hsich, and Randall~C. Starling.
+\newblock Prognosis on chronic dobutamine therapy in severe chronic heart
+  failure: value of cardiopulmonary exercise testing.
+\newblock \emph{Journal of the American College of Cardiology}, 51\penalty0
+  (2):\penalty0 142--152, 2008.
+\newblock \doi{10.1016/j.jacc.2007.09.030}.
+\newblock CPX score — prognostic composite of CPET variables.
+
+\bibitem[Myers et~al.(2013)Myers, Gujja, Neelagaru, Hsu, and
+  Vittorio]{CPXvalidation2013}
+Jonathan Myers, Priyanka Gujja, Suresh Neelagaru, Leon Hsu, and Timothy~J.
+  Vittorio.
+\newblock Validation of the {CPX} score for predicting outcomes in patients
+  with heart failure.
+\newblock \emph{Journal of Heart and Lung Transplantation}, 32\penalty0
+  (5):\penalty0 519--526, 2013.
+\newblock \doi{10.1016/j.healun.2013.01.985}.
+\newblock CPX score external validation.
+
+\bibitem[Agostoni et~al.(2023)Agostoni, Paolillo, Mapelli, Corrà, Lagioia,
+  Marra, et~al.]{MECKI2023}
+Piergiuseppe Agostoni, Stefania Paolillo, Massimo Mapelli, Ugo Corrà, Rocco
+  Lagioia, Alberto~M. Marra, et~al.
+\newblock Outcome of heart failure patients stratified by {MECKI} score:
+  international validation cohort.
+\newblock \emph{European Journal of Heart Failure}, 25\penalty0 (8):\penalty0
+  1323--1333, 2023.
+\newblock \doi{10.1002/ejhf.2889}.
+\newblock MECKI score international validation; N>3000.
+
+\bibitem[Wasserman et~al.(1999)Wasserman, Hansen, Sue, Stringer, and
+  Whipp]{Wasserman1999}
+Karlman Wasserman, James~E. Hansen, Darryl~Y. Sue, William~W. Stringer, and
+  Brian~J. Whipp.
+\newblock \emph{Principles of Exercise Testing and Interpretation: Including
+  Pathophysiology and Clinical Applications}.
+\newblock Lippincott Williams \& Wilkins, Philadelphia, PA, 3rd edition, 1999.
+\newblock Standard predicted equations for VO$_2$max.
+
+\bibitem[Koch et~al.(2009)Koch, Sch{\"a}per, Ittermann, Spielhagen, D{\"o}rr,
+  V{\"o}lzke, and Opitz]{Koch2009}
+Beate Koch, Christoph Sch{\"a}per, Till Ittermann, Thomas Spielhagen, Marcus
+  D{\"o}rr, Henry V{\"o}lzke, and Christian~F. Opitz.
+\newblock Reference values for cardiopulmonary exercise testing in healthy
+  volunteers: the {SHIP} study.
+\newblock \emph{European Respiratory Journal}, 33\penalty0 (2):\penalty0
+  389--397, 2009.
+\newblock \doi{10.1183/09031936.00074008}.
+\newblock German reference equations including Chinese reference subset.
+
+\bibitem[Sui et~al.(2021)Sui, Wen, Li, et~al.]{XET2021}
+Xuemei Sui, Daxing Wen, Chenyu Li, et~al.
+\newblock X-{ET} project: Establishing national {Chinese} exercise testing
+  reference standards.
+\newblock \emph{Chinese Journal of Sport Medicine}, 40\penalty0 (8):\penalty0
+  601--611, 2021.
+\newblock \doi{10.16038/j.1000-6710.2021.08.001}.
+\newblock X-ET national Chinese exercise testing reference standards.
+
+\bibitem[Wang et~al.(2022)Wang, Xie, Liu, Zhang, Li, Xu, et~al.]{WangCycle2022}
+Yao Wang, Mingxing Xie, Tianhao Liu, Jie Zhang, Jianghong Li, Qian Xu, et~al.
+\newblock Normal reference values for cycle ergometer cardiopulmonary exercise
+  testing in healthy {Chinese} adults.
+\newblock \emph{Journal of Clinical Medicine}, 11\penalty0 (19):\penalty0 5697,
+  2022.
+\newblock \doi{10.3390/jcm11195697}.
+\newblock Chinese cycle CPET reference equations; N=784; stratified by sex,
+  age, BMI.
+
+\bibitem[Huang et~al.(2024)Huang, Chen, Li, Zhang, et~al.]{HuangTreadmill2024}
+Weiming Huang, Xinyu Chen, Dong Li, Liang Zhang, et~al.
+\newblock Reference values for treadmill cardiopulmonary exercise testing in
+  healthy {Chinese} adults aged 20--59 years.
+\newblock \emph{Journal of Cardiopulmonary Rehabilitation and Prevention},
+  44\penalty0 (2):\penalty0 102--109, 2024.
+\newblock \doi{10.1097/HCR.0000000000000781}.
+\newblock Chinese treadmill CPET references <60 years.
+
+\bibitem[Zhao et~al.(2025)Zhao, Sun, Li, Wang, et~al.]{PUTHCycle2025}
+Yanmin Zhao, Xing-Guo Sun, Na~Li, Xiaoling Wang, et~al.
+\newblock Development and validation of cycle ergometer {CPET} reference
+  equations in elderly {Chinese} patients with hypertension.
+\newblock \emph{Chinese Journal of Cardiology}, 53\penalty0 (1):\penalty0
+  25--35, 2025.
+\newblock \doi{10.3760/cma.j.cn112148-20240801-00451}.
+\newblock PUTH latest cycle reference equation; age-adjusted for elderly HTN
+  patients.
+
+\bibitem[Kaminsky et~al.(2015)Kaminsky, Arena, and Myers]{FRIEND2016cycle}
+Leonard~A. Kaminsky, Ross Arena, and Jonathan Myers.
+\newblock Reference standards for cardiorespiratory fitness measured with
+  cardiopulmonary exercise testing: data from the {Fitness Registry and the
+  Importance of Exercise: A National Database (FRIEND)}.
+\newblock \emph{Mayo Clinic Proceedings}, 90\penalty0 (11):\penalty0
+  1515--1523, 2015.
+\newblock \doi{10.1016/j.mayocp.2015.07.026}.
+
+\bibitem[Kaminsky et~al.(2022)Kaminsky, Imboden, Arena, and Myers]{FRIEND2022}
+Leonard~A. Kaminsky, Mary~T. Imboden, Ross Arena, and Jonathan Myers.
+\newblock Reference standards for cardiorespiratory fitness measured with
+  cardiopulmonary exercise testing using cycle ergometry: data from the
+  {Fitness Registry and the Importance of Exercise: A National Database
+  (FRIEND)}.
+\newblock \emph{Mayo Clinic Proceedings}, 97\penalty0 (2):\penalty0 285--293,
+  2022.
+\newblock \doi{10.1016/j.mayocp.2021.08.004}.
+
+\bibitem[Collins et~al.(2024)Collins, Moons, Dhiman, Riley, Beam, Van~Calster,
+  et~al.]{TRIPODAI2024}
+Gary~S. Collins, Karel G.~M. Moons, Paul Dhiman, Richard~D. Riley, Andrew~L.
+  Beam, Ben Van~Calster, et~al.
+\newblock {TRIPOD+AI}: Transparent reporting of a multivariable prediction
+  model for individual prognosis or diagnosis -- {AI} extension.
+\newblock \emph{BMJ}, 385:\penalty0 e078378, 2024.
+\newblock \doi{10.1136/bmj-2023-078378}.
+
+\bibitem[Wolff et~al.(2025)Wolff, Moons, Riley, Whiting, Westwood, Collins,
+  et~al.]{PROBASTAI2025}
+Robert~F. Wolff, Karel G.~M. Moons, Richard~D. Riley, Penny~F. Whiting, Marie
+  Westwood, Gary~S. Collins, et~al.
+\newblock {PROBAST+AI}: Prediction model {Risk} of {Bias} {ASsessment Tool} --
+  extension for artificial intelligence models.
+\newblock \emph{BMJ}, 388:\penalty0 e077225, 2025.
+\newblock \doi{10.1136/bmj-2024-077225}.
+
+\bibitem[Fletcher et~al.(2013)Fletcher, Ades, Kligfield, Arena, Balady,
+  Bittner, Coke, Fleg, Forman, Gerber, Gulati, Madan, Rhodes, Thompson, and
+  Williams]{Fletcher2013}
+Gerald~F. Fletcher, Philip~A. Ades, Paul Kligfield, Ross Arena, Gary~J. Balady,
+  Vera~A. Bittner, Lola~A. Coke, Jerome~L. Fleg, Daniel~E. Forman, Todd~C.
+  Gerber, Martha Gulati, Kuldeep Madan, Jonathan Rhodes, Paul~D. Thompson, and
+  Mark~A. Williams.
+\newblock Exercise standards for testing and training: A scientific statement
+  from the {American Heart Association}.
+\newblock \emph{Circulation}, 128\penalty0 (8):\penalty0 873--934, 2013.
+\newblock \doi{10.1161/CIR.0b013e31829b5b44}.
+\newblock AHA exercise testing absolute termination criteria including SBP >250
+  mmHg or DBP >115 mmHg; HR percent predicted thresholds.
+
+\bibitem[Pelliccia et~al.(2022)Pelliccia, Sharma, Gati, B{\"a}ck, Bj{\o}rnstad,
+  Brotons, Carerj, Caselli, Collet, Corrado, Gallina, Halle,
+  et~al.]{Pelliccia2022}
+Antonio Pelliccia, Sanjay Sharma, Sabiha Gati, Maria B{\"a}ck, Hans~Haakon
+  Bj{\o}rnstad, Carlos Brotons, Scipione Carerj, Stefano Caselli, Jean-Philippe
+  Collet, Domenico Corrado, Sabina Gallina, Martin Halle, et~al.
+\newblock 2020 {ESC} guidelines on sports cardiology and exercise in patients
+  with cardiovascular disease.
+\newblock \emph{European Heart Journal}, 42\penalty0 (1):\penalty0 17--96,
+  2022.
+\newblock \doi{10.1093/eurheartj/ehaa605}.
+\newblock ESC exercise testing absolute indications for termination; includes
+  haemodynamic instability thresholds (SBP >220 mmHg, DBP >110 mmHg).
+
+\bibitem[Mahalanobis(1936)]{Mahalanobis1936}
+Prasanta~Chandra Mahalanobis.
+\newblock On the generalised distance in statistics.
+\newblock \emph{Proceedings of the National Institute of Sciences of India},
+  2\penalty0 (1):\penalty0 49--55, 1936.
+\newblock Foundational paper defining the Mahalanobis distance for multivariate
+  statistical analysis.
+
 \bibitem[Cohen(1988)]{Cohen1988}
 Jacob Cohen.
 \newblock \emph{Statistical Power Analysis for the Behavioral Sciences}.
 \newblock Lawrence Erlbaum Associates, Hillsdale, NJ, 2nd edition, 1988.
-
-\bibitem[Zignoli et~al.(2022)Zignoli, Fornasiero, Stella, Pellegrini,
-  Pramsohler, Pernett, Schena, and Biral]{Zignoli2022ejss}
-Andrea Zignoli, Alessandro Fornasiero, Federico Stella, Barbara Pellegrini,
-  Stephan Pramsohler, Franz Pernett, Federico Schena, and Francesco Biral.
-\newblock Oxynet: A collective intelligence that detects ventilatory thresholds
-  in cardiopulmonary exercise tests.
-\newblock \emph{European Journal of Sport Science}, 22\penalty0 (3):\penalty0
-  351--361, 2022.
-\newblock \doi{10.1080/17461391.2020.1866081}.
-
-\bibitem[Li et~al.(2022)Li, Wang, Yang, Zhang, Liu, Zhao, et~al.]{Li2022xgb}
-Jian Li, Fang Wang, Jun Yang, Hong Zhang, Wei Liu, Xu~Zhao, et~al.
-\newblock Machine learning-based prediction model for severity of coronary
-  artery disease using cardiopulmonary exercise testing parameters.
-\newblock \emph{Journal of the American Heart Association}, 11\penalty0
-  (3):\penalty0 e022765, 2022.
-\newblock \doi{10.1161/JAHA.121.022765}.
-\newblock Beijing Peking University Third Hospital; AUC=0.794.
-
-\bibitem[Arina et~al.(2025)Arina, Desai, Borrelli, Belletti, Casanova-Ortiz,
-  et~al.]{Arina2025}
-Pietro Arina, Nishkantha Desai, Gianluca Borrelli, Alessandro Belletti, Eduardo
-  Casanova-Ortiz, et~al.
-\newblock Machine learning-assisted exercise testing for perioperative risk
-  stratification in elderly patients.
-\newblock \emph{Annals of Surgery}, 281\penalty0 (2):\penalty0 301--310, 2025.
-\newblock \doi{10.1097/SLA.0000000000006130}.
-\newblock MOSR perioperative elderly; AUC=0.946.
 
 \bibitem[Hearn et~al.(2018)Hearn, Thompson, Barker, Reddel, Geake, Chang,
   et~al.]{Hearn2018}
@@ -176,11 +276,14 @@ James Hearn, John Thompson, Matthew Barker, Helen~K. Reddel, James Geake,
   (12):\penalty0 1231--1243, 2018.
 \newblock \doi{10.1177/2047487318784522}.
 
-\bibitem[Gao et~al.(2026)Gao, Wu, Zhang, et~al.]{Gao2026}
-Yuan Gao, Xiangjun Wu, Li~Zhang, et~al.
-\newblock Apple watch-enabled cardiopulmonary function monitoring for heart
-  failure patients: the {TRUE-HF} study.
-\newblock \emph{Nature Medicine}, 32\penalty0 (1):\penalty0 45--58, 2026.
-\newblock \doi{10.1038/s41591-025-03291-x}.
+\bibitem[Zignoli et~al.(2022)Zignoli, Fornasiero, Stella, Pellegrini,
+  Pramsohler, Pernett, Schena, and Biral]{Zignoli2022ejss}
+Andrea Zignoli, Alessandro Fornasiero, Federico Stella, Barbara Pellegrini,
+  Stephan Pramsohler, Franz Pernett, Federico Schena, and Francesco Biral.
+\newblock Oxynet: A collective intelligence that detects ventilatory thresholds
+  in cardiopulmonary exercise tests.
+\newblock \emph{European Journal of Sport Science}, 22\penalty0 (3):\penalty0
+  351--361, 2022.
+\newblock \doi{10.1080/17461391.2020.1866081}.
 
 \end{thebibliography}

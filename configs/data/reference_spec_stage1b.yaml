@@ -15,11 +15,7 @@ reference_subset:
     # 允许的组别（仅健康对照）
     allowed_groups:
       - CTRL
-    # 排除异常 test_result
-    exclude_test_result:
-      - "阳性"
-      - "positive"
-      - 1
+    # 注意：不再排除 test_result，保持纯外部验证叙事
     # VO2peak 下界（%pred）
     vo2_peak_pct_pred_min: 70.0
     # VE/VCO2 slope 上界
@@ -123,3 +119,26 @@ output:
   predictions_path: "data/features/reference_quantiles_stage1b.parquet"
   report_path: "reports/reference_quantiles_report.md"
   subset_path: "data/cohort/reference_subset_stage1b.parquet"
+
+# ─────────────────────────────────────────────────────
+# 敏感性分析：排除 test_result 阳性的参考子集（旧版本对比）
+# 由 sensitivity_analysis.py 使用
+# ─────────────────────────────────────────────────────
+sensitivity_with_test_result_exclusion:
+  wide:
+    allowed_groups:
+      - CTRL
+    exclude_test_result:
+      - "阳性"
+      - "positive"
+      - 1
+    vo2_peak_pct_pred_min: 70.0
+    ve_vco2_slope_max: 30.0
+    exclude_eih: true
+    bp_peak_sys_max: 210.0
+    age_range: [40, 85]
+    note: "敏感性分析版本：恢复 test_result 排除（对比主要分析的影响）"
+  strict:
+    hr_effort_proxy: true
+    hr_peak_pct_pred_min: 85.0
+    note: "敏感性分析严版本"

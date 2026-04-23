@@ -102,11 +102,15 @@ instability:
 
 confidence:
   weights:
-    completeness: 0.40
-    effort: 0.15
-    anchor_agreement: 0.20
-    validation_agreement: 0.25
+    completeness: 0.25
+    effort: 0.20
+    anchor_agreement: 0.25
+    validation_agreement: 0.30
+    # 权重总和 = 1.00；较旧版减少 completeness（0.40→0.25），增加 anchor+validation 权重
   thresholds:
-    high: 0.75
-    medium: 0.60
-  indeterminate_if_below: 0.60
+    high: 0.80
+    medium: 0.65
+  indeterminate_if_below: 0.65
+  # 仅当 anchor_agreement 且 validation_agreement 同时均为中性值时，封顶为 medium（AND 逻辑）
+  # 若至少一个域有真实值，允许达到 high
+  cap_to_medium_if_neutral_agreement: true

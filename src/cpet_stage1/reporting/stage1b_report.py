@@ -36,6 +36,7 @@ def build_stage1b_output_table(
     confidence_parquet: str | Path | None = None,
     outcome_parquet: str | Path | None = None,
     anomaly_parquet: str | Path | None = None,
+    reference_mask: pd.Series | None = None,
 ) -> pd.DataFrame:
     """
     汇聚所有 Stage 1B 中间输出，构建最终输出表（每人一行）。
@@ -45,6 +46,9 @@ def build_stage1b_output_table(
       instability_severe, instability_mild,
       final_zone_before_confidence,
       confidence_score, confidence_label, indeterminate_flag, final_zone,
+      anchor_agreement, validation_agreement (debug fields),
+      red_source (red_override | red_phenotype | NaN),
+      release_status (dataset-level: Accept/Warn/Fail),
       outcome_risk_prob (optional), outcome_risk_tertile (optional),
       anomaly_score (optional), anomaly_flag (optional)
     """
@@ -74,6 +78,7 @@ def build_stage1b_output_table(
         (_merge_parquet(confidence_parquet, "confidence"), [
             "confidence_score", "confidence_label", "indeterminate_flag", "final_zone",
             "completeness_score", "effort_score",
+            "anchor_agreement", "validation_agreement",
         ]),
     ]
 
@@ -98,7 +103,37 @@ def build_stage1b_output_table(
             if col in anomaly_df.columns:
                 result[col] = anomaly_df[col].reindex(result.index)
 
+    # 派生 red_source：区分 red_override（instability severe 触发）vs red_phenotype（表型负担触发）
+    result = _derive_red_source(result)
+
+    # 派生 release_status：数据集级验收状态（Accept/Warn/Fail），所有行填同一值
+    verdict = assess_acceptance(result, reference_mask=reference_mask)
+    result["release_status"] = verdict["verdict"]
+
     return result
+
+
+def _derive_red_source(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    派生 red_source 列，拆分 Red 区语义来源：
+    - "red_override"：instability_severe 规则触发（EIH/高血压急症/O2脉搏下降等）
+    - "red_phenotype"：表型负担 >= P90 触发（非 override）
+    - null（np.nan）：非 Red 区
+    """
+    out = df.copy()
+    red_source = pd.Series(np.nan, index=df.index, dtype="object")
+
+    if "final_zone" in df.columns:
+        is_red = df["final_zone"] == "red"
+        severe = df.get("instability_severe", pd.Series(False, index=df.index)).fillna(False).astype(bool)
+
+        # Red 且由 severe override 触发
+        red_source[is_red & severe] = "red_override"
+        # Red 但非 severe（即由表型负担触发）
+        red_source[is_red & ~severe] = "red_phenotype"
+
+    out["red_source"] = red_source
+    return out
 
 
 def compute_construct_validity(
@@ -292,9 +327,19 @@ def generate_stage1b_summary_report(
             lines.append(f"- red%：{rv.get('red_pct', 0):.1%}")
             lines.append(f"- 参考合理：{'✅' if rv.get('reference_ok') else '❌'}")
 
+    # Red 来源拆分统计
+    if "red_source" in df.columns:
+        lines.append("\n## Red 区来源拆分（red_source）\n")
+        lines.append("| 来源 | N | % |")
+        lines.append("|---|---|---|")
+        for src in ["red_override", "red_phenotype"]:
+            cnt = int((df["red_source"] == src).sum())
+            lines.append(f"| {src} | {cnt} | {100*cnt/n:.1f}% |")
+
     # 验收判定
     verdict = assess_acceptance(df, reference_mask=reference_mask)
     lines.append(f"\n## 验收判定：**{verdict['verdict']}**\n")
+    lines.append(f"- release_status：**{verdict['verdict']}**")
     lines.append(f"- 原因：{verdict['reason']}")
     if verdict.get("details"):
         for d in verdict["details"]:

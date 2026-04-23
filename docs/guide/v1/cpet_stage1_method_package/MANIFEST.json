@@ -1,0 +1,30 @@
+{
+  "package_name": "cpet_stage1_method_package",
+  "files": [
+    "00_README_先看这个.md",
+    "01_method_path.md",
+    "01_完整方法路径.md",
+    "02_algorithm_design.md",
+    "02_算法设计与判定流程.md",
+    "03_code_plan.md",
+    "03_代码改造清单与模板.md",
+    "04_expected_results.md",
+    "04_预期结果_里程碑_验收标准.md",
+    "05_paper_rewrite_blueprint.md",
+    "05_论文改写蓝图.md",
+    "06_references.md",
+    "06_参考文献与引用建议.md",
+    "MASTER_manual.docx",
+    "MASTER_总手册.docx",
+    "README.md"
+  ],
+  "code_templates": [
+    "cli_patch_examples.md",
+    "confidence_engine.py",
+    "instability_rules.py",
+    "paper_table_shells.md",
+    "phenotype_engine.py",
+    "reference_quantiles.py",
+    "zone_rules_stage1b.yaml"
+  ]
+}

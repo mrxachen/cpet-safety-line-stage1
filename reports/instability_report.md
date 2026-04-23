@@ -9,15 +9,15 @@
 
 | Zone | N | % |
 |---|---|---|
-| green | 808 | 25.0% |
-| yellow | 937 | 29.0% |
-| red | 1450 | 44.9% |
+| green | 815 | 25.2% |
+| yellow | 934 | 28.9% |
+| red | 1446 | 44.7% |
 | NaN | 37 | 1.1% |
 
 ## 构念效度（final_zone_before_confidence vs test_result）
 
 | Zone | N | test_result 阳性率 |
 |---|---|---|
-| green | 808 | 14.1% |
-| yellow | 937 | 15.2% |
-| red | 1450 | 14.6% |
+| green | 815 | 14.5% |
+| yellow | 934 | 14.9% |
+| red | 1446 | 14.6% |

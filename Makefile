@@ -8,6 +8,7 @@
         model-outcome stats-anomaly stats-concordance phase-g \
         stage1b-reference stage1b-phenotype stage1b-instability stage1b-confidence \
         stage1b-outcome stage1b-anomaly stage1b-report stage1b \
+        stage1b-stratified-validation stage1b-sensitivity \
         reports bridge-prep release clean
 
 PYTHON  := python
@@ -61,6 +62,8 @@ help:
 	@echo "    stage1b-anomaly    Run anomaly audit (QC)"
 	@echo "    stage1b-report     Generate Stage 1B summary report"
 	@echo "    stage1b            Run full Stage 1B pipeline"
+	@echo "    stage1b-stratified-validation  Run 5-group stratified validation"
+	@echo "    stage1b-sensitivity            Run 5-group sensitivity analysis"
 	@echo ""
 	@echo "  Output"
 	@echo "    reports        Generate summary figures and tables"
@@ -258,7 +261,13 @@ stage1b-anomaly:
 stage1b-report:
 	$(CLI) pipeline stage1b
 
-stage1b: stage1b-reference stage1b-phenotype stage1b-instability stage1b-confidence stage1b-outcome stage1b-anomaly stage1b-report
+stage1b: stage1b-reference stage1b-phenotype stage1b-instability stage1b-outcome stage1b-confidence stage1b-anomaly stage1b-report
+
+stage1b-stratified-validation:
+	$(CLI) stats stratified-validation
+
+stage1b-sensitivity:
+	$(CLI) stats sensitivity-analysis
 
 # --------------- Utility ---------------
 clean:
